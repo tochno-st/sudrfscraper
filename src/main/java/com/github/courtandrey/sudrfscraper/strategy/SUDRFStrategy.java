@@ -1,10 +1,8 @@
 package com.github.courtandrey.sudrfscraper.strategy;
 
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
-import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
-import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Issue;
-import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.SearchPattern;
-import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.StrategyName;
+import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.*;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.ConfigurationHelper;
@@ -264,6 +262,9 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     protected Set<Case> filterCases() {
+        if (SearchRequest.getInstance().getField() == Field.CAS && cc.getLevel() == Level.MOSGORSUD) {
+            return resultCases;
+        }
         String textToFind = request.getText();
         if (textToFind != null) {
             Set<Case> cases = new HashSet<>();
