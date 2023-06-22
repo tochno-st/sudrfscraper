@@ -124,13 +124,20 @@
                 </li>
                 <li>Text-in-Decision field. Obvious. Just don't forget info introduced in the previous chapter.</li>
                 <li>The main option: article. SUDRFScraper supports Criminal Articles, Administrative Offense Articles, and
-                    Administrative articles. Just don't forget info introduced in the previous chapter (x2). Important to
-                    know: for administrative articles, you should enter mosgorsud code. You can find these codes in
-                    cas_mosgorsud.txt in the lawbook folder in the root. For other courts, you are still able to put part of
-                    the category from CAS.</li>
+                    Administrative articles. Just don't forget info introduced in the previous chapter (x2).</li>
             </ol>
         </li>
         <li>There are only two dump types supported: MySQL-table and line-by-line JSON document.</li>
+
+        <li>You are also able to configure these options:
+        <ol>
+            <li>Directory path. Path of desirable result directory.
+            </li>
+            <li>Continue. If you want to continue finished scraping (scrap previously inactive courts or continue aborted scraping) you can check this option. You should enter project name and directory of previous scraping. If there are no project, scraping will continue from the most recent session results.</li>
+            <li>Cases filter. SOFT for collecting subArticles for entered Articles, e.g. 20.3 collects 20.3.3. STRICT for collecting only specified article, e.g. 20.3 doesn't collect 20.3.3</li>
+            <li>Court Level and Court region filter.</li>
+        </ol>
+        </li>
         <li>By the end of execution, you are given summary info. It is a list of occurred issues, so you may know how many
             cases you could miss during the scraping. You can also check logs to find issue info. If there are many issues
             that are not include server problems (Inactive court, Connection error) like possible different interfaces, I
