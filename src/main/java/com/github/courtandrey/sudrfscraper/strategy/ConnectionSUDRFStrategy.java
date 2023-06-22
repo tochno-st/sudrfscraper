@@ -7,11 +7,18 @@ import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Sear
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.StrategyName;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.CasesPipeLineFactory;
+import com.github.courtandrey.sudrfscraper.service.Constant;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.SeleniumHelper;
 import com.github.courtandrey.sudrfscraper.service.logger.SimpleLogger;
 import com.github.courtandrey.sudrfscraper.service.ThreadHelper;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.openqa.selenium.TimeoutException;
@@ -22,8 +29,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Set;
-
-import static com.github.courtandrey.sudrfscraper.service.Constant.UA;
 
 public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
     boolean isInTestingMode = false;
@@ -137,11 +142,13 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
 
     private void connectJsoup() {
         try {
-            currentDocument = Jsoup
-                    .connect(urls[indexUrl])
-                    .userAgent(UA.toString())
-                    .timeout(1000 * 60 * 2)
-                    .get();
+            try(CloseableHttpClient httpClient =  HttpClients.custom().disableContentCompression().setRedirectStrategy(new LaxRedirectStrategy()).build()) {
+                HttpGet get = new HttpGet(urls[indexUrl]);
+                get.setHeader("User-Agent", Constant.UA.toString());
+                HttpResponse response = httpClient.execute(get);
+                String htmlString = EntityUtils.toString(response.getEntity());
+                currentDocument = Jsoup.parse(htmlString);
+            }
         } catch (SocketException | HttpStatusException | UnknownHostException e) {
             if (unravel > 0) {
                 ThreadHelper.sleep(5);
