@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+        <meta charset="UTF-8">
+
+        <style>
+            html {
+                height: 100%;
+                overflow: hidden;
+              }
+
+              body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                height: 100%;
+                overflow: auto;
+                background: linear-gradient(to bottom right, #B59410, #710193);
+              }
+
+              .full-window-gradient {
+                background: linear-gradient(to bottom right, #B59410, #710193);
+              }
+
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: white;
+                border-radius: 1px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            h1 {
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            h2 {
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            h3 {
+                font-size: 15px;
+                text-align: center;
+            }
+
+            .input-pair {
+                margin-bottom: 10px;
+            }
+
+            .input-pair label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+
+            .input-pair input[type="text"],
+            .input-pair input[type="password"] {
+                width: 100%;
+                padding: 5px;
+            }
+
+            .input-pair input[type="checkbox"] {
+                vertical-align: middle;
+            }
+
+            .centered {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .rememberInfoInputPair {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            button {
+                display: block;
+                margin: 10px auto;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .inner-inputs {
+                display: flex;
+                font-size:14px;
+                text-align: center;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .input-pair.inline-inputs {
+                align-items: center;
+              }
+
+              .input-pair.inline-inputs label {
+                margin-right: 20px;
+              }
+
+              .input-pair.inline-inputs input[type="text"] {
+                width: 50px;
+                height: 10px;
+                margin-right: 20px;
+              }
+
+            .block-element {
+                display: block;
+            }
+            .select-strict {
+                height: 30px;
+                width: 100%;
+            }
+        </style>
+
+        <title>Search Configuration</title>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Configure Your Search Request</h1>
+
+            <div class="input-pair block-element">
+                <label for="projectName">Project Name<span>*</span></label>
+                <input type="text" id="projectName" placeholder="your_project_name" autocomplete="off">
+            </div>
+
+            <div class="input-pair block-element">
+                <label for="directoryInput">Project Directory</label>
+                <input type="text" id="directoryInput" autocomplete="off">
+            </div>
+
+            <script>
+                document.getElementById('directoryInput').value = './results/';
+            </script>
+
+            <div class="block-element">
+                <div class="centered">
+                    <input type="checkbox" id="continueBox" autocomplete="off">
+                    <label for="continueBox">Continue Previous Scraping</label>
+                </div>
+            </div>
+            <div class="centered">
+                <div id="fetchResult" style="margin-top: 10px"></div>
+            </div>
+            <button id="loadPreviousRequest" class="hidden">Fetch Previous Request</button>
+
+            <div class="block-element">
+                <h2 class="dump_type">Dump Type<span>*</span></h2>
+                <div class="centered">
+                    <input type="checkbox" id="sqlCheckbox" autocomplete="off">
+                    <label for="sqlCheckbox">SQL</label>
+
+                    <input type="checkbox" id="jsonCheckbox" autocomplete="off">
+                    <label for="jsonCheckbox">JSON</label>
+                </div>
+            </div>
+
+            <div id="sqlFields" class="hidden">
+                <div class="input-pair block-element">
+                    <label for="dbUrlInput">Database URL<span>*</span></label>
+                    <input type="text" id="dbUrlInput" required autocomplete="off" placeholder="jdbc:mysql://{host}:{port}/{database_name}">
+                </div>
+
+                <div class="input-pair block-element">
+                    <label for="dbUserInput">Database User</label>
+                    <input type="text" id="dbUserInput" required autocomplete="off">
+                </div>
+
+                <div class="input-pair block-element">
+                    <label for="dbPasswordInput">Database Password</label>
+                    <input type="password" id="dbPasswordInput" required autocomplete="off">
+                </div>
+                <div class="rememberInfoInputPair">
+                    <input type="checkbox" id="rememberInfoCheckbox" autocomplete="off">
+                    <label for="rememberInfoCheckbox">Remember Connection Info</label>
+                </div>
+                <div class="centered">
+                    <div id="connectionStatus" style="margin-top: 10px"></div>
+                </div>
+                <button id="checkConnectionButton">Check Connection</button>
+            </div>
+
+            <div class="input-pair block-element" style="margin-top: 20px">
+                <label for="courtLevel">Court Level</label>
+                <select id="courtLevel" autocomplete="off" multiple class="select-strict">
+                    <option value="all" selected>All</option>
+                    <option value="region">Region</option>
+                    <option value="district">District</option>
+                    <option value="garrison">Garrison</option>
+                    <option value="mosgorsud">Mosgorsud</option>
+                </select>
+            </div>
+
+            <div class="input-pair block-element">
+                <label for="regions">Court Region</label>
+                <select id="regions" autocomplete="off" multiple class="select-strict">
+                    <option value="all" selected>All</option>
+                    <option value="1">Республика Адыгея (Адыгея)</option>
+                    <option value="4">Республика Алтай</option>
+                    <option value="2">Республика Башкортостан</option>
+                    <option value="3">Республика Бурятия</option>
+                    <option value="5">Республика Дагестан</option>
+                    <option value="6">Республика Ингушетия</option>
+                    <option value="7">Кабардино-Балкарская Республика</option>
+                    <option value="8">Республика Калмыкия</option>
+                    <option value="9">Карачаево-Черкесская Республика</option>
+                    <option value="10">Республика Карелия</option>
+                    <option value="11">Республика Коми</option>
+                    <option value="82">Республика Крым</option>
+                    <option value="12">Республика Марий Эл</option>
+                    <option value="13">Республика Мордовия</option>
+                    <option value="14">Республика Саха (Якутия)</option>
+                    <option value="15">Республика Северная Осетия — Алания</option>
+                    <option value="16">Республика Татарстан (Татарстан)</option>
+                    <option value="17">Республика Тыва</option>
+                    <option value="18">Удмуртская Республика</option>
+                    <option value="19">Республика Хакасия</option>
+                    <option value="20">Чеченская Республика</option>
+                    <option value="21">Чувашская Республика — Чувашия</option>
+                    <option value="22">Алтайский край</option>
+                    <option value="75">Забайкальский край</option>
+                    <option value="41">Камчатский край</option>
+                    <option value="23">Краснодарский край</option>
+                    <option value="24">Красноярский край</option>
+                    <option value="59">Пермский край</option>
+                    <option value="25">Приморский край</option>
+                    <option value="26">Ставропольский край</option>
+                    <option value="27">Хабаровский край</option>
+                    <option value="28">Амурская область</option>
+                    <option value="29">Архангельская область</option>
+                    <option value="30">Астраханская область</option>
+                    <option value="31">Белгородская область</option>
+                    <option value="32">Брянская область</option>
+                    <option value="33">Владимирская область</option>
+                    <option value="34">Волгоградская область</option>
+                    <option value="35">Вологодская область</option>
+                    <option value="36">Воронежская область</option>
+                    <option value="37">Ивановская область</option>
+                    <option value="38">Иркутская область</option>
+                    <option value="39">Калининградская область</option>
+                    <option value="40">Калужская область</option>
+                    <option value="42">Кемеровская область</option>
+                    <option value="43">Кировская область</option>
+                    <option value="44">Костромская область</option>
+                    <option value="45">Курганская область</option>
+                    <option value="46">Курская область</option>
+                    <option value="47">Ленинградская область</option>
+                    <option value="48">Липецкая область</option>
+                    <option value="49">Магаданская область</option>
+                    <option value="50">Московская область</option>
+                    <option value="51">Мурманская область</option>
+                    <option value="52">Нижегородская область</option>
+                    <option value="53">Новгородская область</option>
+                    <option value="54">Новосибирская область</option>
+                    <option value="55">Омская область</option>
+                    <option value="56">Оренбургская область</option>
+                    <option value="57">Орловская область</option>
+                    <option value="58">Пензенская область</option>
+                    <option value="60">Псковская область</option>
+                    <option value="61">Ростовская область</option>
+                    <option value="62">Рязанская область</option>
+                    <option value="63">Самарская область</option>
+                    <option value="64">Саратовская область</option>
+                    <option value="65">Сахалинская область</option>
+                    <option value="66">Свердловская область</option>
+                    <option value="67">Смоленская область</option>
+                    <option value="68">Тамбовская область</option>
+                    <option value="69">Тверская область</option>
+                    <option value="70">Томская область</option>
+                    <option value="71">Тульская область</option>
+                    <option value="72">Тюменская область</option>
+                    <option value="73">Ульяновская область</option>
+                    <option value="74">Челябинская область</option>
+                    <option value="76">Ярославская область</option>
+                    <option value="77">Москва</option>
+                    <option value="78">Санкт-Петербург</option>
+                    <option value="92">Севастополь</option>
+                    <option value="79">Еврейская автономная область</option>
+                    <option value="83">Ненецкий автономный округ</option>
+                    <option value="86">Ханты-Мансийский автономный округ</option>
+                    <option value="87">Чукотский автономный округ</option>
+                    <option value="89">Ямало-Ненецкий автономный округ</option>
+                </select>
+            </div>
+
+
+            <div class="input-pair block-element" style="margin-top: 40px">
+                <label for="filterCase">Filter Case Mode</label>
+                <select id="filterCase" autocomplete="off" class="select-strict">
+                    <option value="soft" selected>Soft (collects every subArticle for given Article,
+                        e.g. collects 20.3.3 for 20.3 request)</option>
+                    <option value="strict">Strict (collects only exact Article,
+                        e.g. subArticle 20.3.3 is excluded for Article 20.3 request)</option>
+                </select>
+            </div>
+
+            <div class="input-pair block-element" style="margin-top: 40px">
+                <label for="startDateInput">Result Date From</label>
+                <input type="text" id="startDateInput" placeholder="24/02/2022" autocomplete="off">
+            </div>
+
+            <div class="input-pair block-element">
+                <label for="endDateInput">Result Date Till</label>
+                <input type="text" id="endDateInput" autocomplete="off">
+            </div>
+
+            <div class="input-pair block-element" style="margin-top: 40px">
+                <label for="textWithinActs">Text to Search Within Acts</label>
+                <input type="text" id="textWithinActs" autocomplete="off">
+            </div>
+
+            <div class="input-pair block-element" style="margin-top: 40px">
+                <label for="caseTypeSelect">Case Type</label>
+                <select id="caseTypeSelect" autocomplete="off" class="select-strict">
+                    <option value="criminal">Criminal Article</option>
+                    <option value="cas">Administrative Proceeding</option>
+                    <option value="admin">Administrative Offense Article</option>
+                </select>
+            </div>
+
+            <div id="criminalInputs" class="hidden">
+                <div class="inner-inputs">
+                    <div class="input-pair inline-inputs">
+                        <label for="crArticleInput">Article</label>
+                        <input type="text" id="crArticleInput" autocomplete="off">
+                    </div>
+                    <div class="input-pair inline-inputs">
+                        <label for="crSubArticleInput">SubArticle</label>
+                        <input type="text" id="crSubArticleInput" autocomplete="off">
+                    </div>
+                    <div class="input-pair inline-inputs">
+                        <label for="crPartInput">Part</label>
+                        <input type="text" id="crPartInput" autocomplete="off">
+                    </div>
+                    <div class="input-pair inline-inputs">
+                        <label for="letterInput">Letter</label>
+                        <input type="text" id="letterInput" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+
+            <div id="administrativeProceedingInputs" class="hidden">
+                <div class="inner-inputs">
+                    <div class="input-pair block-element">
+                        <label for="partOfCodexInput" style="margin-right: 30px">Part of Codex</label>
+                        <input type="text" style="width: 180px; margin-right: 30px" id="partOfCodexInput" autocomplete="off">
+                    </div>
+                    <div class="input-pair block-element">
+                        <label for="mosgorsudCodeInput">Mosgorsud Code</label>
+                        <select id="mosgorsudCodeInput" style="height: 32px; width: 200px" autocomplete="off">
+                            <option value=""></option>
+                            <option value="1">1 - О признании незаконными решений, действий (бездействия) судебного пристава-исполнителя</option>
+                            <option value="2">2 - Об оспаривании НПА Президента РФ</option>
+                            <option value="3">3 - Об оспаривании НПА Правительства РФ</option>
+                            <option value="4">4 - Об оспаривании НПА Генеральной прокуратуры РФ, Следственного комитета РФ</option>
+                            <option value="6">6 - Об оспаривании НПА федеральных органов исполнительной власти</option>
+                            <option value="7">7 - Об оспаривании НПА Центрального банка РФ</option>
+                            <option value="8">8 - Об оспаривании НПА государственных внебюджетных фондов, в том числе Пенсионного фонда РФ, Фонда социального страхования РФ, Федерального фонда ОМС, а также государственных корпораций</option>
+                            <option value="9">9 - Оспаривание НПА высшего должностного лица субъекта РФ</option>
+                            <option value="9">9 - Оспаривание НПА иных органов государственной власти субъекта РФ</option>
+                            <option value="9">9 - Оспаривание иных НПА, принятых на уровне субъекта РФ</option>
+                            <option value="9">9 - Оспаривание иных НПА законодательного (представительного) органа государственной власти субъекта РФ</option>
+                            <option value="9">9 - Оспаривание иных законов субъектов РФ</option>
+                            <option value="10">10 - Оспаривание НПА представительного органа муниципального образования</option>
+                            <option value="11">11 - Оспаривание НПА высшего исполнительного органа государственной власти субъекта РФ</option>
+                            <option value="12">12 - Оспаривание НПА главы муниципального образования, местной администрации</option>
+                            <option value="12">12 - Прочие по главе 21 КАС РФ (акты, разъяснения законодательства и обладающие нормативными свойствами)</option>
+                            <option value="13">13 - Оспаривание закона субъекта РФ о роспуске представительного органа муниципального образования</option>
+                            <option value="14">14 - Об оспаривании НПА, принятых Центральной избирательной комиссией</option>
+                            <option value="15">15 - Оспаривание НПА, принятых избирательными комиссиями субъекта</option>
+                            <option value="15">15 - Оспаривание НПА, принятых муниципальными избирательными комиссиями</option>
+                            <option value="16">16 - Оспаривание НПА высшего исполнительного органа государственной власти субъекта РФ по вопросам реализации избирательных прав и права на участие в референдуме граждан РФ</option>
+                            <option value="16">16 - Оспаривание НПА главы муниципального образования, местной администрации по вопросам реализации избирательных прав и права на участие в референдуме граждан РФ</option>
+                            <option value="16">16 - Оспаривание НПА иных органов местного самоуправления и должностных лиц местного самоуправления по вопросам реализации избирательных прав и права на участие в референдуме граждан РФ</option>
+                            <option value="16">16 - Оспаривание законов субъектов РФ по вопросам реализации избирательных прав и права на участие в референдуме граждан РФ</option>
+                            <option value="17">17 - Актов органов государственной власти, содержащие разъяснения законодательства и обладающие нормативными свойствами</option>
+                            <option value="18">18 - Актов иных органов, наделенных публичными полномочиями, содержащие разъяснения законодательства и обладающие нормативными свойствами</option>
+                            <option value="18">18 - Оспаривание НПА иных органов местного самоуправления и должностных лиц местного самоуправления</option>
+                            <option value="20">20 - Жалобы на решение лицензирующего органа об отказе в предоставлении, переоформлении, продлении срока действия лицензии</option>
+                            <option value="20">20 - Иные жалобы на деятельность (незаконные действия / бездействие / акт) лицензирующего органа</option>
+                            <option value="20">20 - Прочие дела об оспаривании решений, действий (бездействия) органов государственной власти, органов военного управления</option>
+                            <option value="21">21 - О разрешении споров между федеральными органами гос. власти и органами гос. власти субъектов РФ, между органами гос. власти субъектов РФ переданных на рассмотрение в Верховный Суд РФ Президентом РФ в соответствии со ст. 85 Конституции РФ</option>
+                            <option value="22">22 - Прочие дела об оспаривании решений, действий (бездействия) - должностных лиц, государственных и муниципальных служащих</option>
+                            <option value="23">23 - Споры между местными органами самоуправления</option>
+                            <option value="24">24 - Жалобы на решение должн. лица лицензирующего органа об отказе в предоставлении, переоформлении, продлении срока действия лицензии</option>
+                            <option value="24">24 - Иные дела об оспаривании решений, действий (бездействия) должн. лица лицензирующего органа</option>
+                            <option value="24">24 - Прочие дела об оспаривании решений, действий (бездействия) - иных органов, организаций, наделенных федеральными законами отдельными государственными или иными публичными полномочиями</option>
+                            <option value="25">25 - Жалобы, НЕ СВЯЗАННЫЕ с ненадлежащими условиями содержания лиц, находящихся под стражей, и лиц, осужденных к лишению свободы</option>
+                            <option value="25">25 - Жалобы иных лиц, связанные с ненадлежащими условиями содержания лиц, находящихся под стражей, и лиц, осужденных к лишению свободы</option>
+                            <option value="25">25 - Жалобы лиц, осужденных к лишению свободы, связанные с ненадлежащими условиями содержания</option>
+                            <option value="25">25 - Жалобы лиц, содержащихся (-вшихся) под стражей, связанные с ненадлежащими условиями содержания</option>
+                            <option value="25">25 - О присуждении компенсации морального вреда вследствие нахождения лица под стражей</option>
+                            <option value="25">25 - О присуждении компенсации морального вреда вследствие признания незаконным лишения свободы</option>
+                            <option value="25">25 - Прочие дел об оспаривании решений, действий (бездействия) должностных лиц органов, организаций, наделенных отдельными государственными или иными публичными</option>
+                            <option value="26">26 - Об оспаривании решений, действий (бездействия) государственных служащих (кроме судебных приставов-исполнителей)</option>
+                            <option value="27">27 - Прочие об оспаривании решений, действий (бездействия) судебного пристава-исполнителя</option>
+                            <option value="28">28 - О признании незаконными решений, действий (бездействия) судебного пристава-исполнителя, связанного с применением мер принудительного исполнения</option>
+                            <option value="29">29 - Об оспаривании решений (действий/бездействия) судебного пристава-исполнителя о временном ограничении права на выезд должника из РФ</option>
+                            <option value="30">30 - Об оспаривании решений (действий/бездействия) судебного пристава-исполнителя о взыскании с должника расходов по совершению исполнительского действий и исполнительного сбора</option>
+                            <option value="31">31 - Об оспаривании решения, действий (бездействия) муниципальных служащих</option>
+                            <option value="32">32 - Прочие дела об оспаривании решений, действий (бездействия) квалификационных коллегий судей (ККС)</option>
+                            <option value="36">36 - Об оспаривании других решений ККС субъектов РФ</option>
+                            <option value="38">38 - Об оспаривании решений и действий (бездействия) экз. комиссий субъекта РФ по приему квалиф. экзамена на должность судьи по основаниям нарушения процедуры проведения квалиф. экзамена и иных решений об отказе в допуске к сдаче</option>
+                            <option value="40">40 - Об оспаривании не НПА Президента РФ, СФ Федерального Собрания РФ, ГД Федерального Собрания РФ, Правительства РФ, Правительственной комиссии по контролю за осуществлением иностранных инвестиций в РФ</option>
+                            <option value="41">41 - Об оспаривании не НПА Министерства обороны РФ, иных федеральных органов исполнительной власти, в которых федеральным законом предусмотрена военная служба, касающихся прав, свобод и охраняемых законом интересов</option>
+                            <option value="42">42 - Об оспаривании не НПА Генеральной прокуратуры РФ и Следственного комитета РФ, касающихся прав, свобод и охраняемых законом интересов военнослужащих органов военной прокуратуры и военнослужащих военных</option>
+                            <option value="43">43 - О признании неправомочным состава законодательного (представительного) органа государственной власти субъекта РФ, представительного органа муниципального образования</option>
+                            <option value="44">44 - Прочие дела по защите нарушенных или оспариваемых прав, свобод и законных интересов граждан, прав и законных интересов организаций, возникающие из административных и иных публичных правоотношений (гл. 22 КАС РФ)</option>
+                            <option value="46">46 - Об оспаривании акта (орг. гос. власти, воен. упр.) о переводе (об отказе в переводе) земель и земельных участков в составе таких земель из одной категории в другую при отсутствии спора о субъективном гражданском праве на земельный участок</option>
+                            <option value="46">46 - Об оспаривании акта (орг. местн. самоупр.) о переводе (об отказе в переводе) земель или земельных участков в составе таких земель из одной категории в другую при отсутствии спора о субъективном гражданском праве на земельный участок</option>
+                            <option value="46">46 - О запрете деятельности общественного объединения или религиозной организации, не являющихся юридическими лицами</option>
+                            <option value="46">46 - О приостановлении деятельности или ликвидации иной некоммерческой организации</option>
+                            <option value="47">47 - О признании незаконными представлений и иных актов прокурора</option>
+                            <option value="48">48 - Прочие дела об оспаривании решения, действий (бездействия) органов военного управления</option>
+                            <option value="49">49 - Об оспаривании решений об увольнении с военной службы</option>
+                            <option value="51">51 - Об оспаривании решений о переводе по службе</option>
+                            <option value="52">52 - Об оспаривании решений о назначении на должность, снижении в должности</option>
+                            <option value="52">52 - Об оспаривании решений о привлечении к дисциплинарной ответственности</option>
+                            <option value="53">53 - Об оспаривании решений о привлечении к материальной ответственности</option>
+                            <option value="54">54 - Об оспаривании решений повлекших необеспечение положенными видами довольствия</option>
+                            <option value="55">55 - Об оспаривании решений повлекших нарушение жилищных прав военнослужащих</option>
+                            <option value="56">56 - Об оспаривании решений повлекших невыплату компенсации за наем жилья</option>
+                            <option value="57">57 - Об оспаривании решений о невыплате денежных компенсаций при увольнении</option>
+                            <option value="59">59 - Об оспаривании решений о невыплате жилищных субсидий</option>
+                            <option value="60">60 - Об оспаривании решений повлекших нарушение прав военнослужащих при ипотечном кредитовании</option>
+                            <option value="61">61 - Об оспаривании решений, действий (бездействия) органа исполнительной власти субъекта РФ</option>
+                            <option value="63">63 - Об оспаривании решений, действий (бездействия) - иных государственных органов</option>
+                            <option value="63">63 - Об оспаривании решений, действий (бездействия) - органов государственной власти</option>
+                            <option value="63">63 - Об оспаривании решений, действий (бездействия) - органов местного самоуправления</option>
+                            <option value="63">63 - Об оспаривании решений, действий (бездействия) органов военного управления</option>
+                            <option value="63">63 - Оспаривание решений представительного органа муниципального образования о самороспуске</option>
+                            <option value="64">64 - Оспаривание решения представительного органа муниципального образования об удалении в отставку главы муниципального образования</option>
+                            <option value="65">65 - Об оспаривании решения в отношении граждан РФ об ограничении права на выезд из РФ (статьи 15, 16, 28 Федерального закона от 15 августа 1996 г. № 114-ФЗ "О порядке выезда из РФ и въезда в РФ")</option>
+                            <option value="66">66 - Об оспаривании решения в отношении иностранных граждан или лиц без гражданства об ограничении права на выезд из РФ (статьи 15, 16, 28 Федерального закона от 15 августа 1996 г. № 114-ФЗ "О порядке выезда из РФ и въезда в РФ")</option>
+                            <option value="67">67 - Об оспаривании решения об ограничении въезда в Российскую Федерацию</option>
+                            <option value="68">68 - Об оспаривании решений об аннулировании разрешения на временное проживание, вида на жительства (статьи 7 и 9 Федерального закона от 25.07.2002 № 115-ФЗ "О правовом положении иностранных граждан в Российской Федерации")</option>
+                            <option value="71">71 - Об оспаривании решений, действий (бездействия), связанных с государственной итоговой аттестации (ст. 59 Федерального закона от 29.12.2012 № 273-ФЗ "Об образовании в Российской Федерации")</option>
+                            <option value="72">72 - Об оспаривании решения о признании информации и материалов, распространяемых посредством сети Интернет, информацией, распространение которой в РФ запрещено</option>
+                            <option value="73">73 - Иные административные дела, связанные с осуществлением обязательного судебного контроля за соблюдением прав и свобод человека и гражданина, прав организаций при реализации отдельных административных властных требований к физ. лицам и организациям</option>
+                            <option value="78">78 - Прочие дела по главе 23 КАС РФ</option>
+                            <option value="80">80 - Об ошибках и о неточностях в списках избирателей, участников референдума</option>
+                            <option value="81">81 - Об отмене решения избирательной комиссии, комиссии референдума об итогах голосования, результатах выборов</option>
+                            <option value="83">83 - Об отказе в регистрации кандидата, списка кандидатов, инициативной группы по проведению референдума, иной группы участников референдума</option>
+                            <option value="84">84 - Иные решения, связанные с оспариванием решений избирательных комиссий по проведению референдума</option>
+                            <option value="86">86 - По вопросам регистрации</option>
+                            <option value="87">87 - Об отмене регистрации кандидата в депутаты ГД Федерального Собрания РФ, выдвинутого по одномандатному избирательному округу</option>
+                            <option value="93">93 - Об отказе в регистрации кандидата, выдвинутого по одномандатному избирательному округу</option>
+                            <option value="98">98 - Об отмене регистрации кандидата, в том числе включенного в зарегистрированный список кандидатов</option>
+                            <option value="98">98 - Об отмене регистрации кандидата на выборах в законодательные (представительные) органы государственной власти субъектов РФ</option>
+                            <option value="101">101 - Об отмене регистрации инициативной группы по проведению референдума, иной группы участников референдума</option>
+                            <option value="101">101 - Об отмене регистрации кандидата на выборную должность местного самоуправления</option>
+                            <option value="102">102 - Об определении срока назначения выборов в органы государственной власти субъектов РФ, а также в органы местного самоуправления</option>
+                            <option value="102">102 - Об отмене регистрации кандидата на выборах в представительные органы местного самоуправления</option>
+                            <option value="108">108 - О регистрации кандидата</option>
+                            <option value="109">109 - Об отказе в регистрации кандидата</option>
+                            <option value="110">110 - Об аннулировании регистрации кандидата</option>
+                            <option value="111">111 - Иные решения, связанные с оспариванием решений избирательных комиссий по выборам высшего должностного лица субъекта РФ, выборного должностного лица местного самоуправления</option>
+                            <option value="114">114 - Об аннулировании регистрации кандидата, списка кандидатов</option>
+                            <option value="114">114 - О регистрации кандидата, списка кандидатов</option>
+                            <option value="115">115 - Об отказе в регистрации кандидата, списка кандидатов</option>
+                            <option value="118">118 - Иные решения, связанные с оспариванием решений избирательных комиссий по выборам в законодательные (представительные) органы государственной власти субъекта РФ, представительные органы местного самоуправления</option>
+                            <option value="119">119 - Об оспаривании решения, действия (бездействия) участковой избирательной комиссии, комиссий референдума</option>
+                            <option value="120">120 - Об отстранении члена участковой избирательной комиссии от участия в работе данной комиссии, удалении наблюдателя или иного лица из помещения для голосования</option>
+                            <option value="121">121 - Прочие дела, возникающие из нарушений избирательного законодательства</option>
+                            <option value="123">123 - Об установлении рыночной стоимости земельных участков и отдельных объектов недвижимости</option>
+                            <option value="124">124 - Об изменении кадастровой стоимости в связи с выявлением недостоверных сведений об объекте оценки, использованных при определении его кадастровой стоимости, в том числе об исправлении технической и (или) кадастровой ошибки</option>
+                            <option value="125">125 - Об оспаривании решения или действия (бездействия) комиссии по рассмотрению споров о результатах определения кадастровой стоимости</option>
+                            <option value="126">126 - Прочие дела по главе 25 КАС РФ</option>
+                            <option value="128">128 - О присуждении компенсации за нарушение права на досудебное производство по уголовному делу и применение меры процессуального принуждения в виде наложения ареста на имущество</option>
+                            <option value="129">129 - О присуждении компенсации за нарушение права на исполнение судебного акта по гражданскому делу в разумный срок</option>
+                            <option value="129">129 - О присуждении компенсации за нарушение права на уголовное судопроизводство в разумный срок</option>
+                            <option value="130">130 - О присуждении компенсации за нарушение права на гражданское судопроизводство в разумный срок</option>
+                            <option value="131">131 - О присуждении компенсации за нарушение права на административное судопроизводство в разумный срок</option>
+                            <option value="132">132 - О присуждении компенсации за нарушении права на производство по делам об АП в разумный срок</option>
+                            <option value="134">134 - О присуждении компенсации за нарушение права на исполнение в разумный срок судебного акта по гражданскому делу, предусматривающего обращение взыскания на средства бюджетов бюджетной системы РФ</option>
+                            <option value="134">134 - О присуждении компенсации за нарушение права на исполнение судебного акта по уголовному делу в разумный срок</option>
+                            <option value="135">135 - О присуждении компенсации за нарушение права на исполнение в разумный срок судебного акта по гражданскому делу, возлагающего обязанность исполнить иные требования имущественного характера и (или) требования неимущественного характера</option>
+                            <option value="144">144 - Прочие дела по главе 26 КАС РФ</option>
+                            <option value="147">147 - О приостановлении деятельности региональных отделений или иных структурных подразделений политических партий</option>
+                            <option value="148">148 - О приостановлении деятельности иных организаций</option>
+                            <option value="149">149 - Об ограничении доступа к аудиовизуальному сервису</option>
+                            <option value="151">151 - О ликвидации региональных отделений или иных структурных подразделений политических партий</option>
+                            <option value="152">152 - О ликвидации местных общественных объединений</option>
+                            <option value="153">153 - О ликвидации региональных общественных объединений</option>
+                            <option value="154">154 - Иные дела о защите нарушенных или оспариваемых прав, свобод и законных интересов граждан, прав и законных интересов организаций, возникающие из административных и иных публичных правоотношений)</option>
+                            <option value="154">154 - О ликвидации межрегиональных общественных объединений</option>
+                            <option value="154">154 - О ликвидации централизованных религиозных организаций, имеющих местные религиозные организации на территории двух и более субъектов РФ (межрегиональных религиозных организаций)</option>
+                            <option value="155">155 - О ликвидации общероссийских общественных объединений</option>
+                            <option value="156">156 - О ликвидации международных общественных объединений</option>
+                            <option value="157">157 - О запрете деятельности местных общественных объединений не явл. юр лицами</option>
+                            <option value="157">157 - О ликвидации местных религиозных организаций</option>
+                            <option value="158">158 - О запрете деятельности региональных общественных объединений, не явл. юр. лицами</option>
+                            <option value="159">159 - О взыскании в взносов в Пенсионный Фонд, Фонд социального страхования и Федеральный фонд обязательного мед. страхования</option>
+                            <option value="160">160 - О ликвидации иных организаций</option>
+                            <option value="163">163 - О запрете деятельности межрегиональных общественных объединений, не явл. юр. лицами</option>
+                            <option value="163">163 - О прекращении деятельности средств массовой информации продукция которых предназначена для распространения на территориях двух и более субъектов РФ</option>
+                            <option value="164">164 - О прекращении деятельности средств массовой информации продукция которых предназначена для распространения на территории одного субъекта РФ</option>
+                            <option value="169">169 - Прочие дела по главе 27 КАС РФ</option>
+                            <option value="172">172 - О признании информации, распространяемой посредство ИТ-сетей, в том числе сети Интернет, информацией, распространение которой в РФ запрещено (кроме экстремистских материалов)</option>
+                            <option value="173">173 - О признании информационных материалов экстремистскими (ст. 13 ФЗ "О противодействии экстремистской деятельности") (кроме Интернета)</option>
+                            <option value="174">174 - О признании информационных материалов, распространяемых посредством сети "Интернет" экстремистскими</option>
+                            <option value="176">176 - О помещении иностранного гражданина (лица без гражданства), подлежащего депортации или реадмиссии, в специальное учреждение</option>
+                            <option value="177">177 - О продлении срока пребывания иностранного гражданина, подлежащего депортации или реадмиссии в специальном учреждении</option>
+                            <option value="178">178 - Прочие дела по главе 28 КАС РФ</option>
+                            <option value="180">180 - Об установлении административного надзора</option>
+                            <option value="181">181 - О продлении административного надзора, о дополнении ранее установленных административных ограничений</option>
+                            <option value="182">182 - О дополнении ранее установленных административных ограничений</option>
+                            <option value="183">183 - О досрочном прекращении административного надзора</option>
+                            <option value="184">184 - О частичной отмене ранее установленных поднадзорному лицу административных ограничений</option>
+                            <option value="185">185 - Прочие дела по главе 29 КАС РФ</option>
+                            <option value="187">187 - О госпитализации гражданина в медицинскую организацию, оказывающую психиатрическую помощь в стационарных условиях, в недобровольном порядке</option>
+                            <option value="188">188 - О продлении срока госпитализации гражданина в недобровольном порядке</option>
+                            <option value="189">189 - О психиатрическом освидетельствовании гражданина в недобровольном порядке</option>
+                            <option value="190">190 - Прочие дела по главе 30 КАС РФ</option>
+                            <option value="192">192 - О госпитализации гражданина в медицинскую противотуберкулезную организацию в недобровольном порядке</option>
+                            <option value="193">193 - Прочие административные дела, связанные с госпитализацией гражданина в медицинскую противотуберкулезную организацию в недобровольном порядке</option>
+                            <option value="195">195 - О защите интересов несовершеннолетнего или недееспособного лица, в случае отказа законного представителя от медицинского вмешательства, необходимого для спасения жизни</option>
+                            <option value="196">196 - Производство по административным делам, связанным с пребыванием несовершеннолетнего в центре временного содержания для несовершеннолетних правонарушителей органа внутренних дел по главе 31.2 КАС РФ</option>
+                            <option value="197">197 - Производство по административным делам, связанным с пребыванием несовершеннолетнего в специальном учебно-воспитательным учреждении закрытого типа по главе 31.3 КАС РФ</option>
+                            <option value="198">198 - О взыскании налогов и сборов</option>
+                            <option value="199">199 - О взыскании взносов в Пенсионный Фонд Российской Федерации</option>
+                            <option value="200">200 - О взыскании взносов в Фонд социального страхования</option>
+                            <option value="201">201 - О взыскании взносов в Федеральный фонд обязательного медицинского страхования</option>
+                            <option value="202">202 - О взыскании таможенных сборов</option>
+                            <option value="203">203 - Прочие о взыскании обязательных платежей и санкций (гл. 32, 11.1 КАС РФ)</option>
+                            <option value="207">207 - Прочие (возникающие из административных и иных публичных правоотношений)</option>
+                            <option value="208">208 - О привлечении судьи к административной ответственности (ч. 4 ст. 16 Закона РФ "О статусе судей РФ")</option>
+                            <option value="209">209 - Об ограничении доступа к запрещенным информационным материалам (за искл. споров, связанных с защитой интеллектуальной собственности)</option>
+                            <option value="210">210 - О прекращении деятельности и исключении сведений о некоммерческой организации из государственного реестра</option>
+                            <option value="211">211 - Об установлении для должника временного ограничения на выезд из РФ по заявлению взыскателя</option>
+                            <option value="212">212 - Об установлении для должника временного ограничения на выезд из РФ по заявлению судебного пристава исполнителя</option>
+                            <option value="213">213 - О снятии ограничения на выезд из РФ</option>
+                            <option value="214">214 - О прекращении действия права на управление транспортными средствами (п. 2 ч. 1 ст. 28 Федерального закона от 10.12.1999 № 196-ФЗ "О безопасности дорожного движения")</option>
+                            <option value="216">216 - О признании регистрации средства массовой информации недействительным (ст. 15)</option>
+                            <option value="217">217 - О прекращении или приостановлении деятельности средства массовой информации (ст. 16)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="administrativeOffenseArticleInputs" class="hidden">
+                <div class="inner-inputs">
+                    <div class="input-pair block-element inline-inputs">
+                        <label for="chapterInput">Chapter</label>
+                        <input type="text" id="chapterInput" autocomplete="off">
+                    </div>
+                    <div class="input-pair block-element inline-inputs">
+                        <label for="articleInput">Article</label>
+                        <input type="text" id="articleInput" autocomplete="off">
+                    </div>
+                    <div class="input-pair block-element inline-inputs">
+                        <label for="subArticleInput">SubArticle</label>
+                        <input type="text" id="subArticleInput" autocomplete="off">
+                    </div>
+                    <div class="input-pair block-element inline-inputs">
+                        <label for="partInput">Part</label>
+                        <input type="text" id="partInput" autocomplete="off">
+                    </div>
+                    <div class="input-pair block-element inline-inputs">
+                        <label for="subPartInput">SubPart</label>
+                        <input type="text" id="subPartInput" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="hidden">
+                <label for="today"></label><input type="text" id="today">
+            </div>
+            <div class="centered">
+                <div id="submitNotValid" style="margin-top: 10px"></div>
+            </div>
+
+            <button id="submitFormButton">Submit</button>
+
+            <script>
+              function updateBackgroundGradient() {
+                const bodyHeight = document.body.scrollHeight;
+                const windowHeight = window.innerHeight;
+
+                if (bodyHeight > windowHeight) {
+                  document.documentElement.classList.remove('full-window-gradient');
+                } else {
+                  document.documentElement.classList.add('full-window-gradient');
+                }
+              }
+
+              // Initial update
+              updateBackgroundGradient();
+
+              // Listen for resize events and update the gradient
+              window.addEventListener('resize', updateBackgroundGradient);
+            </script>
+
+            <script>
+                const contBox = document.getElementById('continueBox');
+                const prev = document.getElementById('loadPreviousRequest');
+
+                contBox.addEventListener('change', function() {
+                    if (contBox.checked) {
+                        prev.classList.remove('hidden');
+                    } else {
+                        prev.classList.add('hidden');
+                    }
+                });
+            </script>
+
+            <script>
+              const caseTypeSelect = document.getElementById('caseTypeSelect');
+              const criminalInputs = document.getElementById('criminalInputs');
+              const administrativeProceedingInputs = document.getElementById('administrativeProceedingInputs');
+              const administrativeOffenseArticleInputs = document.getElementById('administrativeOffenseArticleInputs');
+
+              criminalInputs.classList.remove('hidden');
+
+              caseTypeSelect.addEventListener('change', function() {
+                criminalInputs.classList.add('hidden');
+                administrativeProceedingInputs.classList.add('hidden');
+                administrativeOffenseArticleInputs.classList.add('hidden');
+
+                const selectedCaseType = caseTypeSelect.value;
+                if (selectedCaseType === 'criminal') {
+                  criminalInputs.classList.remove('hidden');
+                } else if (selectedCaseType === 'cas') {
+                  administrativeProceedingInputs.classList.remove('hidden');
+                } else if (selectedCaseType === 'admin') {
+                  administrativeOffenseArticleInputs.classList.remove('hidden');
+                }
+              });
+            </script>
+
+            <script>
+              // Event listener for the button click to request data and populate the form
+              const button = document.getElementById('loadPreviousRequest');
+              button.addEventListener('click', function() {
+                // Get the values of directoryInput and projectName
+                const directoryInput = document.getElementById('directoryInput').value;
+                const projectName = document.getElementById('projectName').value;
+
+                // Create the concatenated string with directoryInput and projectName
+                const requestData = directoryInput + projectName;
+
+                // Send the POST request to the server
+                fetch('/fetch_previous_request', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'text/plain'
+                  },
+                  body: requestData
+                })
+                  .then(response => {
+                      if (response.status === 200) {
+                        return response.json();
+                      } else {
+                        throw new Error('Previous request info is absent or damaged');
+                      }
+                    })
+                  .then(requestDetails => {
+                    // Populate the form fields with the data from the RequestDetails object
+                    document.getElementById('textWithinActs').value = requestDetails.text;
+                    initializeDatepickers(requestDetails.startDate, requestDetails.endDate);
+
+                    const courtLevelSelect = $('#courtLevel');
+                    const regionsSelect = $('#regions');
+
+                    const levels = requestDetails.meta.levels || ['all'];
+                    const regions = requestDetails.meta.regions || ['all'];
+
+                   courtLevelSelect.val(levels.map(level => level.toLowerCase())).trigger('change');
+                   regionsSelect.val(regions).trigger('change');
+
+                    const filterCaseSelect = document.getElementById('filterCase');
+                    filterCaseSelect.value = requestDetails.meta.filterMode.toLowerCase();
+
+                    document.getElementById('sqlCheckbox').checked = requestDetails.chosenDump === 'SQL';
+                    document.getElementById('jsonCheckbox').checked = requestDetails.chosenDump === 'JSON';
+
+                    document.getElementById('caseTypeSelect').value = requestDetails.field.toLowerCase();
+
+                    const caseTypeSelect = document.getElementById('caseTypeSelect');
+                  const criminalInputs = document.getElementById('criminalInputs');
+                  const administrativeProceedingInputs = document.getElementById('administrativeProceedingInputs');
+                  const administrativeOffenseArticleInputs = document.getElementById('administrativeOffenseArticleInputs');
+
+                    // Populate additional fields based on caseTypeSelect value
+                    if (requestDetails.field === 'ADMIN') {
+                      administrativeOffenseArticleInputs.classList.remove('hidden');
+                      criminalInputs.classList.add('hidden');
+                      administrativeProceedingInputs.classList.add('hidden');
+                      if (requestDetails.article) {
+                          document.getElementById('chapterInput').value = requestDetails.article.chapter;
+                          document.getElementById('articleInput').value = requestDetails.article.article;
+                          document.getElementById('subArticleInput').value = requestDetails.article.subArticle;
+                          document.getElementById('partInput').value = requestDetails.article.part;
+                          document.getElementById('subPartInput').value = requestDetails.article.subPart;
+                      }
+                    } else if (requestDetails.field === 'CAS') {
+                      administrativeOffenseArticleInputs.classList.add('hidden');
+                      criminalInputs.classList.add('hidden');
+                      administrativeProceedingInputs.classList.remove('hidden');
+                      if (requestDetails.article) {
+                          document.getElementById('partOfCodexInput').value = requestDetails.article.partOfCas;
+                          document.getElementById('mosgorsudCodeInput').value = requestDetails.article.mosgorsudCode;
+                      }
+                    } else if (requestDetails.field === 'CRIMINAL') {
+                      administrativeOffenseArticleInputs.classList.add('hidden');
+                      criminalInputs.classList.remove('hidden');
+                      administrativeProceedingInputs.classList.add('hidden');
+                      if (requestDetails.article) {
+                         document.getElementById('crArticleInput').value = requestDetails.article.article;
+                         document.getElementById('crPartInput').value = requestDetails.article.part;
+                         document.getElementById('letterInput').value = requestDetails.article.letter;
+                         document.getElementById('crSubArticleInput').value = requestDetails.article.subArticle;
+                      }
+                    }
+
+                    // Populate ServerConnectionDetails fields if applicable
+                    if (requestDetails.connectionInf && requestDetails.chosenDump === 'SQL') {
+                      const sqlFields = document.getElementById('sqlFields');
+                      sqlFields.classList.remove('hidden');
+
+                      document.getElementById('dbUrlInput').value = requestDetails.connectionInf.url;
+                      document.getElementById('dbUserInput').value = requestDetails.connectionInf.user;
+                      document.getElementById('dbPasswordInput').value = requestDetails.connectionInf.password;
+                      document.getElementById('rememberInfoCheckbox').checked = true;
+                    }
+                    document.getElementById('fetchResult').textContent = 'Fetched';
+                    document.getElementById('fetchResult').style.color = 'green';
+                  })
+                  .catch(error => {
+                  document.getElementById('fetchResult').textContent = error.message;
+                  document.getElementById('fetchResult').style.color = 'red';
+                  console.log('Error:', error);
+                });
+              });
+
+              function initializeDatepickers(startDate, endDate) {
+                const startDateInput = document.getElementById('startDateInput');
+                const endDateInput = document.getElementById('endDateInput');
+
+                flatpickr(startDateInput, {
+                  dateFormat: 'd/m/Y',
+                  defaultDate: startDate
+                });
+
+                flatpickr(endDateInput, {
+                  dateFormat: 'd/m/Y',
+                  defaultDate: endDate
+                });
+              }
+            </script>
+
+            <script>
+                $(document).ready(function() {
+                  $('#regions').select2();
+
+                  $('#regions').on('select2:select', function(e) {
+                    var selectedOption = e.params.data.id;
+
+                    if (selectedOption !== 'all') {
+                      var allOption = $(this).find('option[value="all"]');
+                      var allSelected = $(this).find('option:selected').length === $(this).find('option').length - 1;
+
+                      if (allSelected) {
+                        $('#regions').val('all').trigger('change');
+                      } else {
+                        allOption.prop('selected', false).trigger('change');
+                      }
+
+                      return;
+                    }
+
+                    var allOption = $(this).find('option[value="all"]');
+                    $('#regions').val('allOption').trigger('change');
+                    $('#regions').val('all').trigger('change');
+                  });
+
+                  $('#regions').on('select2:unselect', function(e) {
+                    var unselectedOption = e.params.data.id;
+
+                    if (unselectedOption === 'all') {
+                      $('#regions').val(null).trigger('change');
+                    }
+                    if ($(this).find('option:selected').length === 0) {
+                      $('#regions').val('all').trigger('change');
+                    }
+                  });
+                });
+            </script>
+
+            <script>
+                $(document).ready(function() {
+                  $('#courtLevel').select2();
+
+                  $('#courtLevel').on('select2:select', function(e) {
+                    var selectedOption = e.params.data.id;
+
+                    if (selectedOption !== 'all') {
+                      var allOption = $(this).find('option[value="all"]');
+                      var allSelected = $(this).find('option:selected').length === $(this).find('option').length - 1;
+
+                      if (allSelected) {
+                        $('#courtLevel').val('all').trigger('change');
+                      } else {
+                        allOption.prop('selected', false).trigger('change');
+                      }
+
+                      return;
+                    }
+
+
+                    var allOption = $(this).find('option[value="all"]');
+                    $('#courtLevel').val('allOption').trigger('change');
+                    $('#courtLevel').val('all').trigger('change');
+                  });
+
+                  $('#courtLevel').on('select2:unselect', function(e) {
+                    var unselectedOption = e.params.data.id;
+
+                    if (unselectedOption === 'all') {
+                      $('#courtLevel').val(null).trigger('change');
+                    }
+                    if ($(this).find('option:selected').length === 0) {
+                      $('#courtLevel').val('all').trigger('change');
+                    }
+                  });
+                });
+            </script>
+
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+            <script>
+                const startDateInput = document.getElementById('startDateInput');
+                const endDateInput = document.getElementById('endDateInput');
+
+                flatpickr(startDateInput, {
+                  dateFormat: 'd/m/Y',
+                  maxDate: 'today', // Set the maximum date to today
+                  onClose: function(selectedDates, dateStr, instance) {
+                    // Update the minimum date of the end date picker
+                    flatpickr(endDateInput, {
+                      dateFormat: 'd/m/Y',
+                      minDate: dateStr,
+                      maxDate: 'today',// Set the minimum date to the selected start date
+                      onClose: function(selectedDates, dateStr, instance) {
+                        // Add any additional logic you need for the end date picker
+                      }
+                    });
+                  }
+                });
+
+                flatpickr(endDateInput, {
+                  dateFormat: 'd/m/Y',
+                  maxDate: 'today', // Set the maximum date to today
+                  onClose: function(selectedDates, dateStr, instance) {
+                    // Update the minimum date of the end date picker
+                    flatpickr(startDateInput, {
+                      dateFormat: 'd/m/Y',
+                      maxDate: dateStr, // Set the minimum date to the selected start date
+                      onClose: function(selectedDates, dateStr, instance) {
+                        // Add any additional logic you need for the end date picker
+                      }
+                    });
+                  }
+                });
+
+                 flatpickr(today, {
+                    dateFormat: 'd/m/Y',
+                    defaultDate: new Date()
+                 });
+
+                const thisDay = document.getElementById('today').value
+                endDateInput.setAttribute('placeholder', thisDay);
+            </script>
+
+            <script>
+              const submit = document.getElementById('submitFormButton');
+              const submitFailed = document.getElementById('submitNotValid');
+              const directory = document.getElementById('directoryInput');
+              const subPart = document.getElementById('subPartInput');
+              const partInput = document.getElementById('partInput');
+              const subArticle = document.getElementById('subArticleInput');
+              const article = document.getElementById('articleInput');
+              const chapter = document.getElementById('chapterInput');
+              const partOfCodex = document.getElementById('partOfCodexInput');
+              const textWA = document.getElementById('textWithinActs');
+
+              const needToContinue = document.getElementById('continueBox');
+              const filter = document.getElementById('filterCase');
+
+              const sqlCheck = document.getElementById('sqlCheckbox');
+              const jsonCheck = document.getElementById('jsonCheckbox');
+
+              const caseType = document.getElementById('caseTypeSelect');
+              let connectionInfo = null;
+
+              submit.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                if (sqlCheck.checked !== true && jsonCheck.checked !== true) {
+                  submitFailed.textContent = 'You should choose a dump type';
+                  submitFailed.style.color = 'red';
+                  return;
+                }
+
+                let dump = 'JSON';
+
+                if (sqlCheck.checked === true) {
+                  dump = 'SQL';
+                  const dbUrl = document.getElementById('dbUrlInput').value;
+                  const dbUser = document.getElementById('dbUserInput').value;
+                  const dbPassword = document.getElementById('dbPasswordInput').value;
+                  const rememberInfo = document.getElementById('rememberInfoCheckbox').checked;
+                  connectionInfo = {
+                    url: dbUrl,
+                    user: dbUser,
+                    password: dbPassword,
+                    remember: rememberInfo
+                  };
+
+                  const xhr = new XMLHttpRequest();
+                  xhr.open('POST', '/check_connection');
+                  xhr.setRequestHeader('Content-Type', 'application/json');
+                  xhr.onload = function() {
+                    if (xhr.status === 200) {
+                      const response = JSON.parse(xhr.responseText);
+
+                      if (response.connected !== true) {
+                        submitFailed.textContent = 'Connection with the database was not established. Check your info and retry';
+                        submitFailed.style.color = 'red';
+                      }
+                    }
+                  };
+                  xhr.send(JSON.stringify(connectionInfo));
+                }
+
+              const selectedCourtLevels = $('#courtLevel').val();
+              let courtLevels = [];
+              if (!(selectedCourtLevels.length === 1 && selectedCourtLevels[0] === "all")) {
+                courtLevels = selectedCourtLevels.map(level => level.toUpperCase());
+              }
+              const selectedRegions = $('#regions').val();
+              let regions = [];
+              if (!(selectedRegions.length === 1 && selectedRegions[0] === "all")) {
+                 regions = selectedRegions;
+              }
+              const metaINF = {
+                chosenDirectory: directory.value,
+                regions: regions,
+                levels: courtLevels,
+                name: document.getElementById('projectName').value,
+                filterMode: filter.value,
+                needToContinue: needToContinue.checked
+              };
+
+              let article = null;
+
+                if (caseType.value === 'criminal') {
+                  const crLetter = document.getElementById('letterInput').value;
+                  const crPart = document.getElementById('crPartInput').value;
+                  const crSubArticle = document.getElementById('crSubArticleInput').value;
+                  const crArticle = document.getElementById('crArticleInput').value;
+                  const criminalArticle = {
+                    article: crArticle,
+                    subArticle: crSubArticle,
+                    part: crPart,
+                    letter: crLetter,
+                    field: 'CRIMINAL'
+                  };
+                  article = criminalArticle;
+                }
+                else if (caseType.value === 'admin') {
+                    const adminArticle = {
+                        chapter: document.getElementById('chapterInput').value,
+                        article: document.getElementById('articleInput').value,
+                        subArticle: document.getElementById('subArticleInput').value,
+                        part: document.getElementById('partInput').value,
+                        subPart: document.getElementById('subPartInput').value,
+                        field: 'ADMIN'
+                    }
+                    article = adminArticle;
+                }
+                else if (caseType.value === 'cas') {
+                    const casArticle = {
+                        partOfCas: document.getElementById('partOfCodexInput').value,
+                        mosgorsudCode: document.getElementById('mosgorsudCodeInput').value,
+                        field: 'CAS'
+                    }
+                    article = casArticle;
+                }
+
+
+                 const request = {
+                    article: article,
+                    meta: metaINF,
+                    chosenDump: dump,
+                    field: article.field,
+                    connectionInf: connectionInfo,
+                    endDate: document.getElementById('endDateInput').value,
+                    startDate: document.getElementById('startDateInput').value,
+                    text: textWA.value
+                  };
+                  const xhr = new XMLHttpRequest();
+                  xhr.open('POST', '/check_request');
+                  xhr.setRequestHeader('Content-Type', 'application/json');
+                  xhr.onload = function() {
+                    if (xhr.status !== 200) {
+                      submitFailed.textContent = xhr.responseText;
+                      submitFailed.style.color = 'red';
+                    } else {
+                        window.location.href = '/scraping';
+                    }
+                  };
+                  xhr.send(JSON.stringify(request));
+              });
+            </script>
+
+            <script>
+                const sqlCheckbox = document.getElementById('sqlCheckbox');
+                const jsonCheckbox = document.getElementById('jsonCheckbox');
+                const sqlFields = document.getElementById('sqlFields');
+                const checkConnectionButton = document.getElementById('checkConnectionButton');
+                const connectionStatus = document.getElementById('connectionStatus');
+
+                // Function to fetch ServerConnectionInfo from the backend
+                function fetchServerConnectionInfo() {
+                  return fetch('/get_connection_info')
+                    .then((response) => response.json())
+                    .then((data) => data)
+                    .catch((error) => console.log(error));
+                }
+
+                sqlCheckbox.addEventListener('change', async () => {
+                  if (sqlCheckbox.checked) {
+                    sqlFields.classList.remove('hidden');
+                    jsonCheckbox.checked = false;
+                    if (dbUrlInput.value !== '') return;
+                    const connectionInfo = await fetchServerConnectionInfo();
+                    if (connectionInfo) {
+                      dbUrlInput.value = connectionInfo.url;
+                      dbUserInput.value = connectionInfo.user;
+                      dbPasswordInput.value = connectionInfo.password;
+                      rememberInfoCheckbox.checked = connectionInfo.remember;
+                    } else {
+                      dbUrlInput.value = '';
+                      dbUserInput.value = '';
+                      dbPasswordInput.value = '';
+                      rememberInfoCheckbox.checked = false;
+                    }
+                  } else {
+                    sqlFields.classList.add('hidden');
+                  }
+                });
+
+
+                jsonCheckbox.addEventListener('change', function() {
+                  if (jsonCheckbox.checked) {
+                    sqlFields.classList.add('hidden');
+                    sqlCheckbox.checked = false;
+                  }
+                });
+
+                checkConnectionButton.addEventListener('click', function() {
+                  const dbUrl = document.getElementById('dbUrlInput').value;
+                  const dbUser = document.getElementById('dbUserInput').value;
+                  const dbPassword = document.getElementById('dbPasswordInput').value;
+                  const rememberInfo = rememberInfoCheckbox.checked;
+                  const connectionInfo = {
+                    url: dbUrl,
+                    user: dbUser,
+                    password: dbPassword,
+                    remember: rememberInfo
+                  };
+
+                  const xhr = new XMLHttpRequest();
+                  xhr.open('POST', '/check_connection');
+                  xhr.setRequestHeader('Content-Type', 'application/json');
+                  xhr.onload = function() {
+                    if (xhr.status === 200) {
+                      const response = JSON.parse(xhr.responseText);
+
+                      if (response.connected === true) {
+                          connectionStatus.textContent = 'Connection is established';
+                          connectionStatus.style.color = 'green';
+                        } else {
+                          connectionStatus.textContent = 'Connection was not established. Check your info and retry';
+                          connectionStatus.style.color = 'red';
+                        }
+                    }
+                  };
+                  xhr.send(JSON.stringify(connectionInfo));
+                });
+
+                sqlFields.classList.add('hidden');
+              </script>
+        </div>
+    </body>
+</html>

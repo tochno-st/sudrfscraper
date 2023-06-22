@@ -1,0 +1,23 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+
+/shelf/
+/workspace.xml
+/results/
+/src/main/resources/courts/
+/src/main/resources/temp/*
+/out/
+/target/
+/src/main/resources/config/config_sudrf_backup.json
+/src/main/resources/myapplication.properties
+/src/main/resources/default_apllication.properties

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Scraping</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        html {
+            height: 100%;
+            overflow: hidden;
+          }
+
+          body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100%;
+            overflow: auto;
+            background: linear-gradient(to bottom right, #B59410, #710193);
+          }
+
+          .full-window-gradient {
+            background: linear-gradient(to bottom right, #B59410, #710193);
+          }
+          button {
+                display: block;
+                margin: 20px auto;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+         }
+             h1 {
+        font-weight: bold;
+        font-size: 24px;
+        text-align: center;
+        }
+         h2 {
+        font-weight: bold;
+        font-size: 20px;
+        text-align: center;
+        }
+
+         #progressText {
+          margin: 10px;
+          text-align: center;
+        }
+        #logsContainer {
+          border: 1px solid #ccc;
+          margin: 10px;
+          margin-top:30px;
+        }
+
+        #logsHeader {
+          background-color: #f5f5f5;
+          padding: 10px;
+          cursor: pointer;
+        }
+
+        #logsContent {
+          display: none;
+          height: 200px;
+          overflow-y: auto;
+          padding: 10px;
+          font-size: 11px;
+        }
+
+        .bordered {
+          margin-top: 30px;
+          border: 1px solid black;
+        }
+
+        .captcha-container {
+          padding: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .captcha-image {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+
+
+        .captcha-image img {
+          display: none;
+          margin-right: 15px;
+          width: 150px;
+          height: 50px;
+        }
+
+        .captcha-input {
+          display: none;
+          font-size: 16px;
+          width: 150px;
+          height: 50px;
+        }
+
+        .captcha-submit {
+          display: none;
+          margin-top: 10px;
+        }
+        .submit {
+            margin-top: 35px;
+        }
+  </style>
+</head>
+<body>
+    <div>
+        <div class="container">
+            <h1>Scraping progress</h1>
+            <div class="progress" style="width: 500px; height: 20px;">
+            <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
+            <div id="progressText"></div>
+            <div id="progressInfo"></div>
+            <div class = "bordered">
+                <div class="captcha-container">
+                    <div class="captcha-image">
+                        <img id="captchaImage" src="">
+                        <div id="captchaPlaceholder">Captcha would appear here</div>
+                    </div>
+                    <div>
+                        <input type="text" id="captchaInput" placeholder="Enter Captcha" class="captcha-input">
+                    </div>
+                </div>
+
+                <button id="submitButton" onclick="submitCaptcha()" class="captcha-submit">Submit</button>
+            </div>
+
+            <div id="logsContainer">
+                <div id="logsHeader" onclick="toggleLogs()">Show Logs</div>
+                <div id="logsContent"></div>
+            </div>
+
+            <button id="exit" class="submit">Exit</button>
+    </div>
+</div>
+
+    <script>
+        var progressSocket = new WebSocket("ws://localhost:8080/ws");
+        var openedWS = 0;
+        const numWS = 4;
+
+        progressSocket.onopen = function() {
+             var subscription = {
+                command: 'subscribe',
+                destination: '/progress'
+              };
+              progressSocket.send(JSON.stringify(subscription));
+        };
+
+        var progressSocketHandShake = false;
+
+        progressSocket.onmessage = function(event) {
+            if (!progressSocketHandShake) {
+                progressSocketHandShake = true;
+                openedWS = openedWS + 1;
+                if (openedWS === numWS) {
+                    sendInitializationRequest();
+                }
+                return;
+            }
+            var data = JSON.parse(event.data);
+            updateProgress(data.current, data.total, data.scraped);
+        };
+
+        function updateProgress(current, total, scraped) {
+            var progressBar = document.getElementById('progressBar');
+            var progressText = document.getElementById('progressText');
+
+            var progressPercentage = (current / total) * 100;
+            progressBar.style.width = progressPercentage + '%';
+            progressBar.setAttribute('aria-valuenow', progressPercentage);
+            progressText.textContent = current + '/' + total + ' courts done. Total number of found cases: ' + scraped;
+        }
+
+        var infoSocket = new WebSocket("ws://localhost:8080/ws");
+
+        infoSocket.onopen = function() {
+             var subscription = {
+                command: 'subscribe',
+                destination: '/info'
+              };
+              infoSocket.send(JSON.stringify(subscription));
+        };
+
+
+        var infoSocketHandShake = false;
+
+        infoSocket.onmessage = function(event) {
+            if (!infoSocketHandShake) {
+                    infoSocketHandShake = true;
+                    openedWS = openedWS + 1;
+                    if (openedWS === numWS) {
+                        sendInitializationRequest();
+                    }
+                    return;
+                }
+            var data = JSON.parse(event.data);
+            updateInfo(data.type, data.text);
+        };
+
+        function updateInfo(type, text) {
+            var progressInfo = document.getElementById('progressInfo');
+            let txt = text;
+            if (type === 'ERROR') {
+                progressInfo.style.color = 'red';
+                txt = text + '. Scraping ended due to exception.'
+            }
+            progressInfo.textContent = txt;
+        }
+
+        const button = document.getElementById('exit');
+              button.addEventListener('click', function() {
+                  const xhr = new XMLHttpRequest();
+                  xhr.open('GET', '/finish');
+                  xhr.send();
+              });
+
+      function updateBackgroundGradient() {
+        const bodyHeight = document.body.scrollHeight;
+        const windowHeight = window.innerHeight;
+
+        if (bodyHeight > windowHeight) {
+          document.documentElement.classList.remove('full-window-gradient');
+        } else {
+          document.documentElement.classList.add('full-window-gradient');
+        }
+      }
+
+      // Initial update
+      updateBackgroundGradient();
+
+      // Listen for resize events and update the gradient
+      window.addEventListener('resize', updateBackgroundGradient);
+
+        function sendInitializationRequest() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/init');
+            xhr.send();
+        }
+    </script>
+    <script>
+        var logsWebSocket = new WebSocket("ws://localhost:8080/ws");
+        var logsSocketHandShake = false;
+        var logsContent = document.getElementById('logsContent');
+
+        logsWebSocket.onopen = function() {
+          var subscription = {
+            command: 'subscribe',
+            destination: '/logs'
+          };
+          logsWebSocket.send(JSON.stringify(subscription));
+        };
+
+        logsWebSocket.onmessage = function(event) {
+          if (!logsSocketHandShake) {
+            logsSocketHandShake = true;
+            openedWS = openedWS + 1;
+            if (openedWS === numWS) {
+              sendInitializationRequest();
+            }
+            return;
+          }
+
+          // Check if the user has manually scrolled up
+          var userScrolledUp = logsContent.scrollTop < logsContent.scrollHeight - logsContent.clientHeight;
+
+          // Remove the oldest log if there are already 1000 logs
+          if (logsContent.childElementCount >= 1000) {
+            logsContent.removeChild(logsContent.firstElementChild);
+          }
+
+          // Add the new log
+          var log = document.createElement('p');
+          var data = event.data.trim();
+
+          if (data.startsWith('INFO')) {
+            log.style.color = 'green';
+          } else if (data.startsWith('WARNING')) {
+            og.style.color = 'yellow';
+          } else if (data.startsWith('ERROR')) {
+            og.style.color = 'red';
+          } else if (data.startsWith('DEBUG')) {
+            og.style.color = 'blue';
+          }
+
+          log.textContent = data;
+          logsContent.appendChild(log);
+
+          // Preserve the scroll position if the user has manually scrolled up
+          if (!userScrolledUp) {
+            logsContent.scrollTop = logsContent.scrollHeight;
+          }
+        };
+
+        function toggleLogs() {
+          var logsContent = document.getElementById('logsContent');
+
+          if (logsContent.style.display === 'block') {
+            logsContent.style.display = 'none';
+          } else {
+            logsContent.style.display = 'block';
+          }
+        }
+    </script>
+    <script>
+        var captchaSocket = new WebSocket("ws://localhost:8080/ws");
+        var captchaImage = document.getElementById('captchaImage');
+        var captchaInput = document.getElementById('captchaInput');
+        var submitButton = document.getElementById('submitButton');
+        var placeHolder = document.getElementById('captchaPlaceholder');
+        var captchaSocketHandShake = false;
+
+        captchaSocket.onopen = function() {
+          var subscription = {
+            command: 'subscribe',
+            destination: '/captcha'
+          };
+          captchaSocket.send(JSON.stringify(subscription));
+        };
+
+        captchaSocket.onmessage = function(event) {
+            if (!captchaSocketHandShake) {
+            captchaSocketHandShake = true;
+            openedWS = openedWS + 1;
+            if (openedWS === numWS) {
+              sendInitializationRequest();
+            }
+            return;
+          }
+          var imageBlob = event.data;
+          captchaInput.style.display = 'flex';
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var imageDataURL = event.target.result;
+            displayImage(imageDataURL);
+          };
+
+          reader.readAsDataURL(imageBlob);
+        };
+
+        function displayImage(imageDataURL) {
+          var captchaImage = document.getElementById('captchaImage');
+          captchaImage.style.display='flex';
+          placeHolder.textContent = '';
+          captchaImage.src = imageDataURL;
+
+          // Show the submit button
+          var submitButton = document.getElementById('submitButton');
+          submitButton.style.display = 'flex';
+        }
+
+        function submitCaptcha() {
+          var captchaValue = captchaInput.value;
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', '/submit_captcha');
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          captchaVal = {
+            captcha: captchaValue
+          };
+          xhr.send(JSON.stringify(captchaVal));
+          captchaInput.value = '';
+          captchaImage.src = '';
+          captchaImage.style.display = 'none';
+          captchaInput.style.display = 'none';
+          placeHolder.textContent = 'Captcha would appear here';
+          submitButton.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
