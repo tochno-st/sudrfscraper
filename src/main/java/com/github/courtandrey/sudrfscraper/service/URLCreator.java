@@ -162,12 +162,12 @@ public class URLCreator {
     }
     private String getAdminArticlePartForMosGorSudPattern() {
         AdminArticle article = (AdminArticle) sc.getArticle();
-        StringBuilder stringBuilder = new StringBuilder("ст. "+article.getChapter()+"."+article.getArticle());
+        StringBuilder stringBuilder = new StringBuilder("%F1%F2.+"+article.getChapter()+"."+article.getArticle());
         if (article.getSubArticle()!=0) {
             stringBuilder.append(".").append(article.getSubArticle());
         }
         if (article.getPart()!=0) {
-            stringBuilder.append("+ч.").append(article.getPart());
+            stringBuilder.append("+%F7.").append(article.getPart());
         }
         return stringBuilder.toString();
     }
@@ -198,10 +198,10 @@ public class URLCreator {
             articlePart.append(".").append(article.getSubArticle());
         }
         if (article.getPart() != 0) {
-            articlePart.append("+ч.").append(article.getPart());
+            articlePart.append("+%F7.").append(article.getPart());
         }
         if (article.getLetter() != 0) {
-            articlePart.append("%2C+п.+").append(article.getLetter());
+            articlePart.append("%2C+%EF.+").append(article.getLetter());
         }
         return articlePart.toString();
     }
