@@ -157,17 +157,18 @@ public class URLCreator {
         throw new UnsupportedOperationException(Message.UNKNOWN_ARTICLE.toString());
     }
 
-    private String getCASArticleForMosGorSudPatterns() {
+    private String
+    getCASArticleForMosGorSudPatterns() {
         return LawBookHelper.getMosGorSudCodeCas(((CASArticle) sc.getArticle()).getMosgorsudCode());
     }
     private String getAdminArticlePartForMosGorSudPattern() {
         AdminArticle article = (AdminArticle) sc.getArticle();
-        StringBuilder stringBuilder = new StringBuilder("%F1%F2.+"+article.getChapter()+"."+article.getArticle());
+        StringBuilder stringBuilder = new StringBuilder("%D1%81%D1%82.+"+article.getChapter()+"."+article.getArticle());
         if (article.getSubArticle()!=0) {
             stringBuilder.append(".").append(article.getSubArticle());
         }
         if (article.getPart()!=0) {
-            stringBuilder.append("+%F7.").append(article.getPart());
+            stringBuilder.append("+%D1%87.").append(article.getPart());
         }
         return stringBuilder.toString();
     }
@@ -179,7 +180,7 @@ public class URLCreator {
             articlePart.append(".").append(article.getSubArticle());
         }
         if (article.getPart() != 0) {
-            articlePart.append("+%F7.").append(article.getPart());
+            articlePart.append("+%D1%87.").append(article.getPart());
         }
         if (article.getLetter() != 0) {
             Charset neededCharset = Charset.forName("windows-1251");
@@ -198,10 +199,10 @@ public class URLCreator {
             articlePart.append(".").append(article.getSubArticle());
         }
         if (article.getPart() != 0) {
-            articlePart.append("+%F7.").append(article.getPart());
+            articlePart.append("+%D1%87.").append(article.getPart());
         }
         if (article.getLetter() != 0) {
-            articlePart.append("%2C+%EF.+").append(article.getLetter());
+            articlePart.append("%2C+%D0%BF.+").append(article.getLetter());
         }
         return articlePart.toString();
     }
