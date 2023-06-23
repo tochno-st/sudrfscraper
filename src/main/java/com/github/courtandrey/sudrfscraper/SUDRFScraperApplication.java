@@ -29,6 +29,8 @@ public class SUDRFScraperApplication {
 		}
 		else if (os.toLowerCase().contains("windows")) {
 			System.setProperty("webdriver.gecko.driver", "./src/main/resources/windows/geckodriver.exe");
+		} else if (os.toLowerCase().contains("mac")) {
+			System.setProperty("webdriver.gecko.driver","./src/main/resources/macOS/geckodriver");
 		}
 
 		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, nul);
