@@ -36,13 +36,15 @@ public class URLCreator {
             case VNKOD_PATTERN -> {
                 switch (sc.getField()) {
                     case CRIMINAL -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=1540006&_caseType=0&_new=0";
-                    case ADMIN, CAS -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540005&_caseType=0&_new=0";
+                    case ADMIN -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540005&_caseType=0&_new=0";
+                    case CAS -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=41&_caseType=0&_new=0";
                 }
             }
             case PRIMARY_PATTERN -> {
                 switch (sc.getField()) {
                     case CRIMINAL -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540006";
-                    case ADMIN, CAS -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540005";
+                    case ADMIN -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540005";
+                    case CAS -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=41";
                 }
             }
         }
