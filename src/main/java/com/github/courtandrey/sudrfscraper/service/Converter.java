@@ -55,8 +55,8 @@ public class Converter {
                 Files.delete(file.toPath());
             }
             return ret;
-        } catch (IOException  | IllegalArgumentException e) {
-            SimpleLogger.log(LoggingLevel.DEBUG, Message.IOEXCEPTION_OCCURRED + " " + e);
+        } catch (Exception e) {
+            SimpleLogger.log(LoggingLevel.DEBUG, "During parsing occurred exception: " + e);
         }
         return null;
     }
