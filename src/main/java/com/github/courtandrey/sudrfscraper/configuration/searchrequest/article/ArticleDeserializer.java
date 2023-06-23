@@ -46,9 +46,7 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
             } else if ("CAS".equals(articleClass)) {
                 String partOfCas = t.get("partOfCas").asText("");
                 String mosgorsudCode = t.get("mosgorsudCode").asText("");
-                if (LawBookHelper.getMosGorSudCodeCas(mosgorsudCode) != null) {
-                    mosgorsudCode = LawBookHelper.getMosGorSudCodeCas(mosgorsudCode);
-                } else if (!LawBookHelper.isMosGorSudCodeCas(mosgorsudCode)) {
+                if (LawBookHelper.getMosGorSudCodeCas(mosgorsudCode) == null) {
                     return null;
                 }
                 if (partOfCas.equals("") && Objects.equals(mosgorsudCode, "")) return new CASArticle();

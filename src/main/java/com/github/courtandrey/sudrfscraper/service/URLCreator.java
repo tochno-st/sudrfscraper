@@ -156,7 +156,7 @@ public class URLCreator {
     }
 
     private String getCASArticleForMosGorSudPatterns() {
-        return ((CASArticle) sc.getArticle()).getMosgorsudCode();
+        return LawBookHelper.getMosGorSudCodeCas(((CASArticle) sc.getArticle()).getMosgorsudCode());
     }
     private String getAdminArticlePartForMosGorSudPattern() {
         AdminArticle article = (AdminArticle) sc.getArticle();
