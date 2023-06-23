@@ -275,6 +275,10 @@ public class URLCreator {
                         endings[i] = endings[i].replace("entry_date2d=",
                                 "entry_date2d=" + sc.getEntryDateTill());
                     } catch (Exception ignored) {}
+                    try {
+                        endings[i] = endings[i].replace("complaint__entry_date2d=" + sc.getEntryDateTill(),
+                                "complaint__entry_date2d=");
+                    } catch (Exception ignored) {}
                 }
 
             }
