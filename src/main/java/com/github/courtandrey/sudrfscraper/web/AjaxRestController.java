@@ -187,8 +187,12 @@ public class AjaxRestController {
     public void finish() {
         if (isFinishing) return;
         isFinishing = true;
-        starter.end();
-        SeleniumHelper.killApp();
+        try {
+            starter.end();
+            SeleniumHelper.killApp();
+        } catch (Exception e) {
+            System.out.println("Exception occurred while proceeding finishing routine");
+        }
         System.exit(0);
     }
 
