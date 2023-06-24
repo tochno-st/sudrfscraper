@@ -196,7 +196,7 @@ public abstract class SUDRFStrategy implements Runnable{
 
         else if (text.contains("для получения полной информации по делу или материалу, нажмите на номер") ||
                 text.contains("НЕВЕРНЫЙ ФОРМАТ ЗАПРОСА!") ||
-                text.matches("На ..\\...\\..... дел не назначено")) {
+                text.matches(".*На ..\\...\\..... дел не назначено.*")) {
             finalIssue = Issue.compareAndSetIssue(Issue.URL_ERROR, finalIssue);
             issue = Issue.URL_ERROR;
         }
