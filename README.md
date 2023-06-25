@@ -77,6 +77,8 @@ ver.0.1.10 flexibility-update. Feat: Storing configs in results and reusing them
 
 ver.0.2.0 UI-update. Feat: added new HTML-based user interface. Migrated to Spring Boot.
 
+ver.0.2.1 fix-update. UI buf fixes. Article related bug fixes
+
 CONTACT ME:
 
 Email: sudarkinandrew@gmail.com
