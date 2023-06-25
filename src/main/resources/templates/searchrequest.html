@@ -702,9 +702,15 @@
                       if (requestDetails.article) {
                           document.getElementById('chapterInput').value = requestDetails.article.chapter;
                           document.getElementById('articleInput').value = requestDetails.article.article;
-                          document.getElementById('subArticleInput').value = requestDetails.article.subArticle;
-                          document.getElementById('partInput').value = requestDetails.article.part;
-                          document.getElementById('subPartInput').value = requestDetails.article.subPart;
+                          if (requestDetails.article.subArticle !== 0) {
+                             document.getElementById('subArticleInput').value = requestDetails.article.subArticle;
+                          }
+                          if (requestDetails.article.part !== 0) {
+                            document.getElementById('partInput').value = requestDetails.article.part;
+                          }
+                          if (requestDetails.article.subPart !== 0) {
+                            document.getElementById('subPartInput').value = requestDetails.article.subPart;
+                          }
                       }
                     } else if (requestDetails.field === 'CAS') {
                       administrativeOffenseArticleInputs.classList.add('hidden');
@@ -720,9 +726,15 @@
                       administrativeProceedingInputs.classList.add('hidden');
                       if (requestDetails.article) {
                          document.getElementById('crArticleInput').value = requestDetails.article.article;
-                         document.getElementById('crPartInput').value = requestDetails.article.part;
-                         document.getElementById('letterInput').value = requestDetails.article.letter;
-                         document.getElementById('crSubArticleInput').value = requestDetails.article.subArticle;
+                         if (requestDetails.article.part !== 0) {
+                            document.getElementById('crPartInput').value = requestDetails.article.part;
+                         }
+                         if (requestDetails.article.letter !== '\u0000') {
+                            document.getElementById('letterInput').value = requestDetails.article.letter.trim();
+                         }
+                         if (requestDetails.article.subArticle !== 0) {
+                            document.getElementById('crSubArticleInput').value = requestDetails.article.subArticle;
+                         }
                       }
                     }
 

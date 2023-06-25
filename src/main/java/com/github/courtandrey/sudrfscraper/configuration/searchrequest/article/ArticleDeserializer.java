@@ -79,7 +79,7 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
                     adminArticle.setPart(Integer.parseInt(part));
                 }
                 if (subPart.length() > 0) {
-                    adminArticle.setSubPart(subPart.charAt(0));
+                    adminArticle.setSubPart(Integer.parseInt(subPart));
                 }
                 return adminArticle;
             }
