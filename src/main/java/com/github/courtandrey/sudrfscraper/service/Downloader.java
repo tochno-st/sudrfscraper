@@ -32,7 +32,7 @@ public class Downloader {
         return null;
     }
     private File downloadUsingNIO(String urlStr, String file) throws IOException {
-        try(CloseableHttpClient httpClient =  HttpClients.custom().disableContentCompression().setRedirectStrategy(new LaxRedirectStrategy()).build()) {
+        try(CloseableHttpClient httpClient =  HttpClients.custom().disableContentCompression().setRedirectStrategy(new LaxRedirectStrategy()).disableAutomaticRetries().build()) {
             HttpGet get = new HttpGet(urlStr);
             get.setHeader("User-Agent", Constant.UA.toString());
             HttpResponse response = httpClient.execute(get);

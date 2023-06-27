@@ -142,7 +142,7 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
 
     private void connectJsoup() {
         try {
-            try(CloseableHttpClient httpClient =  HttpClients.custom().disableContentCompression().setRedirectStrategy(new LaxRedirectStrategy()).build()) {
+            try(CloseableHttpClient httpClient =  HttpClients.custom().disableContentCompression().disableAutomaticRetries().build()) {
                 HttpGet get = new HttpGet(urls[indexUrl]);
                 get.setHeader("User-Agent", Constant.UA.toString());
                 HttpResponse response = httpClient.execute(get);
@@ -152,7 +152,7 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
         } catch (SocketException | HttpStatusException | UnknownHostException e) {
             if (unravel > 0) {
                 ThreadHelper.sleep(5);
-                --unravel;
+                unravel = unravel - 2;
                 connectJsoup();
             } else {
                 finalIssue = Issue.compareAndSetIssue(Issue.CONNECTION_ERROR, finalIssue);
@@ -161,7 +161,7 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
         } catch (SocketTimeoutException e) {
             if (unravel>0) {
                 ThreadHelper.sleep(5);
-                unravel = unravel - 2;
+                unravel = unravel - 5;
                 connectJsoup();
             } else {
                 finalIssue = Issue.compareAndSetIssue(Issue.URL_ERROR, finalIssue);
