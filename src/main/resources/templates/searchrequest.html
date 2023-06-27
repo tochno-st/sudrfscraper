@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
@@ -143,8 +143,10 @@
                 <input type="text" id="directoryInput" autocomplete="off">
             </div>
 
+            <p data-th-text="${us_dr}" id ="us.dr" style="display: none;"></p>
+
             <script>
-                document.getElementById('directoryInput').value = './results/';
+                document.getElementById('directoryInput').value = document.getElementById('us.dr').textContent;
             </script>
 
             <div class="block-element">
