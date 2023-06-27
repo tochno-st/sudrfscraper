@@ -19,11 +19,7 @@ public class ApplicationController {
     @GetMapping("/search")
     public String search(Model model) {
         if (isScrapingProceeds) return "scraping";
-        String end = "/results/";
-        if (System.getProperty("os.name").contains("windows")) {
-            end = "\\results\\";
-        }
-        model.addAttribute("us_dr",ApplicationConfiguration.getInstance().getProperty("user.work_directory") + end);
+        model.addAttribute("us_dr",ApplicationConfiguration.getInstance().getProperty("basic.result.path"));
         return "searchrequest";
     }
     @GetMapping("/scraping")

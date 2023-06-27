@@ -14,7 +14,7 @@ import java.time.Duration;
 public class SUDRFScraperApplication {
 	public static void main(String[] args) {
 		ApplicationConfiguration.getInstance();
-		ApplicationConfiguration.getInstance().setProperty("user.work_directory", System.getProperty("user.dir"));
+		ApplicationConfiguration.getInstance().setProperty("basic.result.path", System.getProperty("user.dir") + "/results/");
 		SpringApplication application = new SpringApplication(SUDRFScraperApplication.class);
 		application.setLazyInitialization(true);
 		application.run(args);
