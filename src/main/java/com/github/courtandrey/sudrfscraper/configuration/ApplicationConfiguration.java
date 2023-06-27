@@ -14,6 +14,7 @@ import static com.github.courtandrey.sudrfscraper.service.Constant.PATH_TO_APP_P
 
 public class ApplicationConfiguration {
     public static final Properties props = new Properties();
+    private static String usrDir = System.getProperty("user.dir");
 
     private ApplicationConfiguration() {
         try {
@@ -30,6 +31,14 @@ public class ApplicationConfiguration {
             configuration = new ApplicationConfiguration();
         }
         return configuration;
+    }
+
+    public static String getUsrDir() {
+        return usrDir;
+    }
+
+    public static void setUsrDir(String usrDir) {
+        ApplicationConfiguration.usrDir = usrDir;
     }
 
     public synchronized String getProperty(String key) {

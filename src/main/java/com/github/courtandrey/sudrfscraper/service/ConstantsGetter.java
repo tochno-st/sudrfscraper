@@ -10,11 +10,13 @@ import java.util.Properties;
 public class ConstantsGetter {
     private static final Properties constantsProperties = new Properties();
     private static final Properties messagesProperties = new Properties();
+    private static String userDir;
 
     private static void init() {
         try {
-            constantsProperties.load(new FileReader("./src/main/resources/constants/constants.properties"));
-            messagesProperties.load(new FileReader("./src/main/resources/constants/messages.properties"));
+            userDir = ApplicationConfiguration.getUsrDir();
+            constantsProperties.load(new FileReader(userDir+ "/src/main/resources/constants/constants.properties"));
+            messagesProperties.load(new FileReader(userDir + "/src/main/resources/constants/messages.properties"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -48,6 +50,10 @@ public class ConstantsGetter {
                     value.append(split);
                 }
             }
+        }
+
+        if (value.toString().startsWith(".")) {
+            return userDir + value.substring(1);
         }
         return value.toString();
     }

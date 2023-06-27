@@ -1,5 +1,6 @@
 package com.github.courtandrey.sudrfscraper.service;
 
+import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -44,13 +45,13 @@ public class SeleniumHelper {
             String nul = "nul";
             if (os.toLowerCase().contains("linux")) {
                 nul = "/dev/null";
-                System.setProperty("webdriver.gecko.driver", "./src/main/resources/linux/geckodriver");
+                System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/linux/geckodriver");
             }
             else if (os.toLowerCase().contains("windows")) {
-                System.setProperty("webdriver.gecko.driver", "./src/main/resources/windows/geckodriver.exe");
+                System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/windows/geckodriver.exe");
             } else if (os.toLowerCase().contains("mac")) {
                 nul = "/dev/null";
-                System.setProperty("webdriver.gecko.driver","./src/main/resources/macOS/geckodriver");
+                System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/macOS/geckodriver");
             }
 
             System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, nul);

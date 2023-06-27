@@ -13,8 +13,9 @@ import java.time.Duration;
 @SpringBootApplication
 public class SUDRFScraperApplication {
 	public static void main(String[] args) {
+		if (args.length == 1) ApplicationConfiguration.setUsrDir(args[0]);
 		ApplicationConfiguration.getInstance();
-		ApplicationConfiguration.getInstance().setProperty("basic.result.path", System.getProperty("user.dir") + "/results/");
+		ApplicationConfiguration.getInstance().setProperty("basic.result.path", ApplicationConfiguration.getUsrDir() + "/results/");
 		SpringApplication application = new SpringApplication(SUDRFScraperApplication.class);
 		application.setLazyInitialization(true);
 		application.run(args);
@@ -26,13 +27,13 @@ public class SUDRFScraperApplication {
 		String nul = "nul";
 		if (os.toLowerCase().contains("linux")) {
 			nul = "/dev/null";
-			System.setProperty("webdriver.gecko.driver", "./src/main/resources/linux/geckodriver");
+			System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/linux/geckodriver");
 		}
 		else if (os.toLowerCase().contains("windows")) {
-			System.setProperty("webdriver.gecko.driver", "./src/main/resources/windows/geckodriver.exe");
+			System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/windows/geckodriver.exe");
 		} else if (os.toLowerCase().contains("mac")) {
 			nul = "/dev/null";
-			System.setProperty("webdriver.gecko.driver","./src/main/resources/macOS/geckodriver");
+			System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/macOS/geckodriver");
 		}
 
 		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, nul);
