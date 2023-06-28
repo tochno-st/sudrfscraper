@@ -11,6 +11,7 @@ import lombok.experimental.UtilityClass;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -75,7 +76,7 @@ public class ConfigurationLoader {
 
     public synchronized void refresh(List<CourtConfiguration> ccs) {
         try {
-            FileWriter writer = new FileWriter(path);
+            FileWriter writer = new FileWriter(path, StandardCharsets.UTF_8);
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(writer,ccs);
         } catch (IOException e) {
@@ -85,7 +86,7 @@ public class ConfigurationLoader {
 
     public static void storeConfiguration(List<CourtConfiguration> ccs) {
         try {
-            FileWriter writer = new FileWriter(String.format(PATH_TO_RESULT_DIRECTORY.toString(),dumpName) + dumpName + "_result_config.json");
+            FileWriter writer = new FileWriter(String.format(PATH_TO_RESULT_DIRECTORY.toString(),dumpName) + dumpName + "_result_config.json", StandardCharsets.UTF_8);
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(writer,ccs);
         } catch (IOException e) {

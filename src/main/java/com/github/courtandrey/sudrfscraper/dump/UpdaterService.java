@@ -9,6 +9,7 @@ import com.github.courtandrey.sudrfscraper.controller.ErrorHandler;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,7 +96,7 @@ public abstract class UpdaterService extends Thread implements Updater{
     }
 
     protected void writeMeta(HashMap<String,String> meta) throws IOException {
-        FileWriter writer = new FileWriter(String.format(PATH_TO_RESULT_META.toString(), dumpName, dumpName), false);
+        FileWriter writer = new FileWriter(String.format(PATH_TO_RESULT_META.toString(), dumpName, dumpName), StandardCharsets.UTF_8, false);
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(writer, meta);
     }
@@ -110,7 +111,7 @@ public abstract class UpdaterService extends Thread implements Updater{
 
     @Override
     public void addPreviousRequest() {
-        try (FileWriter w = new FileWriter(String.format(PATH_TO_RESULT_DIRECTORY.toString(),dumpName)  + "request_details.json")) {
+        try (FileWriter w = new FileWriter(String.format(PATH_TO_RESULT_DIRECTORY.toString(),dumpName)  + "request_details.json", StandardCharsets.UTF_8)) {
             RequestDetails requestDetails = new RequestDetails();
             requestDetails.setArticle(SearchRequest.getInstance().getArticle());
             String chosenDump = "JSON";
@@ -157,7 +158,7 @@ public abstract class UpdaterService extends Thread implements Updater{
 
     @Override
     public void writeSummery(String text){
-        try (FileWriter w = new FileWriter(SUMMERY)) {
+        try (FileWriter w = new FileWriter(SUMMERY, StandardCharsets.UTF_8)) {
             w.write(text);
             w.write(getSummeryInfo());
         } catch (IOException e) {
