@@ -3,7 +3,9 @@ package com.github.courtandrey.sudrfscraper.configuration.searchrequest;
 public enum Field {
     ADMIN,
     CAS,
-    CRIMINAL;
+    CRIMINAL,
+    MATERIAL_PROCEEDING;
+
 
     public static Field parseField(String field) {
         for (Field fd:Field.values()) {

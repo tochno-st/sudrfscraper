@@ -6,6 +6,7 @@ import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.A
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.CASArticle;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.CriminalArticle;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.MaterialProceedingArticle;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
 
 import java.nio.ByteBuffer;
@@ -38,6 +39,7 @@ public class URLCreator {
                     case CRIMINAL -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=1540006&_caseType=0&_new=0";
                     case ADMIN -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540005&_caseType=0&_new=0";
                     case CAS -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=41&_caseType=0&_new=0";
+                    case MATERIAL_PROCEEDING -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=1610001&_caseType=0&_new=0";
                 }
             }
             case PRIMARY_PATTERN -> {
@@ -45,6 +47,7 @@ public class URLCreator {
                     case CRIMINAL -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540006";
                     case ADMIN -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540005";
                     case CAS -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=41";
+                    case MATERIAL_PROCEEDING -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1610001";
                 }
             }
         }
@@ -123,7 +126,7 @@ public class URLCreator {
     private void makeSearchConfigurationForMosGorSud() {
         if (sc.getArticle() != null) {
             String articlePart = getArticlePartForMosgorsudPattern();
-            if (sc.getArticle() instanceof CASArticle) {
+            if (sc.getArticle() instanceof CASArticle || sc.getArticle() instanceof MaterialProceedingArticle) {
                 endings[0] = endings[0].replace("category=","category="+articlePart);
             }
             else {
@@ -154,11 +157,17 @@ public class URLCreator {
         else if (sc.getArticle() instanceof CASArticle) {
             return getCASArticleForMosGorSudPatterns();
         }
+        else if (sc.getArticle() instanceof MaterialProceedingArticle) {
+            return getMaterialProceedingMosGorSudPatterns();
+        }
         throw new UnsupportedOperationException(Message.UNKNOWN_ARTICLE.toString());
     }
 
-    private String
-    getCASArticleForMosGorSudPatterns() {
+    private String getMaterialProceedingMosGorSudPatterns() {
+        return ((MaterialProceedingArticle) sc.getArticle()).getMosgorsudCode();
+    }
+
+    private String getCASArticleForMosGorSudPatterns() {
         return LawBookHelper.getMosGorSudCodeCas(((CASArticle) sc.getArticle()).getMosgorsudCode());
     }
     private String getAdminArticlePartForMosGorSudPattern() {
@@ -229,7 +238,32 @@ public class URLCreator {
         else if (sc.getArticle() instanceof CASArticle) {
             return getCASArticleForPrimaryPatterns();
         }
+        else if (sc.getArticle() instanceof MaterialProceedingArticle) {
+            return getMaterialProceedingArticleForPrimaryPatterns();
+        }
         throw new UnsupportedOperationException(Message.UNKNOWN_ARTICLE.toString());
+    }
+
+    private String getMaterialProceedingArticleForPrimaryPatterns() {
+        if (cc.getSearchPattern() == SearchPattern.VNKOD_PATTERN && (cc.getRegion() != 63 && cc.getRegion() != 73)) {
+            return LawBookHelper.getVNKODCodeMaterialProceeding(sc.getArticle().getMainPart());
+        }
+        StringBuilder sb = new StringBuilder();
+        String mainPart = sc.getArticle().getMainPart();
+        Charset neededCharset = Charset.forName("windows-1251");
+        for (int i = 0; i < mainPart.length(); i++) {
+            if (Character.isWhitespace(mainPart.charAt(i))) {
+                sb.append("+");
+            }
+            else {
+                String letter = String.valueOf(mainPart.charAt(i));
+                ByteBuffer buffer = neededCharset.encode(CharBuffer.wrap(letter));
+                int ch = buffer.get(0) & 0xff;
+                String hex = Integer.toHexString(ch);
+                sb.append("%").append(hex.toUpperCase());
+            }
+        }
+        return sb.toString();
     }
 
     private String getCASArticleForPrimaryPatterns() {
@@ -255,19 +289,18 @@ public class URLCreator {
         if (sc.getArticle() != null) {
             String articlePart = getArticlePartForPrimaryPatterns();
             for (int i = 0; i < endings.length; i++) {
-                try {
-                    endings[i] = endings[i].replace("LAW_ARTICLESS=",
-                            "LAW_ARTICLESS=" + articlePart);
-                } catch (Exception ignored) {}
-                try {
-                    endings[i] = endings[i].replace("LAW_ARTICLESS=".toLowerCase(),
-                            "law_articless=" + articlePart);
-                } catch (Exception ignored) {}
-                try {
-                    endings[i] = endings[i].replace("lawbookarticles%5B%5D=",
-                            "lawbookarticles%5B%5D=" + articlePart);
-                } catch (Exception ignored) {}
-
+                if (sc.getArticle() instanceof MaterialProceedingArticle) {
+                    endings[i] = endings[i].replace("M_CASE__M_SUB_TYPE=",
+                            "M_CASE__M_SUB_TYPE="+articlePart);
+                    endings[i] = endings[i].replace("case__m_sub_type=", "case__m_sub_type=" + articlePart);
+                    continue;
+                }
+                endings[i] = endings[i].replace("LAW_ARTICLESS=",
+                        "LAW_ARTICLESS=" + articlePart);
+                endings[i] = endings[i].replace("LAW_ARTICLESS=".toLowerCase(),
+                        "law_articless=" + articlePart);
+                endings[i] = endings[i].replace("lawbookarticles%5B%5D=",
+                    "lawbookarticles%5B%5D=" + articlePart);
                 if (sc.getArticle() instanceof CASArticle && !checkFields()) {
                     sc.setEntryDateTill(LocalDate.now());
                     try {

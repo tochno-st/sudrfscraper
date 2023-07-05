@@ -267,6 +267,11 @@ public abstract class SUDRFStrategy implements Runnable{
         if (SearchRequest.getInstance().getField() == Field.CAS && cc.getLevel() == Level.MOSGORSUD) {
             return resultCases;
         }
+
+        if (SearchRequest.getInstance().getField() == Field.MATERIAL_PROCEEDING) {
+            return resultCases;
+        }
+
         String textToFind = request.getText();
         if (textToFind != null) {
             Set<Case> cases = new HashSet<>();

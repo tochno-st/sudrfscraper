@@ -39,8 +39,15 @@ public enum SearchPattern {
             case CAS -> {
                 return getCASPattern();
             }
+            case MATERIAL_PROCEEDING -> {
+                return getMaterialProceedingPattern();
+            }
         }
         return new String[]{};
+    }
+
+    private String[] getMaterialProceedingPattern() {
+        return String.valueOf(getProps(PATH_TO_MATERIAL_PROCEEDING_PROPERTIES.toString()).getProperty(this.toString())).split("\\$DELIMITER");
     }
 
     public String[] getCASPattern() {

@@ -150,7 +150,7 @@ public class GeneralParser extends ConnectorParser{
                 }
                 catch (IOException e) {
                     SimpleLogger.log(LoggingLevel.ERROR,
-                            String.format(Message.EXCEPTION_OCCURRED_WHILE_PARSING.toString(),e) + href);
+                            String.format(Message.EXCEPTION_OCCURRED_WHILE_PARSING.toString(),e) + " " + href);
                     break;
                 }
             }

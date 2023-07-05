@@ -83,6 +83,14 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
                 }
                 return adminArticle;
             }
+            else if (articleClass.equals("MATERIAL_PROCEEDING")) {
+                String partOfUPK = t.get("partOfUPK").asText("");
+                String mosgorsudCode = t.get("mosgorsudCode").asText("");
+                if (partOfUPK.equals("") && Objects.equals(mosgorsudCode, "")) return new MaterialProceedingArticle();
+                else if (Objects.equals(mosgorsudCode, "")) return null;
+                else if (partOfUPK.equals("")) return null;
+                return new MaterialProceedingArticle(partOfUPK, mosgorsudCode);
+            }
         } catch (Exception ignored) {}
 
         return null;

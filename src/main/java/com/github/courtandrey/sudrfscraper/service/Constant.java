@@ -20,7 +20,7 @@ public enum Constant {
     PATH_TO_CRIMINAL_PROPERTIES,
     PATH_TO_ADMIN_PROPERTIES,
     PATH_TO_CAS_PROPERTIES,
-    PATH_TO_TEMP;
+    PATH_TO_TEMP, PATH_TO_MATERIAL_PROCEEDING_PROPERTIES, PATH_TO_UPK_LAWBOOK;
     @Override
     public String toString() {
         return ConstantsGetter.getStringConstant(this);

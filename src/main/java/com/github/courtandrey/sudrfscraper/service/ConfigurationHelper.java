@@ -106,7 +106,7 @@ public class ConfigurationHelper {
         }
         else {
             switch (cc.getIssue()) {
-                case SUCCESS, NOT_FOUND_CASE, NOT_SUPPORTED_REQUEST -> cc.setStrategyName(StrategyName.END_STRATEGY);
+                case SUCCESS, NOT_FOUND_CASE -> cc.setStrategyName(StrategyName.END_STRATEGY);
                 case CAPTCHA -> {
                     cc.setIssue(null);
                     cc.setHasCaptcha(true);
