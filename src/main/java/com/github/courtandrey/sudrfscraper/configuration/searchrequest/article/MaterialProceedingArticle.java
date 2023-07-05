@@ -1,7 +1,11 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest.article;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import lombok.Getter;
 
+@Getter
+@JsonAutoDetect
 public class MaterialProceedingArticle implements Article{
 
     private String partOfUPK;
