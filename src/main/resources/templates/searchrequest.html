@@ -390,10 +390,10 @@
             <div id="administrativeProceedingInputs" class="hidden">
                 <div class="inner-inputs">
                     <div class="input-pair block-element">
-                        <label for="partOfCodexInput" style="margin-right: 30px">Part of Codex</label>
+                        <label for="partOfCodexInput" style="margin-right: 30px; margin-top:10px">Part of Codex</label>
                         <div style="display: flex;">
-                            <input type="text" style=" height:20px; width: 140px; margin-right: 10px; margin-top: 10px; padding: 5px;" id="partOfCodexInput" autocomplete="off">
-                            <button id="lawbookButton" style="margin-right:30px" onclick="showPopup()">Lawbook</button>
+                            <input type="text" style=" height:18px; width: 140px; margin-right: 10px;padding: 5px;" id="partOfCodexInput" autocomplete="off">
+                            <button id="lawbookButton" style="width:90px; margin-right:30px; margin-top:0px;" onclick="showPopup()">Lawbook</button>
                         </div>
                     </div>
                     <div class="input-pair block-element">
@@ -969,6 +969,7 @@
                 criminalInputs.classList.add('hidden');
                 administrativeProceedingInputs.classList.add('hidden');
                 administrativeOffenseArticleInputs.classList.add('hidden');
+                materialProceedingInputs.classList.add('hidden');
 
                 const selectedCaseType = caseTypeSelect.value;
                 if (selectedCaseType === 'criminal') {
