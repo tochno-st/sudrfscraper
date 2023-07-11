@@ -264,7 +264,7 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     protected Set<Case> filterCases() {
-        if (SearchRequest.getInstance().getField() == Field.CAS && cc.getLevel() == Level.MOSGORSUD) {
+        if (SearchRequest.getInstance().getField() == Field.CAS) {
             return resultCases;
         }
 
