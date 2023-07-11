@@ -81,6 +81,8 @@ ver.0.2.1 fix-update. UI buf fixes. Article related bug fixes
 
 ver.0.2.2 material-proceeding-update. Added Material Proceeding.
 
+ver.0.2.3 cas-fix-update. Fixed bugs with mosgorsud cas code. Added lawbook for cas
+
 CONTACT ME:
 
 Email: sudarkinandrew@gmail.com
