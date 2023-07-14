@@ -1,9 +1,6 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest;
 
-import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.AdminArticle;
-import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.Article;
-import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.CASArticle;
-import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.CriminalArticle;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.*;
 import com.github.courtandrey.sudrfscraper.exception.SearchRequestException;
 
 import java.lang.reflect.Field;
@@ -57,6 +54,8 @@ public class SearchRequest {
         if (article instanceof CriminalArticle) setField(com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field.CRIMINAL);
         if (article instanceof AdminArticle) setField(com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field.ADMIN);
         if (article instanceof CASArticle) setField(com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field.CAS);
+        if (article instanceof CivilArticle) setField(com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field.CIVIL);
+        if (article instanceof MaterialProceedingArticle) setField(com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field.MATERIAL_PROCEEDING);
         this.article = article;
     }
 

@@ -45,7 +45,7 @@ EXECUTION INFO:
 As for execution you have these search options: 
 1. Result date starting from and till. "Result" means case is finished though there might not be a published decision. They are only available date params for now. Though I understand how important can be entry date for some cases. Don't use these fields if you want unfinished cases (for some reason).
 2. Text-in-Decision field. Obvious. Just don't forget info introduced in previous chapter.
-3. The main option: article. SUDRFScraper supports Criminal Articles, Administrative Offense Articles, Administrative Proceeding and Material Proceeding. Just don't forget info introduced in previous chapter (x2). Important to know: for administrative articles you should enter mosgorsud code.
+3. The main option: article. SUDRFScraper supports Criminal Articles, Administrative Offense Articles, Administrative Proceeding, Material Proceeding and Civil Proceeding. Just don't forget info introduced in previous chapter (x2). Important to know: for administrative articles you should enter mosgorsud code.
 
 There are only two dump types supported: MySQL-table and line-by-line JSON document.
 
@@ -82,6 +82,8 @@ ver.0.2.1 fix-update. UI buf fixes. Article related bug fixes
 ver.0.2.2 material-proceeding-update. Added Material Proceeding.
 
 ver.0.2.3 cas-fix-update. Fixed bugs with mosgorsud cas code. Added lawbook for cas
+
+ver.0.2.4 civil-proceeding-update. Added Civil Proceeding.
 
 CONTACT ME:
 

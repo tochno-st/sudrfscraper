@@ -4,7 +4,7 @@ public enum Field {
     ADMIN,
     CAS,
     CRIMINAL,
-    MATERIAL_PROCEEDING;
+    MATERIAL_PROCEEDING, CIVIL;
 
 
     public static Field parseField(String field) {

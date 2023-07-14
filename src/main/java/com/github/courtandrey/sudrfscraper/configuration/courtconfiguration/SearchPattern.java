@@ -42,6 +42,9 @@ public enum SearchPattern {
             case MATERIAL_PROCEEDING -> {
                 return getMaterialProceedingPattern();
             }
+            case CIVIL -> {
+                return getCivilPattern();
+            }
         }
         return new String[]{};
     }
@@ -60,6 +63,10 @@ public enum SearchPattern {
 
     public String[] getAdminPattern() {
         return String.valueOf(getProps(PATH_TO_ADMIN_PROPERTIES.toString()).getProperty(this.toString())).split("\\$DELIMITER");
+    }
+
+    public String[] getCivilPattern() {
+        return String.valueOf(getProps(PATH_TO_CIVIL_PROPERTIES.toString()).getProperty(this.toString())).split("\\$DELIMITER");
     }
 }
 

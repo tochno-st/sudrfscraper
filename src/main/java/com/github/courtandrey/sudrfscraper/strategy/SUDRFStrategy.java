@@ -264,7 +264,8 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     protected Set<Case> filterCases() {
-        if (SearchRequest.getInstance().getField() == Field.CAS) {
+        if (SearchRequest.getInstance().getField() == Field.CAS
+                || SearchRequest.getInstance().getField() == Field.CIVIL) {
             return resultCases;
         }
 

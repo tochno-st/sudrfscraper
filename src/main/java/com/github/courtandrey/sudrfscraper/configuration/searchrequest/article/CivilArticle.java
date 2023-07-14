@@ -1,31 +1,22 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest.article;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @JsonAutoDetect
-public class CASArticle implements Article, MosGorSudCategoryArticle{
+public class CivilArticle implements Article, MosGorSudCategoryArticle{
     private String partOfCas;
     private String mosgorsudCode;
 
-    public CASArticle() {
-    }
-
-    public String getMosgorsudCode() {
-        return mosgorsudCode;
-    }
-
-    public CASArticle(String partOfCas, String mosgorsudCode) {
-        this.partOfCas = partOfCas;
-        this.mosgorsudCode = mosgorsudCode;
-    }
-
     @Override
     public Field getField() {
-        return Field.CAS;
+        return Field.CIVIL;
     }
 
     @Override
@@ -40,6 +31,6 @@ public class CASArticle implements Article, MosGorSudCategoryArticle{
 
     @Override
     public String toString() {
-        return "Административное производство: " + partOfCas;
+        return "Гражданское производство: " + partOfCas;
     }
 }

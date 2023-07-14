@@ -1,5 +1,5 @@
 ///
-Scrapped by SUDRFScraper v.0.2.3
+Scrapped by SUDRFScraper v.0.2.4
 Note: scrapping proceeds only within courts of general jurisdiction. Cases are first-instance considered only.
 Feedback: sudarkinandrew@gmail.com
 ///

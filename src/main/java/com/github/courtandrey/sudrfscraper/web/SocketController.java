@@ -82,7 +82,7 @@ public class SocketController {
     public void handleLogsUpdate(String text) {
         sendRegardingFilter("topic", "logs", new TextMessage(text));
     }
-
+    @SuppressWarnings("all")
     private void sendRegardingFilter(String attr, String val, AbstractWebSocketMessage o) {
         for (WebSocketSession session : webSocketHandler.getSessions()) {
             try {

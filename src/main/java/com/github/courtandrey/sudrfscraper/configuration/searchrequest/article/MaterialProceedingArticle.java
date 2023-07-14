@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @JsonAutoDetect
-public class MaterialProceedingArticle implements Article{
+public class MaterialProceedingArticle implements Article, MosGorSudCategoryArticle{
 
     private String partOfUPK;
     private String mosgorsudCode;
@@ -37,5 +37,10 @@ public class MaterialProceedingArticle implements Article{
     @Override
     public boolean isEmpty() {
         return partOfUPK == null && mosgorsudCode == null;
+    }
+
+    @Override
+    public String toString() {
+        return "Производство по материалам: " + partOfUPK;
     }
 }
