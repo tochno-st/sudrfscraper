@@ -5,15 +5,20 @@ import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Cour
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.SearchPattern;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.CasesPipeLine;
+import com.github.courtandrey.sudrfscraper.service.Constant;
 import com.github.courtandrey.sudrfscraper.service.SeleniumHelper;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-
-import static com.github.courtandrey.sudrfscraper.service.Constant.UA;
 
 public abstract class ConnectorParser implements Parser{
     protected CourtConfiguration cc;
@@ -23,11 +28,24 @@ public abstract class ConnectorParser implements Parser{
     }
 
     String getJsoupText(String url) throws IOException {
-        Document decision = Jsoup.connect(url)
-                .userAgent(UA.toString())
-                .timeout(1000 * 60 * 2)
-                .get();
-        return parseText(decision);
+        try(CloseableHttpClient httpClient =  HttpClients.custom().disableAutomaticRetries().
+                setDefaultRequestConfig(RequestConfig.custom()
+                        .setConnectTimeout(3*1000)
+                        .setConnectionRequestTimeout(3*1000)
+                        .setSocketTimeout(3*1000).build()).build()) {
+            HttpGet get = new HttpGet(url);
+            get.setHeader("User-Agent", Constant.UA.toString());
+            get.setHeader("Upgrade-Insecure-Requests","1");
+            get.setHeader("Connection","keep-alive");
+            get.setHeader("Host",cc.getSearchString().replace("http://",""));
+            get.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
+            get.setHeader("Accept_Language","en-US,en;q=0.5");
+            get.setHeader("Accept-Encoding","gzip, deflate");
+            HttpResponse response = httpClient.execute(get);
+            String htmlString = EntityUtils.toString(response.getEntity());
+            Document decision = Jsoup.parse(htmlString);
+            return parseText(decision);
+        }
     }
 
     String getSeleniumText(String href) {
