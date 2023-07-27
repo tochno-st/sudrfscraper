@@ -49,7 +49,7 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
                     partOfCas = partOfCas.replace("  ", " ");
                 }
                 String mosgorsudCode = t.get("mosgorsudCode").asText("");
-                if (LawBookHelper.getMosGorSudCodeCas(mosgorsudCode) == null) {
+                if (LawBookHelper.getMosGorSudCodeCas(mosgorsudCode) == null && !partOfCas.equals("")) {
                     return null;
                 }
                 if (partOfCas.equals("") && Objects.equals(mosgorsudCode, "")) return new CASArticle();
