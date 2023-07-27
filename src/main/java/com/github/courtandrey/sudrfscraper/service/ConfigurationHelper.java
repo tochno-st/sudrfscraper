@@ -1,5 +1,6 @@
 package com.github.courtandrey.sudrfscraper.service;
 
+import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.*;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
@@ -29,7 +30,7 @@ public class ConfigurationHelper {
     }
 
     public void reset(List<CourtConfiguration> ccs) {
-        reset(ccs,false);
+        reset(ccs, Boolean.parseBoolean(ApplicationConfiguration.getInstance().getProperty("dev.delete_working")));
     }
 
     public void reset(List<CourtConfiguration> ccs, boolean deleteWorkingUrl) {
