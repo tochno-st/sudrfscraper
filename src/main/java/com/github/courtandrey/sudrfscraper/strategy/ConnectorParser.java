@@ -5,7 +5,6 @@ import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Cour
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.SearchPattern;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.CasesPipeLine;
-import com.github.courtandrey.sudrfscraper.service.Constant;
 import com.github.courtandrey.sudrfscraper.service.SeleniumHelper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
@@ -22,25 +21,20 @@ import java.util.Set;
 
 public abstract class ConnectorParser implements Parser{
     protected CourtConfiguration cc;
+    private final RequestBuilder builder;
 
     public ConnectorParser(CourtConfiguration cc) {
         this.cc = cc;
+        builder = new RequestBuilder(cc);
     }
 
     String getJsoupText(String url) throws IOException {
         try(CloseableHttpClient httpClient =  HttpClients.custom().disableAutomaticRetries().
                 setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(3*1000)
-                        .setConnectionRequestTimeout(3*1000)
-                        .setSocketTimeout(3*1000).build()).build()) {
-            HttpGet get = new HttpGet(url);
-            get.setHeader("User-Agent", Constant.UA.toString());
-            get.setHeader("Upgrade-Insecure-Requests","1");
-            get.setHeader("Connection","keep-alive");
-            get.setHeader("Host",cc.getSearchString().replace("http://",""));
-            get.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
-            get.setHeader("Accept_Language","en-US,en;q=0.5");
-            get.setHeader("Accept-Encoding","gzip, deflate");
+                        .setConnectTimeout(30*1000)
+                        .setConnectionRequestTimeout(30*1000)
+                        .setSocketTimeout(30*1000).build()).build()) {
+            HttpGet get = builder.get(url,cc.getSearchString().replace("http://",""));
             HttpResponse response = httpClient.execute(get);
             String htmlString = EntityUtils.toString(response.getEntity());
             Document decision = Jsoup.parse(htmlString);

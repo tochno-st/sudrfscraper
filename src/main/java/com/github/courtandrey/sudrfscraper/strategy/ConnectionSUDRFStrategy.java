@@ -7,7 +7,6 @@ import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Sear
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.StrategyName;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.CasesPipeLineFactory;
-import com.github.courtandrey.sudrfscraper.service.Constant;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.SeleniumHelper;
@@ -35,8 +34,11 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
 
     protected Parser parser;
 
+    private final RequestBuilder requestBuilder;
+
     public ConnectionSUDRFStrategy(CourtConfiguration cc) {
         super(cc);
+        requestBuilder = new RequestBuilder(cc);
         if (cc.getStrategyName() != StrategyName.MOSGORSUD_STRATEGY) {
             parser = new GeneralParser(cc);
         } else {
@@ -140,23 +142,14 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
         }
     }
 
-
-
     private void connectJsoup() {
         try {
             try(CloseableHttpClient httpClient =  HttpClients.custom().disableAutomaticRetries().
                     setDefaultRequestConfig(RequestConfig.custom()
-                            .setConnectTimeout(3*1000)
-                            .setConnectionRequestTimeout(3*1000)
-                            .setSocketTimeout(3*1000).build()).build()) {
-                HttpGet get = new HttpGet(urls[indexUrl]);
-                get.setHeader("User-Agent", Constant.UA.toString());
-                get.setHeader("Upgrade-Insecure-Requests","1");
-                get.setHeader("Connection","keep-alive");
-                get.setHeader("Host",cc.getSearchString().replace("http://",""));
-                get.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
-                get.setHeader("Accept_Language","en-US,en;q=0.5");
-                get.setHeader("Accept-Encoding","gzip, deflate");
+                            .setConnectTimeout(60*1000)
+                            .setConnectionRequestTimeout(60*1000)
+                            .setSocketTimeout(60*1000).build()).build()) {
+                HttpGet get = requestBuilder.get(urls[indexUrl],cc.getSearchString().replace("http://",""));
                 HttpResponse response = httpClient.execute(get);
                 String htmlString = EntityUtils.toString(response.getEntity());
                 currentDocument = Jsoup.parse(htmlString);
