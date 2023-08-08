@@ -1,7 +1,10 @@
 package com.github.courtandrey.sudrfscraper.dump.model;
 
+import lombok.Getter;
+
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+@Getter
 public class Case {
     private Long id;
     private int region;
@@ -19,88 +22,44 @@ public class Case {
     public Case() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public int getRegion() {
-        return region;
     }
 
     public void setRegion(int region) {
         this.region = region;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getCaseNumber() {
-        return caseNumber;
     }
 
     public void setCaseNumber(String caseNumber) {
         this.caseNumber = caseNumber;
     }
 
-    public String getEntryDate() {
-        return entryDate;
-    }
-
     public void setEntryDate(String entryDate) {
         this.entryDate = entryDate;
-    }
-
-    public String getNames() {
-        return names;
     }
 
     public void setNames(String names) {
         this.names = names;
     }
 
-    public String getJudge() {
-        return judge;
-    }
-
     public void setJudge(String judge) {
         this.judge = judge;
-    }
-
-    public String getResultDate() {
-        return resultDate;
     }
 
     public void setResultDate(String resultDate) {
         this.resultDate = resultDate;
     }
 
-    public String getDecision() {
-        return decision;
-    }
-
     public void setDecision(String decision) {
         this.decision = decision;
     }
 
-    public String getEndDate() {
-        return endDate;
-    }
-
     public void setEndDate(String endDate) {
         this.endDate = endDate;
-    }
-
-    public String getText() {
-        return text;
     }
 
     public void setText(String text) {

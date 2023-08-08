@@ -193,10 +193,10 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
 
     @Override
     protected void logFinalInfo() {
-        if (!parser.isTextFound() && resultCases.size() != 0 && resultCases.size() >= 25) {
+        if (!parser.isTextFound() && !resultCases.isEmpty() && resultCases.size() >= 25) {
             SimpleLogger.log(LoggingLevel.DEBUG, Message.NO_TEXT_FOUND + urls[indexUrl]);
         }
-        if ((resultCases.size() % 25 == 0 || resultCases.size() % 20 == 0) && resultCases.size() != 0 && !isInTestingMode) {
+        if ((resultCases.size() % 25 == 0 || resultCases.size() % 20 == 0) && !resultCases.isEmpty() && !isInTestingMode) {
             SimpleLogger.log(LoggingLevel.DEBUG, Message.SUSPICIOUS_NUMBER_OF_CASES + urls[indexUrl]);
         }
         super.logFinalInfo();
@@ -214,7 +214,7 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
             resultCases.addAll(cases);
         }
 
-        if (resultCases != null && resultCases.size() > 0) {
+        if (resultCases != null && !resultCases.isEmpty()) {
             finalIssue = Issue.compareAndSetIssue(Issue.SUCCESS,finalIssue);
             issue = Issue.SUCCESS;
         } else {

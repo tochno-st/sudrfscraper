@@ -51,7 +51,7 @@ public class Converter {
             }
             ret = checkEnc(ret);
             String delete = ApplicationConfiguration.getInstance().getProperty("dev.delete_mosgorsud_docs");
-            if (delete == null || delete.equals("true") || delete.equals("")) {
+            if (delete == null || delete.equals("true") || delete.isEmpty()) {
                 Files.delete(file.toPath());
             }
             return ret;

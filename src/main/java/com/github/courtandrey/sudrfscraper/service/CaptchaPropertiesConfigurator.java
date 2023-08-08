@@ -3,6 +3,7 @@ package com.github.courtandrey.sudrfscraper.service;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Level;
 import com.github.courtandrey.sudrfscraper.exception.CaptchaException;
+import com.github.courtandrey.sudrfscraper.exception.InitializationException;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
 import com.github.courtandrey.sudrfscraper.service.logger.SimpleLogger;
@@ -77,7 +78,7 @@ public class CaptchaPropertiesConfigurator {
         try {
             for (Element e:document.getElementsByTag("tr")) {
                 Elements captchaid = e.getElementsByAttributeValue("name","captchaid");
-                if (captchaid.size() == 0) continue;
+                if (captchaid.isEmpty()) continue;
                 String dataUrl = e.getElementsByTag("img").attr("src");
                 byte[] dataBytes = Base64.getDecoder().decode(dataUrl.replaceFirst("data:.+,","").trim());
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(dataBytes));
@@ -123,7 +124,7 @@ public class CaptchaPropertiesConfigurator {
             }
             properties.load(new FileReader(String.format(PATH_TO_CAPTCHA.toString(), cc.getRegion())));
         } catch (IOException e) {
-            e.printStackTrace();
+           throw new InitializationException(e);
         }
         return properties;
     }

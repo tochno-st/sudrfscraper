@@ -1,7 +1,6 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest.article;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
 import lombok.Getter;
 
@@ -12,10 +11,6 @@ public class CASArticle implements Article, MosGorSudCategoryArticle{
     private String mosgorsudCode;
 
     public CASArticle() {
-    }
-
-    public String getMosgorsudCode() {
-        return mosgorsudCode;
     }
 
     public CASArticle(String partOfCas, String mosgorsudCode) {

@@ -1,7 +1,9 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest;
 
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.*;
+import com.github.courtandrey.sudrfscraper.exception.InitializationException;
 import com.github.courtandrey.sudrfscraper.exception.SearchRequestException;
+import lombok.Getter;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -12,16 +14,14 @@ public class SearchRequest {
     private String text;
     private Article article;
     private String publishedDateTill;
+    @Getter
     private String entryDateTill;
-
-    public String getEntryDateTill() {
-        return entryDateTill;
-    }
 
     public void setEntryDateTill(LocalDate entryDateTill) {
         this.entryDateTill = getDateToString(entryDateTill);
     }
 
+    @Getter
     private com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field field = com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field.CRIMINAL;
 
     private static SearchRequest instance;
@@ -71,10 +71,6 @@ public class SearchRequest {
         this.field=field;
     }
 
-    public com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field getField() {
-        return field;
-    }
-
     private String getDateToString(LocalDate date) {
         int dom = date.getDayOfMonth();
         int m = date.getMonthValue();
@@ -101,7 +97,7 @@ public class SearchRequest {
                 if (!f.getName().equals("instance") && f.get(this) != null
                         && !f.getName().equals("field")) return true;
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                throw new InitializationException(e);
             }
         }
         setResultDateTill(LocalDate.now());

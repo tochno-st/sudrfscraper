@@ -19,10 +19,6 @@ public class MaterialProceedingArticle implements Article, MosGorSudCategoryArti
         this.mosgorsudCode = mosgorsudCode;
     }
 
-    public String getMosgorsudCode() {
-        return mosgorsudCode;
-    }
-
 
     @Override
     public Field getField() {

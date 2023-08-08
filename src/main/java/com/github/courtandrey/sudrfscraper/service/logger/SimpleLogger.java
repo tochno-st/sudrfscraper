@@ -4,6 +4,7 @@ import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguratio
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Issue;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
+import com.github.courtandrey.sudrfscraper.exception.InitializationException;
 import com.github.courtandrey.sudrfscraper.view.LogProccessingView;
 import com.github.courtandrey.sudrfscraper.view.View;
 
@@ -28,12 +29,6 @@ public final class SimpleLogger {
     private static LogProccessingView view = null;
 
     private SimpleLogger() {}
-    public static void initLogger(String name) {
-        if (!isInited) {
-            initLogger(name, null);
-            isInited = true;
-        }
-    }
 
     public static void initLogger(String name, View view) {
         if (view instanceof LogProccessingView) {
@@ -86,7 +81,7 @@ public final class SimpleLogger {
             try {
                 logWriter.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new InitializationException(e);
             }
         }
         logWriter = null;

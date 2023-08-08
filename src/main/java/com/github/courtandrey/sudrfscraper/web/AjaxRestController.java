@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@SuppressWarnings("unused")
 public class AjaxRestController {
     @Autowired
     private Validator validator;
@@ -48,13 +48,13 @@ public class AjaxRestController {
     @GetMapping("/get_connection_info")
     public ResponseEntity<ServerConnectionDetails> getConnectionInfo() {
         ServerConnectionDetails serverConnectionDetails = new ServerConnectionDetails();
-        if (ApplicationConfiguration.getInstance().getProperty("sql.url").length() > 0) {
+        if (!ApplicationConfiguration.getInstance().getProperty("sql.url").isEmpty()) {
             serverConnectionDetails.setUrl(ApplicationConfiguration.getInstance().getProperty("sql.url"));
         } else return ResponseEntity.notFound().build();
-        if (ApplicationConfiguration.getInstance().getProperty("sql.usr").length() > 0) {
+        if (!ApplicationConfiguration.getInstance().getProperty("sql.usr").isEmpty()) {
             serverConnectionDetails.setUser(ApplicationConfiguration.getInstance().getProperty("sql.usr"));
         } else return ResponseEntity.notFound().build();
-        if (ApplicationConfiguration.getInstance().getProperty("sql.password").length() > 0) {
+        if (!ApplicationConfiguration.getInstance().getProperty("sql.password").isEmpty()) {
             serverConnectionDetails.setPassword(ApplicationConfiguration.getInstance().getProperty("sql.password"));
         } else return ResponseEntity.notFound().build();
         serverConnectionDetails.setRemember(true);
@@ -68,7 +68,7 @@ public class AjaxRestController {
             starter.setServerConnectionInfoAndTest(serverConnectionDetails.getUrl(),
                     serverConnectionDetails.getUser(),
                     serverConnectionDetails.getPassword());
-            if (serverConnectionDetails.getRemember()) {
+            if (serverConnectionDetails.isRemember()) {
                 ApplicationConfiguration.getInstance().setProperty("sql.url", serverConnectionDetails.getUrl());
                 ApplicationConfiguration.getInstance().setProperty("sql.usr", serverConnectionDetails.getUser());
                 ApplicationConfiguration.getInstance().setProperty("sql.password", serverConnectionDetails.getPassword());
@@ -97,7 +97,7 @@ public class AjaxRestController {
             }
 
             SearchRequest.getInstance().setField(Field.parseField(requestDetails.getField()));
-            if (requestDetails.getMeta().getChosenDirectory().length() > 0) {
+            if (!requestDetails.getMeta().getChosenDirectory().isEmpty()) {
                 ApplicationConfiguration.getInstance().setProperty("basic.result.path", requestDetails.getMeta().getChosenDirectory());
             } else {
                 ApplicationConfiguration.getInstance().setProperty("basic.result.path","./results/");
@@ -112,10 +112,10 @@ public class AjaxRestController {
             } else {
                 ApplicationConfiguration.getInstance().setProperty("basic.regions", "");
             }
-            if (requestDetails.getEndDate().length() > 0) {
+            if (!requestDetails.getEndDate().isEmpty()) {
                 SearchRequest.getInstance().setResultDateTill(validator.validateDate(requestDetails.getEndDate()));
             }
-            if (requestDetails.getStartDate().length() > 0) {
+            if (!requestDetails.getStartDate().isEmpty()) {
                 SearchRequest.getInstance().setResultDateFrom(validator.validateDate(requestDetails.getStartDate()));
             }
             ApplicationConfiguration.getInstance().setProperty("basic.continue",String.valueOf(requestDetails.getMeta().isNeedToContinue()));
@@ -145,19 +145,19 @@ public class AjaxRestController {
             return ResponseEntity.badRequest().body("Wrong article format");
         }
 
-        if (requestDetails.getStartDate().length() > 0) {
+        if (!requestDetails.getStartDate().isEmpty()) {
             if (validator.validateDate(requestDetails.getStartDate()) == null) {
                 return ResponseEntity.badRequest().body("Wrong date format");
             }
         }
 
-        if (requestDetails.getEndDate().length() > 0) {
+        if (!requestDetails.getEndDate().isEmpty()) {
             if (validator.validateDate(requestDetails.getEndDate()) == null) {
                 return ResponseEntity.badRequest().body("Wrong date format");
             }
         }
 
-        if (requestDetails.getMeta().getChosenDirectory().length() > 0) {
+        if (!requestDetails.getMeta().getChosenDirectory().isEmpty()) {
             if (!validator.validateDirectory(requestDetails.getMeta().getChosenDirectory())) {
                 return ResponseEntity.badRequest().body("Invalid directory");
             }

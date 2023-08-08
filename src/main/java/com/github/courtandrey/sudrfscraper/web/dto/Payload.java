@@ -1,22 +1,14 @@
 package com.github.courtandrey.sudrfscraper.web.dto;
 
+import lombok.Getter;
+
+@Getter
 public class Payload {
-    private String command;
-    private String destination;
+    private final String command;
+    private final String destination;
 
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
+    public Payload(String command, String destination) {
         this.command = command;
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
         this.destination = destination;
     }
 }

@@ -34,6 +34,7 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Component
+@SuppressWarnings({"unused"})
 public class Starter {
     private Thread mainThread;
     private SearchRequest searchConfiguration;
@@ -202,13 +203,12 @@ public class Starter {
 
             starter.update(strategy.getResultCases());
 
-            if (t == null && r instanceof Future<?>) {
-                Future<?> future = (Future<?>) r;
+            if (t == null && r instanceof Future<?> future) {
                 try {
                     if (future.isDone())
                         future.get();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    throw new ConcurrentModificationException(e);
                 } catch (ExecutionException e) {
                     (new StrategyUEH()).handle(r, e.getCause());
                 }
@@ -319,7 +319,7 @@ public class Starter {
 
         singleCCS.addAll(configHolder.getCCs().stream()
                 .filter(x -> x.isSingleStrategy() && x.getStrategyName() != StrategyName.CAPTCHA_STRATEGY
-                        && x.getStrategyName() != StrategyName.END_STRATEGY && x.getStrategyName() != StrategyName.MOSGORSUD_STRATEGY).collect(Collectors.toList()));
+                        && x.getStrategyName() != StrategyName.END_STRATEGY && x.getStrategyName() != StrategyName.MOSGORSUD_STRATEGY).toList());
 
         if (ignoreInactive) {
             mainCCS = mainCCS.stream().filter(x -> x.getIssue() != Issue.INACTIVE_COURT
@@ -392,7 +392,7 @@ public class Starter {
 
         refresh();
 
-        if (cases.size() != 0) {
+        if (!cases.isEmpty()) {
             updaterService.update(cases);
         }
     }
@@ -403,7 +403,7 @@ public class Starter {
 
 
     private List<CourtConfiguration> checkIfNothingToExecute(List<CourtConfiguration> ccs) {
-        if (ccs.size() == 0) {
+        if (ccs.isEmpty()) {
             CourtConfiguration emptyCC = new CourtConfiguration();
             emptyCC.setStrategyName(StrategyName.END_STRATEGY);
             ccs = new ArrayList<>();

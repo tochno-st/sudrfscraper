@@ -25,20 +25,20 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
                 String part = t.get("part").asText("");
                 String letter = t.get("letter").asText("");
                 boolean headLess = Objects.equals(article, "");
-                if (headLess && part.length() > 0) return null;
-                if (headLess && subArticle.length() > 0) return null;
-                if (headLess && letter.length() > 0) return null;
+                if (headLess && !part.isEmpty()) return null;
+                if (headLess && !subArticle.isEmpty()) return null;
+                if (headLess && !letter.isEmpty()) return null;
                 if (letter.length() > 1) return null;
                 if (headLess) return new CriminalArticle();
                 CriminalArticle criminalArticle = new CriminalArticle();
                 criminalArticle.setArticle(Integer.parseInt(article));
-                if (subArticle.length() > 0) {
+                if (!subArticle.isEmpty()) {
                     criminalArticle.setSubArticle(Integer.parseInt(subArticle));
                 }
-                if (part.length() > 0) {
+                if (!part.isEmpty()) {
                     criminalArticle.setPart(Integer.parseInt(part));
                 }
-                if (letter.length() > 0) {
+                if (!letter.isEmpty()) {
                     criminalArticle.setLetter(letter.charAt(0));
                 }
                 return criminalArticle;
@@ -49,12 +49,12 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
                     partOfCas = partOfCas.replace("  ", " ");
                 }
                 String mosgorsudCode = t.get("mosgorsudCode").asText("");
-                if (LawBookHelper.getMosGorSudCodeCas(mosgorsudCode) == null && !partOfCas.equals("")) {
+                if (LawBookHelper.getMosGorSudCodeCas(mosgorsudCode) == null && !partOfCas.isEmpty()) {
                     return null;
                 }
-                if (partOfCas.equals("") && Objects.equals(mosgorsudCode, "")) return new CASArticle();
+                if (partOfCas.isEmpty() && Objects.equals(mosgorsudCode, "")) return new CASArticle();
                 else if (Objects.equals(mosgorsudCode, "")) return null;
-                else if (partOfCas.equals("")) return null;
+                else if (partOfCas.isEmpty()) return null;
                 return new CASArticle(partOfCas, mosgorsudCode);
             } else if ("ADMIN".equals(articleClass)) {
                 String chapter = t.get("chapter").asText("");
@@ -64,24 +64,24 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
                 String subPart = t.get("subPart").asText("");
                 boolean headLess = false;
 
-                if (chapter.length() == 0 && article.length() == 0) headLess = true;
-                else if (article.length() == 0) return null;
-                else if (chapter.length() == 0) return null;
+                if (chapter.isEmpty() && article.isEmpty()) headLess = true;
+                else if (article.isEmpty()) return null;
+                else if (chapter.isEmpty()) return null;
 
-                if (headLess && part.length() > 0) return null;
-                if (headLess && subPart.length() > 0) return null;
-                if (headLess && subArticle.length() > 0) return null;
+                if (headLess && !part.isEmpty()) return null;
+                if (headLess && !subPart.isEmpty()) return null;
+                if (headLess && !subArticle.isEmpty()) return null;
                 if (headLess) return new AdminArticle();
                 AdminArticle adminArticle = new AdminArticle();
                 adminArticle.setChapter(Integer.parseInt(chapter));
                 adminArticle.setArticle(Integer.parseInt(article));
-                if (subArticle.length() > 0) {
+                if (!subArticle.isEmpty()) {
                     adminArticle.setSubArticle(Integer.parseInt(subArticle));
                 }
-                if (part.length() > 0) {
+                if (!part.isEmpty()) {
                     adminArticle.setPart(Integer.parseInt(part));
                 }
-                if (subPart.length() > 0) {
+                if (!subPart.isEmpty()) {
                     adminArticle.setSubPart(Integer.parseInt(subPart));
                 }
                 return adminArticle;
@@ -89,9 +89,9 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
             else if (articleClass.equals("MATERIAL_PROCEEDING")) {
                 String partOfUPK = t.get("partOfUPK").asText("");
                 String mosgorsudCode = t.get("mosgorsudCode").asText("");
-                if (partOfUPK.equals("") && Objects.equals(mosgorsudCode, "")) return new MaterialProceedingArticle();
+                if (partOfUPK.isEmpty() && Objects.equals(mosgorsudCode, "")) return new MaterialProceedingArticle();
                 else if (Objects.equals(mosgorsudCode, "")) return null;
-                else if (partOfUPK.equals("")) return null;
+                else if (partOfUPK.isEmpty()) return null;
                 return new MaterialProceedingArticle(partOfUPK, mosgorsudCode);
             }
             else if ("CIVIL".equals(articleClass)) {
@@ -100,9 +100,9 @@ public class ArticleDeserializer extends JsonDeserializer<Article> {
                     partOfCas = partOfCas.replace("  ", " ");
                 }
                 String mosgorsudCode = t.get("mosgorsudCode").asText("");
-                if (partOfCas.equals("") && Objects.equals(mosgorsudCode, "")) return new CivilArticle();
+                if (partOfCas.isEmpty() && Objects.equals(mosgorsudCode, "")) return new CivilArticle();
                 else if (Objects.equals(mosgorsudCode, "")) return null;
-                else if (partOfCas.equals("")) return null;
+                else if (partOfCas.isEmpty()) return null;
                 return new CivilArticle(partOfCas, mosgorsudCode);
             }
         } catch (Exception ignored) {}

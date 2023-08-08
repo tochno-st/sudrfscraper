@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.github.courtandrey.sudrfscraper.service.Constant.PATH_TO_RESULT_JSON;
 import static com.github.courtandrey.sudrfscraper.service.Constant.PATH_TO_RESULT_META;
@@ -81,14 +80,14 @@ public class ScrapingAnalyzer {
             ObjectMapper mapper = new ObjectMapper();
             while (reader.ready()) {
                 String str = reader.readLine();
-                if (str.equals("")) continue;
+                if (str.isEmpty()) continue;
                 Case _case = mapper.readValue(str,Case.class);
                 checkMap.merge(_case.getRegion(),1,Integer::sum);
             }
 
             checkMap.keySet()
                     .stream()
-                    .sorted(Comparator.comparing(x -> checkMap.get((Integer) x)).reversed()).collect(Collectors.toList())
+                    .sorted(Comparator.comparing(x -> checkMap.get((Integer) x)).reversed()).toList()
                     .forEach(x -> SimpleLogger.println(String.format(Message.CASES_PER_REGION.toString(), x, checkMap.get(x))));
 
             reader.close();
@@ -135,7 +134,7 @@ public class ScrapingAnalyzer {
                 if (_case.getText() != null) {
                     cases.add(_case);
                 }
-                if (i == stringCount - 1 && cases.size() == 0) {
+                if (i == stringCount - 1 && cases.isEmpty()) {
                     SimpleLogger.println(Message.NO_DECISION_TEXT);
                     return;
                 }
@@ -156,7 +155,7 @@ public class ScrapingAnalyzer {
             int stringNum = 0;
             while (reader.ready()) {
                 String str = reader.readLine();
-                if (str.equals("")) continue;
+                if (str.isEmpty()) continue;
                 _case = mapper.readValue(str, Case.class);
                 stringNum = stringNum + 1;
                 if (_case.getText() != null) textNum = textNum + 1;

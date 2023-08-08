@@ -117,10 +117,7 @@ public abstract class UpdaterService extends Thread implements Updater{
             String chosenDump = "JSON";
             if (this instanceof DBUpdaterService) {
                 chosenDump = "SQL";
-                ServerConnectionDetails serverConnectionDetails = new ServerConnectionDetails();
-                serverConnectionDetails.setPassword(ServerConnectionInfo.getInstance().getPassword()!=null?ServerConnectionInfo.getInstance().getPassword() : "");
-                serverConnectionDetails.setUrl(ServerConnectionInfo.getInstance().getDbUrl() != null ? ServerConnectionInfo.getInstance().getDbUrl() : "");
-                serverConnectionDetails.setUser(serverConnectionDetails.getUser() != null ? ServerConnectionInfo.getInstance().getUser() : "");
+                ServerConnectionDetails serverConnectionDetails = getServerConnectionDetails();
                 requestDetails.setConnectionInf(serverConnectionDetails);
             }
             requestDetails.setChosenDump(chosenDump);
@@ -130,7 +127,7 @@ public abstract class UpdaterService extends Thread implements Updater{
             requestDetails.setStartDate(SearchRequest.getInstance().getResultDateFrom() != null ? SearchRequest.getInstance().getResultDateFrom() : "");
             requestDetails.setMeta(new RequestDetails.Meta());
             requestDetails.getMeta().setLevels((ApplicationConfiguration.getInstance().getProperty("basic.levels") != null &&
-                    !ApplicationConfiguration.getInstance().getProperty("basic.levels").equals(""))  ?
+                    !ApplicationConfiguration.getInstance().getProperty("basic.levels").isEmpty())  ?
                     ApplicationConfiguration.getInstance().getProperty("basic.levels").split(",") : null);
             requestDetails.getMeta().setName(dumpName);
             requestDetails.getMeta().setFilterMode(ApplicationConfiguration.getInstance().getProperty("cases.article_filter") != null ?
@@ -138,10 +135,10 @@ public abstract class UpdaterService extends Thread implements Updater{
             requestDetails.getMeta().setChosenDirectory(ApplicationConfiguration.getInstance().getProperty("basic.result.path") != null ?
                     ApplicationConfiguration.getInstance().getProperty("basic.result.path") : "./results/");
             requestDetails.getMeta().setRegions((ApplicationConfiguration.getInstance().getProperty("basic.regions") != null &&
-                    !ApplicationConfiguration.getInstance().getProperty("basic.regions").equals("")) ?
+                    !ApplicationConfiguration.getInstance().getProperty("basic.regions").isEmpty()) ?
                     ApplicationConfiguration.getInstance().getProperty("basic.regions").split(",") : null);
             requestDetails.getMeta().setNeedToContinue(ApplicationConfiguration.getInstance().getProperty("basic.continue") != null &&
-                    !ApplicationConfiguration.getInstance().getProperty("basic.continue").equals("")
+                    !ApplicationConfiguration.getInstance().getProperty("basic.continue").isEmpty()
                     && Boolean.parseBoolean(ApplicationConfiguration.getInstance().getProperty("basic.continue")));
 
             ObjectMapper mapper = new ObjectMapper();
@@ -149,6 +146,14 @@ public abstract class UpdaterService extends Thread implements Updater{
         } catch (IOException e) {
             SimpleLogger.log(LoggingLevel.WARNING, Message.IOEXCEPTION_OCCURRED + " while trying to add previous request");
         }
+    }
+
+    private static ServerConnectionDetails getServerConnectionDetails() {
+        ServerConnectionDetails serverConnectionDetails = new ServerConnectionDetails();
+        serverConnectionDetails.setPassword(ServerConnectionInfo.getInstance().getPassword()!=null?ServerConnectionInfo.getInstance().getPassword() : "");
+        serverConnectionDetails.setUrl(ServerConnectionInfo.getInstance().getDbUrl() != null ? ServerConnectionInfo.getInstance().getDbUrl() : "");
+        serverConnectionDetails.setUser(serverConnectionDetails.getUser() != null ? ServerConnectionInfo.getInstance().getUser() : "");
+        return serverConnectionDetails;
     }
 
     @Override
@@ -162,7 +167,7 @@ public abstract class UpdaterService extends Thread implements Updater{
             w.write(text);
             w.write(getSummeryInfo());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

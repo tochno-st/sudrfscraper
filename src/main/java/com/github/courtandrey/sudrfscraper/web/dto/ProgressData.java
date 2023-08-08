@@ -1,25 +1,16 @@
 package com.github.courtandrey.sudrfscraper.web.dto;
 
-public class ProgressData {
-    private int current;
-    private int total;
-    private int scraped;
+import lombok.Getter;
 
-    public int getScraped() {
-        return scraped;
-    }
+@Getter
+public class ProgressData {
+    private final int current;
+    private final int total;
+    private final int scraped;
 
     public ProgressData(int current, int total, int scraped) {
         this.current = current;
         this.total = total;
         this.scraped = scraped;
-    }
-
-    public int getCurrent() {
-        return current;
-    }
-
-    public int getTotal() {
-        return total;
     }
 }

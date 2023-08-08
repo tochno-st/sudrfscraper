@@ -2,6 +2,8 @@ package com.github.courtandrey.sudrfscraper.configuration.dumpconfiguration;
 
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.dump.DBUpdaterService;
+import lombok.Getter;
+
 import java.sql.SQLException;
 public class ServerConnectionInfo {
     private ServerConnectionInfo() {
@@ -21,24 +23,15 @@ public class ServerConnectionInfo {
     }
 
     private String DB_URL;
+    @Getter
     private String user;
+    @Getter
     private String password;
+    @Getter
     private boolean remember;
 
     public static void setInstance(ServerConnectionInfo instance) {
         ServerConnectionInfo.instance = instance;
-    }
-
-    public String getDB_URL() {
-        return DB_URL;
-    }
-
-    public void setDB_URL(String DB_URL) {
-        this.DB_URL = DB_URL;
-    }
-
-    public boolean isRemember() {
-        return remember;
     }
 
     public void setRemember(boolean remember) {
@@ -53,16 +46,8 @@ public class ServerConnectionInfo {
         this.DB_URL = dbUrl;
     }
 
-    public String getUser() {
-        return user;
-    }
-
     public void setUser(String user) {
         this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public void setPassword(String password) {
@@ -70,7 +55,7 @@ public class ServerConnectionInfo {
     }
 
     public void testConnection() throws SQLException {
-        if (!DB_URL.equals("")) {
+        if (!DB_URL.isEmpty()) {
             DBUpdaterService.CasesDB.getConnection();
         }
         else {

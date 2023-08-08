@@ -80,7 +80,7 @@ public class ConfigurationLoader {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(writer,ccs);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -90,7 +90,7 @@ public class ConfigurationLoader {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(writer,ccs);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

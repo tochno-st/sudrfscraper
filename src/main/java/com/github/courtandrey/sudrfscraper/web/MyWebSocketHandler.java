@@ -5,6 +5,7 @@ import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
 import com.github.courtandrey.sudrfscraper.service.logger.SimpleLogger;
 import com.github.courtandrey.sudrfscraper.web.dto.Payload;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -16,18 +17,17 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
+@Getter
 public class MyWebSocketHandler extends TextWebSocketHandler {
-    private List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-    private ObjectMapper mapper = new ObjectMapper();
+    private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public MyWebSocketHandler() {
     }
 
-    public List<WebSocketSession> getSessions() {
-        return sessions;
-    }
     @Override
+    @SuppressWarnings("all")
     public void afterConnectionEstablished(WebSocketSession session) {
         sessions.add(session);
     }

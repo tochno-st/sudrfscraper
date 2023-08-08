@@ -2,19 +2,15 @@ package com.github.courtandrey.sudrfscraper.web.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.Article;
+import lombok.Getter;
 
 @JsonAutoDetect
+@Getter
 public class CheckboxData {
 
-    private boolean hidePage;
+    private final boolean hidePage;
 
-    public boolean isHidePage() {
-        return hidePage;
-    }
-
-    public void setHidePage(boolean hidePage) {
+    public CheckboxData(boolean hidePage) {
         this.hidePage = hidePage;
     }
-
 }
