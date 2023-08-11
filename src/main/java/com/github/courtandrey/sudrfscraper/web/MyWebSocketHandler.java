@@ -36,7 +36,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         try {
             Payload payload = mapper.readValue(message.getPayload(),Payload.class);
-            session.getAttributes().put("topic",payload.getDestination().substring(1));
+            session.getAttributes().put("topic",payload.destination().substring(1));
             session.sendMessage(new TextMessage("{\"handshake_completed\":\"true\"}"));
         } catch (IOException e) {
             SimpleLogger.log(LoggingLevel.ERROR, Message.IOEXCEPTION_OCCURRED.toString() + e);

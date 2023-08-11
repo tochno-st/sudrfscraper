@@ -1,14 +1,15 @@
 SUDRFScraper
 
+NB:
+
+sudrf.ru sometimes is blocking requests from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
+
 DESCRIPTION:
 
 Among russian independent journalists official aggregator bsr.sudrf.ru known as "Pravosudie" is associated with only one feeling - pain.
-It is script-based, it is slow, it is off half of the time. And with all these issues it even often does its primary job badly.
+It is script-based, it is slow, it is off half of the time.
 
 So solution was as obvious as necessary. Just re-do aggregation from the courts websites instead of using script built on our taxes.
-
-Though there still were no open-code project to do this thing. 
-And it is not much of a surprise: there are no crowds aggregating court cases and the task is not as easy as it seemed to me at the start.
 
 Websites of courts are using different interfaces. Some are using scripts, so selenium is needed anyway.
 More important for a user: some courts are with CAPTCHA, though implementation as dumb as possible (basically you need to type one captcha for a whole region).
@@ -16,15 +17,13 @@ More important for a user: some courts are with CAPTCHA, though implementation a
 Nevertheless, SUDRFScraper keeps on winning in compression with "Pravosudie".
 It is faster due to its mainly request nature and multi-threading.
 It is more stable: there are always courts which are down, but it is bearable considering that whole "Pravosudie" tends to be down.
-And, what to be honest, surprises me, it is more complete.
 
-But this project is my first non-educational project so there is quite a bunch of problems.
-It also should be definitely broadened. So the work only begins here.
+Also, SUDRFScraper provides UI so there's no need to do any coding.
 
 IMPORTANT THINGS TO KNOW BEFORE USING:
 
 Scraper uses FireFox WebDriver, so you should have firefox browser.
-If you see errors about WebDriver in log file, follow the instruction that may help:
+If you see errors about WebDriver in logs, follow the instruction that may help:
 1. Visit "https://github.com/mozilla/geckodriver/releases" and download driver for your OS.
 2. Replace driver in ./src/main/resources/"name-of-your-OS"/.
 
@@ -45,7 +44,7 @@ EXECUTION INFO:
 As for execution you have these search options: 
 1. Result date starting from and till. "Result" means case is finished though there might not be a published decision. They are only available date params for now. Though I understand how important can be entry date for some cases. Don't use these fields if you want unfinished cases (for some reason).
 2. Text-in-Decision field. Obvious. Just don't forget info introduced in previous chapter.
-3. The main option: article. SUDRFScraper supports Criminal Articles, Administrative Offense Articles, Administrative Proceeding, Material Proceeding and Civil Proceeding. Just don't forget info introduced in previous chapter (x2). Important to know: for administrative articles you should enter mosgorsud code.
+3. The main option: article. SUDRFScraper supports Criminal Articles, Administrative Offense Articles, Administrative Proceeding, Material Proceeding and Civil Proceeding. Just don't forget info introduced in previous chapter (x2).
 
 There are only two dump types supported: MySQL-table and line-by-line JSON document.
 
@@ -84,6 +83,8 @@ ver.0.2.2 material-proceeding-update. Added Material Proceeding.
 ver.0.2.3 cas-fix-update. Fixed bugs with mosgorsud cas code. Added lawbook for cas
 
 ver.0.2.4 civil-proceeding-update. Added Civil Proceeding.
+
+ver.0.2.4-1 performance enhancement. Enhanced performance for VPN environment.
 
 CONTACT ME:
 

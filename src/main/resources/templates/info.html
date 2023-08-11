@@ -56,36 +56,32 @@
     <h1>Welcome to SUDRFScraper!</h1>
 
     <h2>
+        NB::
+    </h2>
+    <p>
+        sudrf.ru sometimes is blocking requests from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
+    </p>
+    <h2>
         DESCRIPTION:
     </h2>
     <p>
-        Among Russian independent journalists, the official aggregator bsr.sudrf.ru known as "Pravosudie" is associated
-        with only one feeling - pain. It is script-based, it is slow, it is off half of the time. And with all these
-        issues it even often does its primary job badly.
+        Among russian independent journalists official aggregator bsr.sudrf.ru known as "Pravosudie" is associated with only one feeling - pain.
+        It is script-based, it is slow, it is off half of the time.
     </p>
     <p>
-        So the solution was as obvious as necessary. Just re-do aggregation from the courts' websites instead of using
-        a script built on our taxes.
+        So solution was as obvious as necessary. Just re-do aggregation from the courts websites instead of using script built on our taxes.
     </p>
     <p>
-        Though there still were no open-code projects to do this thing. And it is not much of a surprise: there are no
-        crowds aggregating court cases and the task is not as easy as it seemed to me at the start.
+        Websites of courts are using different interfaces. Some are using scripts, so selenium is needed anyway.
+        More important for a user: some courts are with CAPTCHA, though implementation as dumb as possible (basically you need to type one captcha for a whole region).
     </p>
     <p>
-        Websites of courts are using different interfaces. Some are using scripts, so Selenium is needed anyway. More
-        important for a user: some courts are with CAPTCHA, though implementation as dumb as possible (basically you
-        need to type one captcha for a whole region).
+        Nevertheless, SUDRFScraper keeps on winning in compression with "Pravosudie".
+        It is faster due to its mainly request nature and multi-threading.
+        It is more stable: there are always courts which are down, but it is bearable considering that whole "Pravosudie" tends to be down.
     </p>
     <p>
-        Nevertheless, SUDRFScraper keeps on winning in compression with "Pravosudie". It is faster due to its mainly
-        request nature and multi-threading. It is more stable: there are always courts which are down, but it is
-        bearable considering that the whole "Pravosudie" tends to be down. And, what to be honest, surprises me, it is
-        more complete. Every testing shows SUDRFScraper's leadership in the number of both scraped cases and decision
-        texts.
-    </p>
-    <p>
-        But this project is my first non-educational project, so there is quite a bunch of problems. It also should be
-        definitely broadened. So the work only begins here.
+        Also, SUDRFScraper provides UI so there's no need to do any coding.
     </p>
 
     <h2>
