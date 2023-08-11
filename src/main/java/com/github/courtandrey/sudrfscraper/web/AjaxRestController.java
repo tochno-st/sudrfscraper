@@ -41,7 +41,7 @@ public class AjaxRestController {
     private SocketController socketController;
     @PostMapping("/save-checkbox")
     public void saveCheckbox(@RequestBody CheckboxData checkboxData) {
-        boolean hidePage = checkboxData.isHidePage();
+        boolean hidePage = checkboxData.hidePage();
         ApplicationConfiguration.getInstance().setProperty("user.hide_info",String.valueOf(hidePage));
     }
 
@@ -81,7 +81,7 @@ public class AjaxRestController {
 
     @PostMapping("/submit_captcha")
     public void submitCaptcha(@RequestBody Captcha captcha) {
-        socketController.setCaptcha(captcha.getCaptcha());
+        socketController.setCaptcha(captcha.captcha());
     }
 
 
