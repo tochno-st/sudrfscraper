@@ -1,4 +1,4 @@
-SUDRFScraper
+## SUDRFScraper
 
 Project made in collaboration with 'To Be Precise' https://github.com/tochno-st
 
@@ -59,7 +59,7 @@ You are also able to configure these options:
 By the end of execution you are given summery info. It is a list of occurred issues, so you may know how many cases you could miss during the scraping. You also can check logs to find issues info.
 If there are many issues that are not include server problems (Inactive court, Connection error) like possible different interfaces I will be glad if you contact me for further improvement of the system.
 
-UPDATES:
+### Updates
 
 ver.0.1.4 CAS-UPDATE. Feat: implementation of search based on administrative articles. Small bug fixes and refactoring.
 
