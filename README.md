@@ -1,6 +1,6 @@
 ## SUDRFScraper (User-friendly interactive interface to parse court decision)
 
-Project made by **Andrew Sudarkin** in collaboration with [**To Be Precise**](https://tochno.st/).
+Project is made by **Andrew Sudarkin** in collaboration with [**To Be Precise**](https://tochno.st/).
 
 NB:
 
@@ -42,18 +42,20 @@ Administrative and Civil cases are aggregated simultaneously in many courts, so 
 
 ## EXECUTION INFO
 
-As for execution you have these search options: 
-1. Result date starting from and till. "Result" means case is finished though there might not be a published decision. They are only available date params for now. Though I understand how important can be entry date for some cases. Don't use these fields if you want unfinished cases (for some reason).
-2. Text-in-Decision field. Obvious. Just don't forget info introduced in previous chapter.
-3. The main option: article. SUDRFScraper supports Criminal Articles, Administrative Offense Articles, Administrative Proceeding, Material Proceeding and Civil Proceeding. Just don't forget info introduced in previous chapter (x2).
+As for execution you have these search options:
+
+1. *Start and end dates*. «Result» means case is finished though there might not be a published decision. They are only available date params for now. Though I understand how important can be entry date for some cases. Don't use these fields if you want unfinished cases (for some reason).
+2. *Text-in-Decision field*. Obvious. Just don't forget info introduced in previous chapter.
+3. The main option: *article*. SUDRFScraper supports Criminal Articles, Administrative Offense Articles, Administrative Proceeding, Material Proceeding and Civil Proceeding. Just don't forget info introduced in previous chapter (x2).
 
 There are only two dump types supported: MySQL-table and line-by-line JSON document.
 
 You are also able to configure these options:
-1. Directory path. Path of desirable result directory.
-2. Continue. If you want to continue finished scraping (scrap previously inactive courts or continue aborted scraping) you can check this option. You should enter project name and directory of previous scraping. If there are no project, scraping will continue from the most recent session results.
-3. Cases filter. SOFT for collecting subArticles for entered Articles, e.g. 20.3 collects 20.3.3. STRICT for collecting only specified article, e.g. 20.3 doesn't collect 20.3.3
-4. Court Level and Court region filter.
+
+1. *Directory path*. Path of desirable result directory.
+2. *Continue*. If you want to continue finished scraping (scrap previously inactive courts or continue aborted scraping) you can check this option. You should enter project name and directory of previous scraping. If there are no project, scraping will continue from the most recent session results.
+3. *Cases filter*. SOFT for collecting subArticles for entered Articles, e.g. 20.3 collects 20.3.3. STRICT for collecting only specified article, e.g. 20.3 doesn't collect 20.3.3
+4. *Court Level* and *Court region filter*.
 
 By the end of execution you are given summary info. It is a list of occurred issues, so you may know how many cases you could miss during the scraping. You also can check logs to find issues info. If there are many issues that are not include server problems (Inactive court, Connection error) like possible different interfaces I will be glad if you contact me for further improvement of the system.
 
