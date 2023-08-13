@@ -2,9 +2,7 @@
 
 Project is made by **Andrew Sudarkin** in collaboration with [**To Be Precise**](https://tochno.st/).
 
-NB:
-
-> sudrf.ru sometimes is blocking requests from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
+> NB: sudrf.ru sometimes is blocking requests from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
 
 ### DESCRIPTION
 
@@ -21,7 +19,7 @@ It is more stable: there are always courts which are down, but it is bearable co
 
 Also, SUDRFScraper **provides UI so there's no need to do any coding**.
 
-### IMPORTANT THINGS TO KNOW BEFORE USING:
+### IMPORTANT THINGS TO KNOW BEFORE USING
 
 Scraper uses FireFox WebDriver, so you should have firefox browser. If you see errors about WebDriver in logs, follow the instruction that may help:
 
@@ -39,7 +37,7 @@ You can search only through one type of articles. If it is not set, search execu
 You are highly not recommended to use bold administrative article search.
 Administrative and Civil cases are aggregated simultaneously in many courts, so you need to specify CAS article or filter your results.
 
-## EXECUTION INFO
+### EXECUTION INFO
 
 As for execution you have these search options:
 
