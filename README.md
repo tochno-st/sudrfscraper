@@ -19,6 +19,13 @@ It is more stable: there are always courts which are down, but it is bearable co
 
 Also, SUDRFScraper **provides UI so there's no need to do any coding**.
 
+### SETUP DETAILS
+
+1. Go to https://github.com/tochno-st/sudrfscraper/releases/. Find latest release and download version corresponding to your Operating System.
+2. Unzip archive.
+3. If you are Windows user, you can start application with double-click on run.bat script. 
+Else you should open terminal and enter /path/to/run.sh.
+
 ### IMPORTANT THINGS TO KNOW BEFORE USING
 
 Scraper uses FireFox WebDriver, so you should have firefox browser. If you see errors about WebDriver in logs, follow the instruction that may help:
