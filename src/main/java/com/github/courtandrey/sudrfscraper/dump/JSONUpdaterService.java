@@ -5,10 +5,7 @@ import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.ThreadHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,6 +29,12 @@ public class JSONUpdaterService extends UpdaterService {
         try {
             renew();
             if (Files.size(Paths.get(fileName)) > 0) {
+                RandomAccessFile file = new RandomAccessFile(fileName, "r");
+                file.seek(file.length() - 1);
+                if (file.readByte() != '\n') {
+                    fileWriter.write("\n");
+                }
+                file.close();
                 Case.idInteger = new AtomicLong(getCaseId());
             }
         } catch (IOException e) {
