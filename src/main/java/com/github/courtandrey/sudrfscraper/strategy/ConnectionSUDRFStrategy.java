@@ -149,7 +149,8 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
                             .setConnectTimeout(60*1000)
                             .setConnectionRequestTimeout(60*1000)
                             .setSocketTimeout(60*1000).build()).build()) {
-                HttpGet get = requestBuilder.get(urls[indexUrl],cc.getSearchString().replace("http://",""));
+                HttpGet get = requestBuilder.get(urls[indexUrl],cc.getSearchString().replace("http://","")
+                        .replace("https://",""));
                 HttpResponse response = httpClient.execute(get);
                 String htmlString = EntityUtils.toString(response.getEntity());
                 currentDocument = Jsoup.parse(htmlString);

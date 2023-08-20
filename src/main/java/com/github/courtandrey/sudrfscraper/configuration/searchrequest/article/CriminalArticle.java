@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @JsonAutoDetect
-public class CriminalArticle implements Article{
+public class CriminalArticle implements Article, SoftStrictFilterable{
     private int article = 0;
     private int part = 0;
     private char letter = 0;
