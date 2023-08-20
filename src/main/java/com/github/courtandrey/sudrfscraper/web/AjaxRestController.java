@@ -40,9 +40,10 @@ public class AjaxRestController {
     @Autowired
     private SocketController socketController;
     @PostMapping("/save-checkbox")
-    public void saveCheckbox(@RequestBody CheckboxData checkboxData) {
+    public CheckboxData saveCheckbox(@RequestBody CheckboxData checkboxData) {
         boolean hidePage = checkboxData.hidePage();
         ApplicationConfiguration.getInstance().setProperty("user.hide_info",String.valueOf(hidePage));
+        return new CheckboxData(Boolean.parseBoolean(ApplicationConfiguration.getInstance().getProperty("user.hide_info")));
     }
 
     @GetMapping("/get_connection_info")
@@ -83,8 +84,6 @@ public class AjaxRestController {
     public void submitCaptcha(@RequestBody Captcha captcha) {
         socketController.setCaptcha(captcha.captcha());
     }
-
-
 
     @PostMapping("/check_request")
     public ResponseEntity<String> checkRequest(@RequestBody RequestDetails requestDetails) {
