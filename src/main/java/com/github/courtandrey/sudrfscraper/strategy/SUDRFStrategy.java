@@ -2,11 +2,11 @@ package com.github.courtandrey.sudrfscraper.strategy;
 
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.*;
-import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.SoftStrictFilterable;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.ConfigurationHelper;
+import com.github.courtandrey.sudrfscraper.service.SoftStrictFilterer;
 import com.github.courtandrey.sudrfscraper.service.URLCreator;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
@@ -260,15 +260,6 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     protected Set<Case> filterCases() {
-        if (SearchRequest.getInstance().getField() == Field.CAS
-                || SearchRequest.getInstance().getField() == Field.CIVIL) {
-            return resultCases;
-        }
-
-        if (SearchRequest.getInstance().getField() == Field.MATERIAL_PROCEEDING) {
-            return resultCases;
-        }
-
         String textToFind = request.getText();
         if (textToFind != null) {
             Set<Case> cases = new HashSet<>();
@@ -285,36 +276,29 @@ public abstract class SUDRFStrategy implements Runnable{
         }
 
         if (request.getArticle() != null && request.getArticle() instanceof SoftStrictFilterable) {
-            Set<Case> cases = new HashSet<>();
-            String mainPart = request.getArticle().getMainPart();
-            String reg2;
-            if (ApplicationConfiguration.getInstance().getProperty("cases.article_filter").equals("strict")) {
-                reg2 = "[^\\d.](.*)";
-            }
-            else {
-                reg2 = "\\D(.*)";
-            }
-            for (Case _case:resultCases) {
-                if (_case.getNames() != null && _case.getNames().matches("(.*)" +"\\D"+ prepareForRegex(mainPart) + reg2)) {
-                    cases.add(_case);
-                }
+            SoftStrictFilterer.SoftStrictMode softStrictMode = SoftStrictFilterer.SoftStrictMode.parseMode(
+                    ApplicationConfiguration
+                            .getInstance()
+                            .getProperty("cases.article_filter")
+            );
+
+            if (softStrictMode == null) {
+                SimpleLogger.log(LoggingLevel.WARNING, "SoftStrictMode is Malformed");
+                return resultCases;
             }
 
-            resultCases = cases;
+            resultCases = (new SoftStrictFilterer())
+                    .filter(resultCases,
+                            request.getArticle().getMainPart(),
+                            softStrictMode
+                    );
 
-            if (cases.isEmpty()) {
+            if (resultCases.isEmpty()) {
                 issue = Issue.NOT_FOUND_CASE;
                 finalIssue = Issue.NOT_FOUND_CASE;
             }
         }
         return resultCases;
-    }
-
-    private String prepareForRegex(String src) {
-        src = src.replaceAll("\\(","\\\\(");
-        src = src.replaceAll("\\)", "\\\\)");
-        src = src.replaceAll("\\.", "\\\\.");
-        return src;
     }
 
     protected void finish() {

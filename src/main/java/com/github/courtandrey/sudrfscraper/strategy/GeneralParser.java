@@ -41,7 +41,7 @@ public class GeneralParser extends ConnectorParser{
         }
         if (table == null) {
             Elements elements = document.getElementsByClass("bgs-result relative sudrf-dt");
-            if (elements.size() != 0) table = elements.get(0);
+            if (!elements.isEmpty()) table = elements.get(0);
         }
         if (table == null) {
             table = document.getElementById("search_results");
@@ -72,29 +72,29 @@ public class GeneralParser extends ConnectorParser{
                 _case.setName(cc.getName());
             }
 
-            if (!caseParams.get(0).text().replace(" ", "").equals("")) {
+            if (!caseParams.get(0).text().replace(" ", "").isEmpty()) {
                 _case.setCaseNumber(caseParams.get(0).text());
             }
-            if (!caseParams.get(1).text().replace(" ", "").equals("")) {
+            if (!caseParams.get(1).text().replace(" ", "").isEmpty()) {
                 _case.setEntryDate(caseParams.get(1).text());
             }
-            if (!caseParams.get(2).text().replace(" ", "").equals("")) {
+            if (!caseParams.get(2).text().replace(" ", "").isEmpty()) {
                 _case.setNames(caseParams.get(2).text());
             }
-            if (!caseParams.get(3).text().replace(" ", "").equals("")) {
+            if (!caseParams.get(3).text().replace(" ", "").isEmpty()) {
                 _case.setJudge(caseParams.get(3).text());
             }
-            if (!caseParams.get(4).text().replace(" ", "").equals("")) {
+            if (!caseParams.get(4).text().replace(" ", "").isEmpty()) {
                 _case.setResultDate(caseParams.get(4).text());
             }
-            if (!caseParams.get(5).text().replace(" ", "").equals("")) {
+            if (!caseParams.get(5).text().replace(" ", "").isEmpty()) {
                 _case.setDecision(caseParams.get(5).text());
             }
 
             int textParam = 7;
 
             if (caseParams.size() > 7) {
-                if (!caseParams.get(6).text().replace(" ", "").equals("")) {
+                if (!caseParams.get(6).text().replace(" ", "").isEmpty()) {
                     _case.setEndDate(caseParams.get(6).text());
                 }
             } else {
@@ -103,9 +103,9 @@ public class GeneralParser extends ConnectorParser{
 
             Elements els = caseParams.get(textParam).getElementsByTag("a");
             String href = "";
-            if (els.size() != 0)
+            if (!els.isEmpty())
                 href = els.get(0).attr("href");
-            if (!href.equals("")) {
+            if (!href.isEmpty()) {
                 if (href.charAt(0) == '/') href = currentUrl + href;
                 _case.setText(href);
             }
@@ -115,7 +115,7 @@ public class GeneralParser extends ConnectorParser{
     }
     @Override
     public Set<Case> scrapTexts(Set<Case> cases) {
-        if (cases.size() == 0) return cases;
+        if (cases.isEmpty()) return cases;
         SimpleLogger.log(LoggingLevel.INFO, String.format(Message.COLLECTING_TEXTS.toString(),cases.size(),cc.getName()));
         int i = 1;
         for (Case _case:cases) {
@@ -176,7 +176,7 @@ public class GeneralParser extends ConnectorParser{
         if (cc.getSearchPattern() == SearchPattern.SECONDARY_PATTERN ||
                 cc.getSearchPattern() == SearchPattern.DEPRECATED_SECONDARY_PATTERN) {
             Elements text = doc.getElementsByClass("doc-content marginTop10");
-            if (text.size() == 0) {
+            if (text.isEmpty()) {
                 return checkMalformed(doc);
             }
             return text.get(0).text();
@@ -194,7 +194,7 @@ public class GeneralParser extends ConnectorParser{
 
             if (content == null) {
                 Elements elements = doc.getElementsByClass("Section1");
-                if (elements.size() > 0) {
+                if (!elements.isEmpty()) {
                     content = elements.get(0);
                 }
             }
@@ -214,7 +214,7 @@ public class GeneralParser extends ConnectorParser{
 
     private String checkMalformed(Document doc) {
         Elements malformedElements = doc.getElementsByClass("grayColor empty-field one-value");
-        if (malformedElements.size()>0 && malformedElements.get(0).text()
+        if (!malformedElements.isEmpty() && malformedElements.get(0).text()
                 .contains("Не заполнено")) return "Malformed case";
         Element malformedElement = doc.getElementById("search_results");
         if (malformedElement!=null &&
