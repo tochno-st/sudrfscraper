@@ -286,16 +286,15 @@ public abstract class SUDRFStrategy implements Runnable{
 
         if (request.getArticle() != null && request.getArticle() instanceof SoftStrictFilterable) {
             Set<Case> cases = new HashSet<>();
-
+            String mainPart = request.getArticle().getMainPart();
+            String reg2;
+            if (ApplicationConfiguration.getInstance().getProperty("cases.article_filter").equals("strict")) {
+                reg2 = "[^\\d.](.*)";
+            }
+            else {
+                reg2 = "\\D(.*)";
+            }
             for (Case _case:resultCases) {
-                String mainPart = request.getArticle().getMainPart();
-                String reg2;
-                if (ApplicationConfiguration.getInstance().getProperty("cases.article_filter").equals("strict")) {
-                    reg2 = "[^\\d.](.*)";
-                }
-                else {
-                    reg2 = "\\D(.*)";
-                }
                 if (_case.getNames() != null && _case.getNames().matches("(.*)" +"\\D"+ prepareForRegex(mainPart) + reg2)) {
                     cases.add(_case);
                 }
