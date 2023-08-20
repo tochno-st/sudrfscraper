@@ -182,7 +182,7 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
 
     @Override
     protected void finish() {
-        if (issue == Issue.SUCCESS)
+        if (!resultCases.isEmpty())
             resultCases = filterCases();
         if (resultCases.size() > 150_000) {
             parser.scrapTextsAndFlush(resultCases, CasesPipeLineFactory.getInstance().getPipeLine());

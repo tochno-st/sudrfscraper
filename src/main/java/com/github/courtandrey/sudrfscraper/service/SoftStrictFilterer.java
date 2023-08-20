@@ -4,8 +4,30 @@ import com.github.courtandrey.sudrfscraper.dump.model.Case;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
-public class SoftStrictFilterer {
+public class SoftStrictFilterer implements Predicate<Case> {
+    private final String mainPart;
+    private final SoftStrictMode softStrictMode;
+
+    public SoftStrictFilterer(String mainPart, SoftStrictMode softStrictMode) {
+        this.mainPart = mainPart;
+        this.softStrictMode = softStrictMode;
+    }
+
+    @Override
+    public boolean test(Case _case) {
+        String reg2;
+        if (softStrictMode == SoftStrictMode.STRICT_MODE) {
+            reg2 = "[^\\d.](.*)";
+        }
+        else {
+            reg2 = "\\D(.*)";
+        }
+        return _case.getNames() != null &&
+                _case.getNames().matches("(.*)" + "\\D" + prepareForRegex(mainPart) + reg2);
+    }
+
     public enum SoftStrictMode {
         STRICT_MODE,
         SOFT_MODE;
@@ -25,22 +47,6 @@ public class SoftStrictFilterer {
                 }
             }
         }
-    }
-    public HashSet<Case> filter(Set<Case> src, String mainPart, SoftStrictMode softStrictMode) {
-        HashSet<Case> cases = new HashSet<>();
-        String reg2;
-        if (softStrictMode == SoftStrictMode.STRICT_MODE) {
-            reg2 = "[^\\d.](.*)";
-        }
-        else {
-            reg2 = "\\D(.*)";
-        }
-        for (Case _case:src) {
-            if (_case.getNames() != null && _case.getNames().matches("(.*)" +"\\D"+ prepareForRegex(mainPart) + reg2)) {
-                cases.add(_case);
-            }
-        }
-        return cases;
     }
 
     private String prepareForRegex(String src) {

@@ -16,6 +16,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class SUDRFStrategy implements Runnable{
     protected int srv_num = 1;
@@ -287,11 +288,12 @@ public abstract class SUDRFStrategy implements Runnable{
                 return resultCases;
             }
 
-            resultCases = (new SoftStrictFilterer())
-                    .filter(resultCases,
-                            request.getArticle().getMainPart(),
-                            softStrictMode
-                    );
+            resultCases = resultCases
+                    .stream()
+                    .filter(
+                        new SoftStrictFilterer(request.getArticle().getMainPart(), softStrictMode)
+                    )
+                    .collect(Collectors.toSet());
 
             if (resultCases.isEmpty()) {
                 issue = Issue.NOT_FOUND_CASE;
