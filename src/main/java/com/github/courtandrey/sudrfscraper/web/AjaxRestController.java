@@ -117,6 +117,7 @@ public class AjaxRestController {
             if (!requestDetails.getStartDate().isEmpty()) {
                 SearchRequest.getInstance().setResultDateFrom(validator.validateDate(requestDetails.getStartDate()));
             }
+            ApplicationConfiguration.getInstance().setProperty("cases.article_filter",String.valueOf(requestDetails.getMeta().getFilterMode()));
             ApplicationConfiguration.getInstance().setProperty("basic.continue",String.valueOf(requestDetails.getMeta().isNeedToContinue()));
             ApplicationConfiguration.getInstance().setProperty("basic.name",requestDetails.getMeta().getName());
             ApplicationConfiguration.getInstance().setProperty("basic.dump",requestDetails.getChosenDump());
