@@ -33,7 +33,7 @@ public abstract class UpdaterService extends Thread implements Updater{
     protected boolean isScrappingOver;
     protected String dumpName;
     protected volatile Queue<Case> cases = new ArrayDeque<>();
-    private final String SUMMERY;
+    private final String SUMMARY;
     protected ErrorHandler handler;
     protected boolean isMetaNeeded = false;
 
@@ -46,7 +46,7 @@ public abstract class UpdaterService extends Thread implements Updater{
     public UpdaterService(String dumpName, ErrorHandler handler) throws IOException{
         this.dumpName = dumpName;
         this.handler = handler;
-        SUMMERY = String.format(PATH_TO_SUMMERY.toString(), dumpName, dumpName);
+        SUMMARY = String.format(PATH_TO_SUMMARY.toString(), dumpName, dumpName);
         Path dumpDirectory = Paths.get(BASIC_RESULT_PATH.toString());
         if (Files.notExists(dumpDirectory)) {
             Files.createDirectory(dumpDirectory);
@@ -163,7 +163,7 @@ public abstract class UpdaterService extends Thread implements Updater{
 
     @Override
     public void writeSummery(String text){
-        try (FileWriter w = new FileWriter(SUMMERY, StandardCharsets.UTF_8)) {
+        try (FileWriter w = new FileWriter(SUMMARY, StandardCharsets.UTF_8)) {
             w.write(text);
             w.write(getSummeryInfo());
         } catch (IOException e) {
@@ -173,7 +173,7 @@ public abstract class UpdaterService extends Thread implements Updater{
 
     private String getSummeryInfo() throws IOException {
         StringBuilder returnString = new StringBuilder();
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get(PATH_TO_SUMMERY_INFO.toString()))) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(PATH_TO_SUMMARY_INFO.toString()))) {
             while (reader.ready()) {
                 returnString.append(reader.readLine());
                 returnString.append("\n");
