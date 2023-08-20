@@ -32,7 +32,6 @@ public class JSONUpdaterService extends UpdaterService {
         try {
             renew();
             if (Files.size(Paths.get(fileName)) > 0) {
-                fileWriter.write("\n");
                 Case.idInteger = new AtomicLong(getCaseId());
             }
         } catch (IOException e) {
