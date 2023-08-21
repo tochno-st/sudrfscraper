@@ -195,7 +195,7 @@ public class URLCreator {
             articlePart.append(".").append(article.getSubArticle());
         }
         if (article.getPart() != 0) {
-            articlePart.append("+%D1%87.").append(article.getPart());
+            articlePart.append("+%F7.").append(article.getPart());
         }
         if (article.getLetter() != 0) {
             Charset neededCharset = Charset.forName("windows-1251");
