@@ -19,9 +19,9 @@ It is more stable: there are always courts which are down, but it is bearable co
 
 Also, SUDRFScraper **provides UI so there's no need to do any coding**.
 
-📷 See [video-instruction](https://www.youtube.com/watch?v=zVHfMdqrzwQ) 
-
 ### SETUP DETAILS
+
+📷 See [video-instruction](https://www.youtube.com/watch?v=zVHfMdqrzwQ) 
 
 1. Go to https://github.com/tochno-st/sudrfscraper/releases/. Find latest release and download version corresponding to your Operating System.
 2. Unzip archive.
