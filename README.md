@@ -1,4 +1,4 @@
-## SUDRF Scraper (User-friendly interactive interface to parse Russian courts decisions)
+## SUDRFScraper (User-friendly interactive interface to parse Russian courts decisions)
 
 Project is made by **Andrew Sudarkin** in collaboration with [**To Be Precise**](https://tochno.st/).
 
