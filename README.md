@@ -21,7 +21,7 @@ Also, SUDRFScraper **provides UI so there's no need to do any coding**.
 
 ### SETUP DETAILS
 
-📷 Watch [instructional video](https://www.youtube.com/watch?v=zVHfMdqrzwQ) 
+📷 Watch [instructional video](https://www.youtube.com/watch?v=TDDejU0ap14&feature=youtu.be) 
 
 1. Go to https://github.com/tochno-st/sudrfscraper/releases/. Find latest release and download version corresponding to your Operating System.
 2. Unzip archive.
