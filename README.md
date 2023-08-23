@@ -2,7 +2,7 @@
 
 Project is made by **Andrew Sudarkin** in collaboration with [**To Be Precise**](https://tochno.st/).
 
-> sudrf.ru sometimes is blocking requests from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
+> Sometimes requests are blocking from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
 
 ### DESCRIPTION
 
