@@ -26,7 +26,7 @@ Also, SUDRFScraper **provides UI so there's no need to do any coding**.
 1. Go to https://github.com/tochno-st/sudrfscraper/releases/. Find latest release and download version corresponding to your Operating System.
 2. Unzip archive.
 3. If you are Windows user, you can start application with double-click on run.bat script. 
-Else you should open terminal and enter /path/to/run.sh.
+Else you should open terminal and enter /path/to/run.sh (full path to file run.sh)
 
 ### IMPORTANT THINGS TO KNOW BEFORE USING
 
