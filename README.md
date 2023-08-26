@@ -2,7 +2,7 @@
 
 Project is made by **Andrew Sudarkin** in collaboration with [**To Be Precise**](https://tochno.st/).
 
-> Sometimes requests are blocking from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
+> Sometimes requests are blocked from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
 
 ### DESCRIPTION
 
@@ -37,7 +37,7 @@ Scraper uses FireFox WebDriver, so you should have firefox browser. If you see e
 
 Scraped cases are among courts of general jurisdiction.
 
-You are highly not recommended to use for a search only text-in-decision field.
+You are highly not recommended to use for a search only text-in-decision field. 
 Most of the courts don't support this field so search will be executed among ALL cases with published decision till this very day.
 Use this field only in a bundle with others.
 
@@ -91,6 +91,8 @@ ver.0.2.2 material-proceeding-update. Added Material Proceeding.
 ver.0.2.3 cas-fix-update. Fixed bugs with mosgorsud cas code. Added lawbook for cas
 
 ver.0.2.4 civil-proceeding-update. Added Civil Proceeding.
+
+ver.0.2.4-1 performance enhancement. Enhanced performance for VPN environment.
 
 ver.0.2.5 appellation-update. Added appellation instance.
 
