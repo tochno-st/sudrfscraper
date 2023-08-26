@@ -2,6 +2,7 @@ package com.github.courtandrey.sudrfscraper.service;
 
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.SearchPattern;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.*;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
@@ -19,8 +20,17 @@ public class URLCreator {
     private final CourtConfiguration cc;
     private SearchPattern pattern;
 
+    private final Instance i;
+
+    public URLCreator(CourtConfiguration cc, Instance i) {
+        this.cc = cc;
+        this.i = i;
+        setPattern();
+    }
+
     public URLCreator(CourtConfiguration cc) {
         this.cc = cc;
+        i = Instance.FIRST;
         setPattern();
     }
 
@@ -28,7 +38,42 @@ public class URLCreator {
         pattern=cc.getSearchPattern();
     }
 
-    public String createUrlForCaptcha() {
+    public String createUrlForCaptcha(Instance i) {
+        switch (i) {
+            case FIRST -> {
+                return createFirstInstanceUrlForCaptcha();
+            }
+            case APPELLATION -> {
+                return createAppellationUrlForCaptcha();
+            }
+        }
+        return "";
+    }
+
+    private String createAppellationUrlForCaptcha() {
+        String ending = "";
+        switch (pattern) {
+            case VNKOD_PATTERN -> {
+                switch (sc.getField()) {
+                    case CRIMINAL -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=1540006&_caseType=0&_new=4";
+                    case ADMIN -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=1502001&_caseType=0&_new=0";
+                    case CAS -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=42&_caseType=0&_new=0";
+                    case CIVIL -> ending = "/modules.php?name=sud_delo&name_op=sf&srv_num=1&_deloId=1540005&_caseType=0&_new=5";
+                }
+            }
+            case PRIMARY_PATTERN -> {
+                switch (sc.getField()) {
+                    case CRIMINAL -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540006&new=4";
+                    case ADMIN -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1502001&new=0";
+                    case CAS -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=42&new=0";
+                    case CIVIL -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&delo_id=1540005&case_type=0&new=5";
+                }
+            }
+        }
+        return cc.getSearchString() + ending;
+    }
+
+    public String createFirstInstanceUrlForCaptcha() {
         String ending = "";
         switch (pattern) {
             case VNKOD_PATTERN -> {
@@ -75,12 +120,12 @@ public class URLCreator {
     }
 
     public String returnEnding(int indexUrl) {
-        return pattern.getPattern(sc.getField())[indexUrl];
+        return pattern.getPattern(sc.getField(), i)[indexUrl];
     }
 
     private void getEndings() {
-        if (cc.getWorkingUrl().get(sc.getField()) == null) {
-            endings = pattern.getPattern(sc.getField());
+        if (cc.getWorkingUrl().get(sc.getField()) == null || i != Instance.FIRST) {
+            endings = pattern.getPattern(sc.getField(),i);
         } else {
             endings = new String[]{cc.getWorkingUrl().get(sc.getField())};
         }
@@ -125,7 +170,7 @@ public class URLCreator {
     private void makeSearchConfigurationForMosGorSud() {
         if (sc.getArticle() != null) {
             String articlePart = getArticlePartForMosgorsudPattern();
-            if (sc.getArticle() instanceof MosGorSudCategoryArticle) {
+            if (sc.getArticle() instanceof CategorizedArticle) {
                 endings[0] = endings[0].replace("category=","category="+articlePart);
             }
             else {
@@ -195,7 +240,7 @@ public class URLCreator {
             articlePart.append(".").append(article.getSubArticle());
         }
         if (article.getPart() != 0) {
-            articlePart.append("+%D1%87.").append(article.getPart());
+            articlePart.append("+%F7.").append(article.getPart());
         }
         if (article.getLetter() != 0) {
             Charset neededCharset = Charset.forName("windows-1251");

@@ -11,7 +11,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,10 +30,10 @@ public class MosGorSudParser extends ConnectorParser{
     @Override
     public Set<Case> scrap(Document document, String currentUrl) {
         Elements table = document.getElementsByClass("custom_table");
-        if (table.size() == 0) return cases;
+        if (table.isEmpty()) return cases;
         for (Element element:table.get(0).getElementsByTag("tr")) {
             try{
-                if (element.getElementsByTag("th").size() !=0) continue;
+                if (!element.getElementsByTag("th").isEmpty()) continue;
                 Elements rowParts = element.getElementsByTag("td");
                 Case _case = new Case();
                 _case.setCaseNumber(rowParts.get(0).getElementsByTag("nobr").get(0).text());
@@ -54,11 +53,15 @@ public class MosGorSudParser extends ConnectorParser{
 
     @Override
     public Set<Case> scrapTexts(Set<Case> resultCases) {
-        if (cases.size() == 0) return resultCases;
-        SimpleLogger.log(LoggingLevel.INFO, String.format(Message.COLLECTING_TEXTS.toString(),cases.size(),cc.getName()));
+        if (resultCases.isEmpty()) return resultCases;
+        SimpleLogger.log(LoggingLevel.INFO, String.format(
+                Message.COLLECTING_TEXTS.toString(),
+                resultCases.size(),
+                cc.getName())
+        );
         int i = 1;
         Set<Case> newCases = new HashSet<>();
-        for (Case _case:cases) {
+        for (Case _case:resultCases) {
             String url = _case.getText();
             if (url != null) {
                 _case.setText(null);
@@ -76,14 +79,7 @@ public class MosGorSudParser extends ConnectorParser{
                         else {
                             _case.setText(splits[0]);
                             for (int j = 1; j < splits.length; j++) {
-                                Case newCase = new Case();
-                                newCase.setCaseNumber(_case.getCaseNumber()+" ("+j+")");
-                                newCase.setNames(_case.getNames());
-                                newCase.setJudge(_case.getJudge());
-                                newCase.setRegion(_case.getRegion());
-                                newCase.setName(_case.getName());
-                                newCase.setDecision(_case.getDecision());
-                                newCase.setText(splits[j]);
+                                Case newCase = getaCase(_case, j, splits);
                                 newCases.add(newCase);
                             }
 
@@ -95,33 +91,45 @@ public class MosGorSudParser extends ConnectorParser{
                 }
             }
             if (i % 25 == 0) {
-                SimpleLogger.log(LoggingLevel.INFO, String.format(Message.COLLECTED_TEXTS.toString(), i, cases.size(), cc.getName()));
+                SimpleLogger.log(LoggingLevel.INFO, String.format(Message.COLLECTED_TEXTS.toString(), i, resultCases.size(), cc.getName()));
             }
             i += 1;
         }
-        cases.addAll(newCases);
-        return cases;
+        resultCases.addAll(newCases);
+        return resultCases;
+    }
+
+    private Case getaCase(Case _case, int j, String[] splits) {
+        Case newCase = new Case();
+        newCase.setCaseNumber(_case.getCaseNumber()+" ("+ j +")");
+        newCase.setNames(_case.getNames());
+        newCase.setJudge(_case.getJudge());
+        newCase.setRegion(_case.getRegion());
+        newCase.setName(_case.getName());
+        newCase.setDecision(_case.getDecision());
+        newCase.setText(splits[j]);
+        return newCase;
     }
 
     @Override
     public String parseText(Document decision) {
-        if (decision.getElementsByAttributeValue("id","tabs-3").size() == 0) return null;
+        if (decision.getElementsByAttributeValue("id", "tabs-3").isEmpty()) return null;
         Element table = decision.getElementsByAttributeValue("id", "tabs-3").get(0);
         StringBuilder stringBuilder = new StringBuilder();
         for (Element e : table.getElementsByTag("tr")) {
-            if (e.getElementsByTag("th").size() != 0) continue;
+            if (!e.getElementsByTag("th").isEmpty()) continue;
             Element textElement = e.getElementsByTag("td").get(2);
-            if (textElement.getElementsByTag("a").attr("href").equals("")) continue;
+            if (textElement.getElementsByTag("a").attr("href").isEmpty()) continue;
             String url = cc.getSearchString() + textElement.getElementsByTag("a").attr("href");
 
-            if (url.equalsIgnoreCase("https://www.mos-gorsud.ru#")) {
-                if (stringBuilder.length() == 0) stringBuilder.append("MALFORMED");
+            if (url.equalsIgnoreCase("https://www.mos-gorsud.ru#") || url.equalsIgnoreCase("http://www.mos-gorsud.ru#")) {
+                if (stringBuilder.isEmpty()) stringBuilder.append("MALFORMED");
                 continue;
             }
             String text = converter.getTxtFromFile(downloader.download(url));
             if (text == null) continue;
             text = cleanUp(text);
-            if (stringBuilder.length() > 0) {
+            if (!stringBuilder.isEmpty()) {
                 if (stringBuilder.toString().equals("MALFORMED")) {
                     stringBuilder = new StringBuilder();
                     stringBuilder.append(text);
@@ -132,7 +140,7 @@ public class MosGorSudParser extends ConnectorParser{
                 stringBuilder.append(text);
             }
         }
-        if (stringBuilder.length() == 0) return null;
+        if (stringBuilder.isEmpty()) return null;
         return stringBuilder.toString();
     }
 

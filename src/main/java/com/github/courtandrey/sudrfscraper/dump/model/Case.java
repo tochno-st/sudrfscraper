@@ -1,6 +1,7 @@
 package com.github.courtandrey.sudrfscraper.dump.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -8,6 +9,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Case {
     private Long id;
     private int region;
+    @Setter
+    private String instance = "FIRST";
     private String name;
     private String caseNumber;
     private String entryDate;

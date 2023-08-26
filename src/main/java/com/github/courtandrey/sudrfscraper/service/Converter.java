@@ -126,7 +126,7 @@ public class Converter {
         }
     }
 
-    private String getText(File file) throws IOException {
+    private String getText(File file) {
             BodyContentHandler handler = new BodyContentHandler();
             Metadata metadata = new Metadata();
             AutoDetectParser parser = new AutoDetectParser();
@@ -134,7 +134,7 @@ public class Converter {
             try (InputStream stream = new FileInputStream(file)) {
                 parser.parse(stream, handler, metadata, context);
                 String text = handler.toString();
-                if (text.length() == 0) throw new TikaException("Text is not parsed");
+                if (text.isEmpty()) throw new TikaException("Text is not parsed");
             } catch (IOException | TikaException | SAXException | IllegalArgumentException e) {
                 String[] splits = file.getName().split("\\.");
                 SimpleLogger.log(LoggingLevel.WARNING, Message.CONVERSION_FAILED + " " + splits[splits.length-1]);

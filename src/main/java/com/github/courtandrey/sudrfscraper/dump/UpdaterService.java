@@ -3,6 +3,7 @@ package com.github.courtandrey.sudrfscraper.dump;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.dumpconfiguration.ServerConnectionInfo;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
 import com.github.courtandrey.sudrfscraper.controller.ErrorHandler;
 
@@ -13,10 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Queue;
+import java.util.*;
 
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.CasesPipeLineFactory;
@@ -33,7 +31,7 @@ public abstract class UpdaterService extends Thread implements Updater{
     protected boolean isScrappingOver;
     protected String dumpName;
     protected volatile Queue<Case> cases = new ArrayDeque<>();
-    private final String SUMMERY;
+    private final String SUMMARY;
     protected ErrorHandler handler;
     protected boolean isMetaNeeded = false;
 
@@ -46,7 +44,7 @@ public abstract class UpdaterService extends Thread implements Updater{
     public UpdaterService(String dumpName, ErrorHandler handler) throws IOException{
         this.dumpName = dumpName;
         this.handler = handler;
-        SUMMERY = String.format(PATH_TO_SUMMERY.toString(), dumpName, dumpName);
+        SUMMARY = String.format(PATH_TO_SUMMARY.toString(), dumpName, dumpName);
         Path dumpDirectory = Paths.get(BASIC_RESULT_PATH.toString());
         if (Files.notExists(dumpDirectory)) {
             Files.createDirectory(dumpDirectory);
@@ -141,6 +139,8 @@ public abstract class UpdaterService extends Thread implements Updater{
                     !ApplicationConfiguration.getInstance().getProperty("basic.continue").isEmpty()
                     && Boolean.parseBoolean(ApplicationConfiguration.getInstance().getProperty("basic.continue")));
 
+            requestDetails.setInstances(Arrays.stream(SearchRequest.getInstance().getInstanceList()).map(Instance::name).toArray(String[]::new));
+
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(w,requestDetails);
         } catch (IOException e) {
@@ -163,7 +163,7 @@ public abstract class UpdaterService extends Thread implements Updater{
 
     @Override
     public void writeSummery(String text){
-        try (FileWriter w = new FileWriter(SUMMERY, StandardCharsets.UTF_8)) {
+        try (FileWriter w = new FileWriter(SUMMARY, StandardCharsets.UTF_8)) {
             w.write(text);
             w.write(getSummeryInfo());
         } catch (IOException e) {
@@ -173,7 +173,7 @@ public abstract class UpdaterService extends Thread implements Updater{
 
     private String getSummeryInfo() throws IOException {
         StringBuilder returnString = new StringBuilder();
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get(PATH_TO_SUMMERY_INFO.toString()))) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(PATH_TO_SUMMARY_INFO.toString()))) {
             while (reader.ready()) {
                 returnString.append(reader.readLine());
                 returnString.append("\n");

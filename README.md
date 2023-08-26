@@ -21,6 +21,7 @@ Also, SUDRFScraper **provides a UI, so there's no need to do any coding**.
 
 ### SETUP DETAILS
 
+
 📷 Watch the [instructional video](https://www.youtube.com/watch?v=TDDejU0ap14&feature=youtu.be) 
 
 1. Go to https://github.com/tochno-st/sudrfscraper/releases/. Find the latest release and download the version corresponding to your Operating System.
@@ -35,7 +36,6 @@ Scraper uses Firefox WebDriver, so you should have the Firefox browser. If you s
 - Visit [https://github.com/mozilla/geckodriver/releases](https://github.com/mozilla/geckodriver/releases) and download the driver for your OS.
 - Replace the driver in ./src/main/resources/"name-of-your-OS"/.
 
-Scraped cases are only first-instance cases (no appeals).
 Scraped cases are from courts of general jurisdiction.
 
 You are highly not recommended to use the "Text to Search Within Acts" field. 
@@ -94,6 +94,8 @@ ver.0.2.3 cas-fix-update. Fixed bugs with mosgorsud cas code. Added lawbook for 
 ver.0.2.4 civil-proceeding-update. Added Civil Proceeding.
 
 ver.0.2.4-1 performance enhancement. Enhanced performance for VPN environment.
+
+ver.0.2.5 appellation-update. Added appellation instance.
 
 CONTACT ME:
 

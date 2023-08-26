@@ -2,18 +2,22 @@ package com.github.courtandrey.sudrfscraper.strategy;
 
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.*;
-import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.SoftStrictFilterableArticle;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.ConfigurationHelper;
+import com.github.courtandrey.sudrfscraper.service.SoftStrictFilterer;
 import com.github.courtandrey.sudrfscraper.service.URLCreator;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
 import com.github.courtandrey.sudrfscraper.service.logger.SimpleLogger;
+import lombok.Getter;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class SUDRFStrategy implements Runnable{
     protected int srv_num = 1;
@@ -24,6 +28,9 @@ public abstract class SUDRFStrategy implements Runnable{
     protected boolean timeToStopRotatingBuild = false;
     protected boolean timeToStopRotatingPage = false;
 
+    protected Instance currentInstance;
+
+    @Getter
     final CourtConfiguration cc;
     protected URLCreator urlCreator;
     protected Issue issue = null;
@@ -36,11 +43,8 @@ public abstract class SUDRFStrategy implements Runnable{
     private int prevSrvSize = -1;
     private int prevBuildSize = -1;
 
+    @Getter
     protected Set<Case> resultCases = new HashSet<>();
-
-    public Set<Case> getResultCases() {
-        return resultCases;
-    }
 
     protected String[] urls;
 
@@ -50,10 +54,6 @@ public abstract class SUDRFStrategy implements Runnable{
         setPage_num();
 
         if (cc.getSearchPattern() != SearchPattern.VNKOD_PATTERN) timeToStopRotatingBuild = true;
-    }
-
-    public CourtConfiguration getCc() {
-        return cc;
     }
 
     private void setPage_num() {
@@ -258,21 +258,28 @@ public abstract class SUDRFStrategy implements Runnable{
         }
     }
 
-    protected void createUrls() {
+    protected boolean checkArticleAndInstance(Instance i) {
+        return Arrays.stream(SearchRequest.getInstance().getArticle().getInstances()).collect(Collectors.toSet()).contains(i);
+    }
+
+    protected void createUrls(Instance instance) {
+        switch (instance) {
+            case FIRST -> createFirstInstanceUrls();
+            case APPELLATION -> createAppellationUrls();
+        }
+    }
+
+    private void createAppellationUrls() {
+        urlCreator = new URLCreator(cc,Instance.APPELLATION);
+        urls = urlCreator.createUrls();
+    }
+
+    private void createFirstInstanceUrls() {
         urlCreator = new URLCreator(cc);
         urls = urlCreator.createUrls();
     }
 
     protected Set<Case> filterCases() {
-        if (SearchRequest.getInstance().getField() == Field.CAS
-                || SearchRequest.getInstance().getField() == Field.CIVIL) {
-            return resultCases;
-        }
-
-        if (SearchRequest.getInstance().getField() == Field.MATERIAL_PROCEEDING) {
-            return resultCases;
-        }
-
         String textToFind = request.getText();
         if (textToFind != null) {
             Set<Case> cases = new HashSet<>();
@@ -282,29 +289,32 @@ public abstract class SUDRFStrategy implements Runnable{
                 }
             }
             resultCases = cases;
-            if (cases.size() == 0) {
+            if (cases.isEmpty()) {
                 issue = Issue.NOT_FOUND_CASE;
                 finalIssue = Issue.NOT_FOUND_CASE;
             }
         }
 
-        if (request.getArticle() != null) {
-            Set<Case> cases = new HashSet<>();
-            for (Case _case:resultCases) {
-                String mainPart = request.getArticle().getMainPart();
-                String reg2;
-                if (ApplicationConfiguration.getInstance().getProperty("cases.article_filter").equals("strict")) {
-                    reg2 = "[^\\d.](.*)";
-                }
-                else {
-                    reg2 = "\\D(.*)";
-                }
-                if (_case.getNames() != null && _case.getNames().matches("(.*)" +"\\D"+ prepareForRegex(mainPart) + reg2)) {
-                    cases.add(_case);
-                }
+        if (request.getArticle() != null && request.getArticle() instanceof SoftStrictFilterableArticle) {
+            SoftStrictFilterer.SoftStrictMode softStrictMode = SoftStrictFilterer.SoftStrictMode.parseMode(
+                    ApplicationConfiguration
+                            .getInstance()
+                            .getProperty("cases.article_filter")
+            );
+
+            if (softStrictMode == null) {
+                SimpleLogger.log(LoggingLevel.WARNING, "SoftStrictMode is Malformed");
+                return resultCases;
             }
-            resultCases = cases;
-            if (cases.size() == 0) {
+
+            resultCases = resultCases
+                    .stream()
+                    .filter(
+                        new SoftStrictFilterer(request.getArticle().getMainPart(), softStrictMode)
+                    )
+                    .collect(Collectors.toSet());
+
+            if (resultCases.isEmpty()) {
                 issue = Issue.NOT_FOUND_CASE;
                 finalIssue = Issue.NOT_FOUND_CASE;
             }
@@ -312,16 +322,14 @@ public abstract class SUDRFStrategy implements Runnable{
         return resultCases;
     }
 
-    private String prepareForRegex(String src) {
-        src = src.replaceAll("\\(","\\\\(");
-        src = src.replaceAll("\\)", "\\\\)");
-        src = src.replaceAll("\\.", "\\\\.");
-        return src;
-    }
-
     protected void finish() {
+        if (currentInstance != Instance.FIRST) setInstance();
         setFinalInfo();
         logFinalInfo();
+    }
+
+    private void setInstance() {
+        resultCases.forEach(x -> x.setInstance(currentInstance.name()));
     }
 
     protected void logFinalInfo() {
@@ -358,8 +366,9 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     private void putWorkingUrl() {
-        if (Issue.isGoodIssue(finalIssue) && cc.getWorkingUrl().get(request.getField()) == null) {
-            cc.putWorkingUrl(request.getField(),urlCreator.returnEnding(indexUrl));
+        if (Issue.isGoodIssue(finalIssue) && cc.getWorkingUrl().get(request.getField()) == null
+                && currentInstance == Instance.FIRST) {
+            cc.putWorkingUrl(request.getField(), urlCreator.returnEnding(indexUrl));
         }
     }
 }

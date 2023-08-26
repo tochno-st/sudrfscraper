@@ -63,7 +63,9 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
             timeToStopRotatingSrv = true;
             return;
         }
+
         connect();
+
         if (checkPreventable()) {
             timeToStopRotatingSrv = true;
             return;
@@ -149,7 +151,8 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
                             .setConnectTimeout(60*1000)
                             .setConnectionRequestTimeout(60*1000)
                             .setSocketTimeout(60*1000).build()).build()) {
-                HttpGet get = requestBuilder.get(urls[indexUrl],cc.getSearchString().replace("http://",""));
+                HttpGet get = requestBuilder.get(urls[indexUrl],cc.getSearchString().replace("http://","")
+                        .replace("https://",""));
                 HttpResponse response = httpClient.execute(get);
                 String htmlString = EntityUtils.toString(response.getEntity());
                 currentDocument = Jsoup.parse(htmlString);
@@ -181,9 +184,9 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
 
     @Override
     protected void finish() {
-        if (issue == Issue.SUCCESS)
+        if (!resultCases.isEmpty())
             resultCases = filterCases();
-        if (resultCases.size() > 150_000) {
+        if (resultCases.size() > 2000) {
             parser.scrapTextsAndFlush(resultCases, CasesPipeLineFactory.getInstance().getPipeLine());
             resultCases.clear();
         }

@@ -1,5 +1,7 @@
 package com.github.courtandrey.sudrfscraper.strategy;
 
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
 import com.github.courtandrey.sudrfscraper.exception.CaptchaException;
 import com.github.courtandrey.sudrfscraper.service.CaptchaPropertiesConfigurator;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
@@ -24,11 +26,23 @@ public class CaptchaStrategy extends ConnectionSUDRFStrategy {
 
     @Override
     public void run() {
+        for (Instance i: SearchRequest.getInstance().getInstanceList()) {
+            currentInstance = i;
+            if (!checkArticleAndInstance(i)) continue;
+            upperRun(i);
+            clear();
+            issue = null;
+            timeToStopRotatingPage = false;
+        }
+        finish();
+    }
+
+    private void upperRun(Instance i) {
         try {
-            createUrls();
+            createUrls(i);
             for (indexUrl = 0; indexUrl < urls.length; indexUrl++) {
                 super.run();
-                if (issue == Issue.CAPTCHA && finalIssue != NOT_FOUND_CASE) {
+                if (issue == Issue.CAPTCHA) {
                     if (captchaInLoop == 5 && page_num == prevNum && srv_num == prevSrvNum) {
                         if (indexUrl + 1 == urls.length) {
                             finalIssue = Issue.compareAndSetIssue(LOOPED_CAPTCHA,finalIssue);
@@ -48,10 +62,10 @@ public class CaptchaStrategy extends ConnectionSUDRFStrategy {
                     issue = null;
                     timeToStopRotatingSrv = false;
 
-                    CaptchaPropertiesConfigurator.configureCaptcha(cc, didWellItWorkedOnceUsed,cc.getConnection());
+                    CaptchaPropertiesConfigurator.configureCaptcha(cc, didWellItWorkedOnceUsed,cc.getConnection(),i);
 
                     didWellItWorkedOnceUsed = true;
-                    createUrls();
+                    createUrls(i);
                     indexUrl = indexUrl - 1;
                     refreshUrls();
                 }
@@ -77,8 +91,6 @@ public class CaptchaStrategy extends ConnectionSUDRFStrategy {
         catch (CaptchaException e) {
             finalIssue = Issue.CAPTCHA_NOT_CONFIGURABLE;
         }
-        finish();
-
     }
 
     private void refreshUrls() {

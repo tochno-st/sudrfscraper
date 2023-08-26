@@ -32,7 +32,7 @@ public class CourtConfiguration {
 
     @JsonIgnore
     public boolean isSingleStrategy() {
-        return connection == Connection.SELENIUM || strategyName == StrategyName.CAPTCHA_STRATEGY || strategyName == StrategyName.MOSGORSUD_STRATEGY;
+        return connection == Connection.SELENIUM || strategyName == StrategyName.CAPTCHA_STRATEGY;
     }
 
     @Override

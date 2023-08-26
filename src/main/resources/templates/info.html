@@ -157,17 +157,12 @@
 
     <script>
         const hideCheckbox = document.getElementById('hide-checkbox');
-        const submitButton = document.getElementById('submit-button');
 
-        submitButton.addEventListener('click', () => {
-            if (hideCheckbox.checked) {
-                localStorage.setItem('hidePage', 'true');
-
+        hideCheckbox.addEventListener('change', () => {
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', '/save-checkbox', true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.send(JSON.stringify({ hidePage: true }));
-            }
+                xhr.send(JSON.stringify({ hidePage: hideCheckbox.checked }));
         });
     </script>
     <script>
