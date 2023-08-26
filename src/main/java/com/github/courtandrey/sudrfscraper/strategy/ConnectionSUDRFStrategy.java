@@ -63,7 +63,9 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
             timeToStopRotatingSrv = true;
             return;
         }
+
         connect();
+
         if (checkPreventable()) {
             timeToStopRotatingSrv = true;
             return;
@@ -184,7 +186,7 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
     protected void finish() {
         if (!resultCases.isEmpty())
             resultCases = filterCases();
-        if (resultCases.size() > 150_000) {
+        if (resultCases.size() > 2000) {
             parser.scrapTextsAndFlush(resultCases, CasesPipeLineFactory.getInstance().getPipeLine());
             resultCases.clear();
         }

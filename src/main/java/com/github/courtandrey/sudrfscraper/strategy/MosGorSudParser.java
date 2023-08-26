@@ -53,11 +53,15 @@ public class MosGorSudParser extends ConnectorParser{
 
     @Override
     public Set<Case> scrapTexts(Set<Case> resultCases) {
-        if (cases.isEmpty()) return resultCases;
-        SimpleLogger.log(LoggingLevel.INFO, String.format(Message.COLLECTING_TEXTS.toString(),cases.size(),cc.getName()));
+        if (resultCases.isEmpty()) return resultCases;
+        SimpleLogger.log(LoggingLevel.INFO, String.format(
+                Message.COLLECTING_TEXTS.toString(),
+                resultCases.size(),
+                cc.getName())
+        );
         int i = 1;
         Set<Case> newCases = new HashSet<>();
-        for (Case _case:cases) {
+        for (Case _case:resultCases) {
             String url = _case.getText();
             if (url != null) {
                 _case.setText(null);
@@ -87,12 +91,12 @@ public class MosGorSudParser extends ConnectorParser{
                 }
             }
             if (i % 25 == 0) {
-                SimpleLogger.log(LoggingLevel.INFO, String.format(Message.COLLECTED_TEXTS.toString(), i, cases.size(), cc.getName()));
+                SimpleLogger.log(LoggingLevel.INFO, String.format(Message.COLLECTED_TEXTS.toString(), i, resultCases.size(), cc.getName()));
             }
             i += 1;
         }
-        cases.addAll(newCases);
-        return cases;
+        resultCases.addAll(newCases);
+        return resultCases;
     }
 
     private Case getaCase(Case _case, int j, String[] splits) {

@@ -55,6 +55,11 @@ public class RequestDetails {
     private String endDate;
     private String startDate;
     private String text;
+    private String[] instances;
+
+    public void setInstances(String[] instances) {
+        this.instances = instances;
+    }
 
     public void setMeta(Meta meta) {
         this.meta = meta;

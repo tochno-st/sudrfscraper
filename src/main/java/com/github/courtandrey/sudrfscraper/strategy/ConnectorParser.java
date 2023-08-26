@@ -6,6 +6,9 @@ import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Sear
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.CasesPipeLine;
 import com.github.courtandrey.sudrfscraper.service.SeleniumHelper;
+import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
+import com.github.courtandrey.sudrfscraper.service.logger.Message;
+import com.github.courtandrey.sudrfscraper.service.logger.SimpleLogger;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
@@ -73,6 +76,7 @@ public abstract class ConnectorParser implements Parser{
                     break;
                 }
             }
+            SimpleLogger.log(LoggingLevel.INFO, String.format(Message.CHUNK.toString(),resultCases.size(),cc.getName()));
             chunk = scrapTexts(chunk);
             casesPipeLine.offer(chunk);
             resultCases.removeAll(chunk);

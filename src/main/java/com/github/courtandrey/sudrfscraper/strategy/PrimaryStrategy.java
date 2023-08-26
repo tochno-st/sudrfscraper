@@ -1,8 +1,9 @@
 package com.github.courtandrey.sudrfscraper.strategy;
 
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
-import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.SearchPattern;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Issue;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
 
 
 public class PrimaryStrategy extends ConnectionSUDRFStrategy {
@@ -13,23 +14,16 @@ public class PrimaryStrategy extends ConnectionSUDRFStrategy {
 
     @Override
     public void run() {
-        createUrls();
-        iterateThroughUrls();
-        if (checkSuccessAndChangePattern(SearchPattern.SECONDARY_PATTERN,SearchPattern.DEPRECATED_SECONDARY_PATTERN) ||
-                checkSuccessAndChangePattern(SearchPattern.DEPRECATED_SECONDARY_PATTERN,SearchPattern.SECONDARY_PATTERN)) {
+        for (Instance i: SearchRequest.getInstance().getInstanceList()) {
+            currentInstance = i;
+            if (!checkArticleAndInstance(i)) continue;
+            createUrls(i);
             iterateThroughUrls();
+            clear();
+            issue = null;
+            timeToStopRotatingPage = false;
         }
         finish();
-    }
-
-    private boolean checkSuccessAndChangePattern(SearchPattern src, SearchPattern trg) {
-        if (finalIssue != Issue.SUCCESS && cc.getSearchPattern()==src) {
-            cc.setSearchPattern(trg);
-            indexUrl = 0;
-            createUrls();
-            return true;
-        }
-        return false;
     }
 
     private void iterateThroughUrls() {

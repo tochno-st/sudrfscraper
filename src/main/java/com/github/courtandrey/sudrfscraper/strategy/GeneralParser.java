@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GeneralParser extends ConnectorParser{
-    private final Set<Case> cases = new HashSet<>();
     protected boolean isTextFound = false;
 
     GeneralParser(CourtConfiguration cc) {
@@ -35,6 +34,7 @@ public class GeneralParser extends ConnectorParser{
 
     @Override
     public Set<Case> scrap(Document document, String currentUrl) {
+        Set<Case> cases = new HashSet<>();
         Element table = document.getElementById("tablcont");
         if (table == null) {
             table = document.getElementById("resultTable");

@@ -2,8 +2,9 @@ package com.github.courtandrey.sudrfscraper.strategy;
 
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.*;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
-import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.SoftStrictFilterable;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.SoftStrictFilterableArticle;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.ConfigurationHelper;
 import com.github.courtandrey.sudrfscraper.service.SoftStrictFilterer;
@@ -26,6 +27,8 @@ public abstract class SUDRFStrategy implements Runnable{
     protected boolean timeToStopRotatingSrv = false;
     protected boolean timeToStopRotatingBuild = false;
     protected boolean timeToStopRotatingPage = false;
+
+    protected Instance currentInstance;
 
     @Getter
     final CourtConfiguration cc;
@@ -255,7 +258,23 @@ public abstract class SUDRFStrategy implements Runnable{
         }
     }
 
-    protected void createUrls() {
+    protected boolean checkArticleAndInstance(Instance i) {
+        return Arrays.stream(SearchRequest.getInstance().getArticle().getInstances()).collect(Collectors.toSet()).contains(i);
+    }
+
+    protected void createUrls(Instance instance) {
+        switch (instance) {
+            case FIRST -> createFirstInstanceUrls();
+            case APPELLATION -> createAppellationUrls();
+        }
+    }
+
+    private void createAppellationUrls() {
+        urlCreator = new URLCreator(cc,Instance.APPELLATION);
+        urls = urlCreator.createUrls();
+    }
+
+    private void createFirstInstanceUrls() {
         urlCreator = new URLCreator(cc);
         urls = urlCreator.createUrls();
     }
@@ -276,7 +295,7 @@ public abstract class SUDRFStrategy implements Runnable{
             }
         }
 
-        if (request.getArticle() != null && request.getArticle() instanceof SoftStrictFilterable) {
+        if (request.getArticle() != null && request.getArticle() instanceof SoftStrictFilterableArticle) {
             SoftStrictFilterer.SoftStrictMode softStrictMode = SoftStrictFilterer.SoftStrictMode.parseMode(
                     ApplicationConfiguration
                             .getInstance()
@@ -304,8 +323,13 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     protected void finish() {
+        if (currentInstance != Instance.FIRST) setInstance();
         setFinalInfo();
         logFinalInfo();
+    }
+
+    private void setInstance() {
+        resultCases.forEach(x -> x.setInstance(currentInstance.name()));
     }
 
     protected void logFinalInfo() {
@@ -342,8 +366,9 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     private void putWorkingUrl() {
-        if (Issue.isGoodIssue(finalIssue) && cc.getWorkingUrl().get(request.getField()) == null) {
-            cc.putWorkingUrl(request.getField(),urlCreator.returnEnding(indexUrl));
+        if (Issue.isGoodIssue(finalIssue) && cc.getWorkingUrl().get(request.getField()) == null
+                && currentInstance == Instance.FIRST) {
+            cc.putWorkingUrl(request.getField(), urlCreator.returnEnding(indexUrl));
         }
     }
 }

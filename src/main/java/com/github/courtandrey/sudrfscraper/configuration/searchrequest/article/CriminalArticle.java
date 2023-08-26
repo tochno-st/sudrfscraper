@@ -1,19 +1,27 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest.article;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import lombok.Getter;
 
 @Getter
 @JsonAutoDetect
-public class CriminalArticle implements Article, SoftStrictFilterable{
+public class CriminalArticle implements SoftStrictFilterableArticle {
     private int article = 0;
     private int part = 0;
     private char letter = 0;
     private int subArticle = 0;
 
-    public CriminalArticle() {
+    @JsonIgnore
+    private final static Instance[] INSTANCES = {Instance.FIRST, Instance.APPELLATION};
+    @Override
+    public Instance[] getInstances() {
+        return INSTANCES;
     }
+
+    public CriminalArticle() {}
 
     public int getArticle() {
         return article;
@@ -45,43 +53,6 @@ public class CriminalArticle implements Article, SoftStrictFilterable{
 
     public void setSubArticle(int subArticle) {
         this.subArticle = subArticle;
-    }
-
-    public CriminalArticle(int article, int partOrSubArticle, boolean isSubArticlePresent) {
-        this.article = article;
-        if (isSubArticlePresent) {
-            subArticle = partOrSubArticle;
-        } else {
-            part = partOrSubArticle;
-        }
-    }
-
-    public CriminalArticle(int article, int subArticle, int part) {
-        this.article = article;
-        this.part = part;
-        this.subArticle = subArticle;
-    }
-
-    public CriminalArticle(int article, int subArticle, int part, char letter) {
-        this.article = article;
-        this.part = part;
-        this.letter = letter;
-        this.subArticle = subArticle;
-    }
-
-    public CriminalArticle(int article, int part, char letter) {
-        this.article = article;
-        this.part = part;
-        this.letter = letter;
-    }
-
-    public CriminalArticle(int article) {
-        this.article = article;
-    }
-
-    public CriminalArticle(int article, int part) {
-        this.article = article;
-        this.part = part;
     }
 
     @Override

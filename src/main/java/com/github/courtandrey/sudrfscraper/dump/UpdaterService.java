@@ -3,6 +3,7 @@ package com.github.courtandrey.sudrfscraper.dump;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.dumpconfiguration.ServerConnectionInfo;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
 import com.github.courtandrey.sudrfscraper.controller.ErrorHandler;
 
@@ -13,10 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Queue;
+import java.util.*;
 
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.CasesPipeLineFactory;
@@ -140,6 +138,8 @@ public abstract class UpdaterService extends Thread implements Updater{
             requestDetails.getMeta().setNeedToContinue(ApplicationConfiguration.getInstance().getProperty("basic.continue") != null &&
                     !ApplicationConfiguration.getInstance().getProperty("basic.continue").isEmpty()
                     && Boolean.parseBoolean(ApplicationConfiguration.getInstance().getProperty("basic.continue")));
+
+            requestDetails.setInstances(Arrays.stream(SearchRequest.getInstance().getInstanceList()).map(Instance::name).toArray(String[]::new));
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(w,requestDetails);

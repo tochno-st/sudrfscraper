@@ -5,10 +5,10 @@ import com.github.courtandrey.sudrfscraper.service.logger.Message;
 import com.github.courtandrey.sudrfscraper.service.logger.SimpleLogger;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.LaxRedirectStrategy;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -32,7 +32,16 @@ public class Downloader {
         return null;
     }
     private File downloadUsingNIO(String urlStr, String file) throws IOException {
-        try(CloseableHttpClient httpClient =  HttpClients.custom().disableContentCompression().setRedirectStrategy(new LaxRedirectStrategy()).disableAutomaticRetries().build()) {
+        try(CloseableHttpClient httpClient =  HttpClients.custom()
+                .disableAutomaticRetries()
+                .setDefaultRequestConfig(
+                        RequestConfig
+                                .custom()
+                                .setConnectTimeout(30*1000)
+                                .setConnectionRequestTimeout(30*1000)
+                                .setSocketTimeout(30*1000)
+                                .build())
+                .build()) {
             HttpGet get = new HttpGet(urlStr);
             get.setHeader("User-Agent", Constant.UA.toString());
             HttpResponse response = httpClient.execute(get);

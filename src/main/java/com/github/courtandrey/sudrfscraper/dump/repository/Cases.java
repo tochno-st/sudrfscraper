@@ -22,6 +22,7 @@ public class Cases {
     private static final String create = "CREATE TABLE IF NOT EXISTS %s (" +
             "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
             "region_id INT," +
+            "instance VARCHAR(255)" +
             "court_name VARCHAR(255)," +
             "case_number VARCHAR(255)," +
             "entry_date VARCHAR(255)," +
@@ -36,23 +37,24 @@ public class Cases {
             "(coalesce(judge, ''))," +
             "(coalesce(court_name, '')))" +
             ");";
-    private static final String preparedInsert = "INSERT INTO %s (region_id, court_name, " +
+    private static final String preparedInsert = "INSERT INTO %s (region_id, instance, court_name, " +
             "case_number, entry_date, names_articles, judge, result_date, decision, end_date, decision_text) VALUES" +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     public void addCase(Case _case) {
         try {
             PreparedStatement query = connection.prepareStatement(String.format(preparedInsert,name));
             query.setInt(1,_case.getRegion());
-            query.setString(2,_case.getName());
-            query.setString(3,_case.getCaseNumber());
-            query.setString(4, _case.getEntryDate());
-            query.setString(5, _case.getNames());
-            query.setString(6,_case.getJudge());
-            query.setString(7,_case.getResultDate());
-            query.setString(8,_case.getDecision());
-            query.setString(9,_case.getEndDate());
-            query.setString(10, _case.getText());
+            query.setString(2,_case.getInstance());
+            query.setString(3,_case.getName());
+            query.setString(4,_case.getCaseNumber());
+            query.setString(5, _case.getEntryDate());
+            query.setString(6, _case.getNames());
+            query.setString(7,_case.getJudge());
+            query.setString(8,_case.getResultDate());
+            query.setString(9,_case.getDecision());
+            query.setString(10,_case.getEndDate());
+            query.setString(11, _case.getText());
             query.execute();
         } catch (SQLException e) {
             SimpleLogger.log(LoggingLevel.WARNING, String.format(Message.SOME_SQL_EXCEPTION.toString(),e));

@@ -1,17 +1,26 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest.article;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import lombok.Getter;
 
 @Getter
 @JsonAutoDetect
-public class AdminArticle implements Article, SoftStrictFilterable {
+public class AdminArticle implements SoftStrictFilterableArticle {
     private int chapter;
     private int article;
     private int subArticle;
     private int part;
     private int subPart;
+
+    @JsonIgnore
+    private final static Instance[] INSTANCES = {Instance.FIRST, Instance.APPELLATION};
+    @Override
+    public Instance[] getInstances() {
+        return INSTANCES;
+    }
 
     public AdminArticle() {
     }
