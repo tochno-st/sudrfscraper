@@ -1,8 +1,8 @@
-## SUDRFScraper (User-friendly interactive interface to parse court decision)
+## SUDRFScraper (User-friendly interactive interface to parse Russian courts decisions)
 
 Project is made by **Andrew Sudarkin** in collaboration with [**To Be Precise**](https://tochno.st/).
 
-> NB: sudrf.ru sometimes is blocking requests from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
+> Sometimes requests are blocking from foreign IPs. So using Russian IP (inside Russia or via proxy server / VPN) is needed.
 
 ### DESCRIPTION
 
@@ -19,6 +19,15 @@ It is more stable: there are always courts which are down, but it is bearable co
 
 Also, SUDRFScraper **provides UI so there's no need to do any coding**.
 
+### SETUP DETAILS
+
+📷 Watch [instructional video](https://www.youtube.com/watch?v=TDDejU0ap14&feature=youtu.be)
+
+1. Go to https://github.com/tochno-st/sudrfscraper/releases/. Find latest release and download version corresponding to your Operating System.
+2. Unzip archive.
+3. If you are Windows user, you can start application with double-click on run.bat script.
+   Else you should open terminal and enter /path/to/run.sh (full path to file run.sh)
+
 ### IMPORTANT THINGS TO KNOW BEFORE USING
 
 Scraper uses FireFox WebDriver, so you should have firefox browser. If you see errors about WebDriver in logs, follow the instruction that may help:
@@ -28,7 +37,7 @@ Scraper uses FireFox WebDriver, so you should have firefox browser. If you see e
 
 Scraped cases are among courts of general jurisdiction.
 
-You are highly not recommended to use for a search only text-in-decision field. 
+You are highly not recommended to use for a search only text-in-decision field.
 Most of the courts don't support this field so search will be executed among ALL cases with published decision till this very day.
 Use this field only in a bundle with others.
 
@@ -67,7 +76,7 @@ Massive refactoring.
 
 ver.0.1.7 configuration-update. Modified configuration with default sql connection parameters. Massive refactoring.
 
-ver.0.1.8 captcha-update. Feat: added regions to configuration. Fixed captcha related bugs. Updated strategies and court configuration for solving new issues 
+ver.0.1.8 captcha-update. Feat: added regions to configuration. Fixed captcha related bugs. Updated strategies and court configuration for solving new issues
 
 ver.0.1.9 content-update. Feat: fixed broken courts, removed courts that ceased to exist, replaced renamed courts, added garrison courts and mosgorsud. Configs: added sorting by court level.
 
@@ -82,8 +91,6 @@ ver.0.2.2 material-proceeding-update. Added Material Proceeding.
 ver.0.2.3 cas-fix-update. Fixed bugs with mosgorsud cas code. Added lawbook for cas
 
 ver.0.2.4 civil-proceeding-update. Added Civil Proceeding.
-
-ver.0.2.4-1 performance enhancement. Enhanced performance for VPN environment.
 
 ver.0.2.5 appellation-update. Added appellation instance.
 
