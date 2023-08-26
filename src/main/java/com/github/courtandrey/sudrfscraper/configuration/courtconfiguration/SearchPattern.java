@@ -1,6 +1,7 @@
 package com.github.courtandrey.sudrfscraper.configuration.courtconfiguration;
 
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.exception.InitializationException;
 
 import java.io.FileReader;
@@ -28,7 +29,60 @@ public enum SearchPattern {
         return properties;
     }
 
-    public String[] getPattern(Field field) {
+    public String[] getPattern(Field field, Instance i) {
+        switch (i) {
+            case FIRST -> {
+                return getFirstPattern(field);
+            }
+            case APPELLATION -> {
+                return getAppellationPattern(field);
+            }
+        }
+        return new String[]{};
+    }
+
+    private String[] getAppellationPattern(Field field) {
+        switch (field) {
+            case ADMIN -> {
+                return getAdminPatternAppellation();
+            }
+            case CRIMINAL -> {
+                return getCriminalPatternAppellation();
+            }
+            case CAS -> {
+                return getCASPatternAppellation();
+            }
+            case MATERIAL_PROCEEDING -> {
+                return getMaterialProceedingPatternAppellation();
+            }
+            case CIVIL -> {
+                return getCivilPatternAppellation();
+            }
+        }
+        return new String[]{};
+    }
+
+    private String[] getCivilPatternAppellation() {
+        return String.valueOf(getProps(PATH_TO_CIVIL_PROPERTIES.toString()).getProperty(this +"_APPELLATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getMaterialProceedingPatternAppellation() {
+        return String.valueOf(getProps(PATH_TO_MATERIAL_PROCEEDING_PROPERTIES.toString()).getProperty(this +"_APPELLATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getCASPatternAppellation() {
+        return String.valueOf(getProps(PATH_TO_CAS_PROPERTIES.toString()).getProperty(this +"_APPELLATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getCriminalPatternAppellation() {
+        return String.valueOf(getProps(PATH_TO_CRIMINAL_PROPERTIES.toString()).getProperty(this +"_APPELLATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getAdminPatternAppellation() {
+        return String.valueOf(getProps(PATH_TO_ADMIN_PROPERTIES.toString()).getProperty(this +"_APPELLATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getFirstPattern(Field field) {
         switch (field) {
             case ADMIN -> {
                 return getAdminPattern();

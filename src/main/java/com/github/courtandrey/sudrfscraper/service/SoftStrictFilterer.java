@@ -2,8 +2,6 @@ package com.github.courtandrey.sudrfscraper.service;
 
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Predicate;
 
 public class SoftStrictFilterer implements Predicate<Case> {
@@ -17,6 +15,7 @@ public class SoftStrictFilterer implements Predicate<Case> {
 
     @Override
     public boolean test(Case _case) {
+        if (_case.getNames() == null) return false;
         String reg2;
         if (softStrictMode == SoftStrictMode.STRICT_MODE) {
             reg2 = "[^\\d.](.*)";
@@ -24,8 +23,7 @@ public class SoftStrictFilterer implements Predicate<Case> {
         else {
             reg2 = "\\D(.*)";
         }
-        return _case.getNames() != null &&
-                _case.getNames().matches("(.*)" + "\\D" + prepareForRegex(mainPart) + reg2);
+        return _case.getNames().matches("(.*)" + "\\D" + prepareForRegex(mainPart) + reg2) || _case.getNames().matches("(.*)" + "\\D" + prepareForRegex(mainPart) + "$") || _case.getNames().matches("^" + prepareForRegex(mainPart) + reg2) || _case.getNames().matches(prepareForRegex(mainPart));
     }
 
     public enum SoftStrictMode {

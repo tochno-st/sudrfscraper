@@ -29,7 +29,6 @@ If you see errors about WebDriver in logs, follow the instruction that may help:
 1. Visit "https://github.com/mozilla/geckodriver/releases" and download driver for your OS.
 2. Replace driver in ./src/main/resources/"name-of-your-OS"/.
 
-Scraped cases are only first-instance considered (no appellations).
 Scraped cases are among courts of general jurisdiction.
 
 You are highly not recommended to use for a search only text-in-decision field. 
@@ -87,6 +86,8 @@ ver.0.2.3 cas-fix-update. Fixed bugs with mosgorsud cas code. Added lawbook for 
 ver.0.2.4 civil-proceeding-update. Added Civil Proceeding.
 
 ver.0.2.4-1 performance enhancement. Enhanced performance for VPN environment.
+
+ver.0.2.5 appellation-update. Added appellation instance.
 
 CONTACT ME:
 

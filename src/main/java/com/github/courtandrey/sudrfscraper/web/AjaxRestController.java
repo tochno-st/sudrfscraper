@@ -3,6 +3,7 @@ package com.github.courtandrey.sudrfscraper.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
 import com.github.courtandrey.sudrfscraper.controller.Starter;
 import com.github.courtandrey.sudrfscraper.dump.model.Dump;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,6 +98,11 @@ public class AjaxRestController {
             }
 
             SearchRequest.getInstance().setField(Field.parseField(requestDetails.getField()));
+
+            SearchRequest.getInstance().setInstanceList(
+                    Arrays.stream(requestDetails.getInstances()).map(Instance::parseInstance).toArray(Instance[]::new)
+            );
+
             if (!requestDetails.getMeta().getChosenDirectory().isEmpty()) {
                 ApplicationConfiguration.getInstance().setProperty("basic.result.path", requestDetails.getMeta().getChosenDirectory());
             } else {
@@ -116,6 +123,9 @@ public class AjaxRestController {
             }
             if (!requestDetails.getStartDate().isEmpty()) {
                 SearchRequest.getInstance().setResultDateFrom(validator.validateDate(requestDetails.getStartDate()));
+            }
+            if (!requestDetails.getText().trim().isEmpty()) {
+                SearchRequest.getInstance().setText(requestDetails.getText());
             }
             ApplicationConfiguration.getInstance().setProperty("cases.article_filter",String.valueOf(requestDetails.getMeta().getFilterMode()));
             ApplicationConfiguration.getInstance().setProperty("basic.continue",String.valueOf(requestDetails.getMeta().isNeedToContinue()));

@@ -4,9 +4,11 @@ import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.*
 import com.github.courtandrey.sudrfscraper.exception.InitializationException;
 import com.github.courtandrey.sudrfscraper.exception.SearchRequestException;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.List;
 
 public class SearchRequest {
     private String resultDateFrom;
@@ -14,6 +16,9 @@ public class SearchRequest {
     private String text;
     private Article article;
     private String publishedDateTill;
+    @Setter
+    @Getter
+    private Instance[] instanceList;
     @Getter
     private String entryDateTill;
 

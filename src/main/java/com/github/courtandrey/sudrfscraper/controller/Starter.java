@@ -309,13 +309,16 @@ public class Starter {
 
     private void execute(Boolean ignoreInactive) throws InterruptedException {
         List<CourtConfiguration> mainCCS = configHolder.getCCs().stream().filter(x -> !x.isSingleStrategy() &&
-                x.getStrategyName() != StrategyName.END_STRATEGY).collect(Collectors.toList());
+                x.getStrategyName() != StrategyName.END_STRATEGY)
+                .sorted((o1, o2) -> {
+                    if (o1.getStrategyName() == StrategyName.MOSGORSUD_STRATEGY) return -1;
+                    if (o2.getStrategyName() == StrategyName.MOSGORSUD_STRATEGY) return 1;
+                    return 0;
+                })
+                .collect(Collectors.toList());
 
         List<CourtConfiguration> singleCCS = configHolder.getCCs().stream().filter(x -> x.getStrategyName()
                 == StrategyName.CAPTCHA_STRATEGY).collect(Collectors.toList());
-
-        List<CourtConfiguration> mosgorsud = configHolder.getCCs().stream().filter(x -> x.getStrategyName()
-                == StrategyName.MOSGORSUD_STRATEGY).collect(Collectors.toList());
 
         singleCCS.addAll(configHolder.getCCs().stream()
                 .filter(x -> x.isSingleStrategy() && x.getStrategyName() != StrategyName.CAPTCHA_STRATEGY
@@ -326,50 +329,40 @@ public class Starter {
                     && x.getIssue() != Issue.INACTIVE_MODULE).collect(Collectors.toList());
             singleCCS = singleCCS.stream().filter(x -> x.getIssue() != Issue.INACTIVE_COURT
                     && x.getIssue() != Issue.INACTIVE_MODULE).collect(Collectors.toList());
-            mosgorsud = mosgorsud.stream().filter(x -> x.getIssue() != Issue.INACTIVE_COURT
-                    && x.getIssue() != Issue.INACTIVE_MODULE).collect(Collectors.toList());
         }
 
         if (selectedRegions != null) {
             mainCCS = mainCCS.stream().filter(x -> Arrays.stream(selectedRegions).anyMatch(r -> r == x.getRegion())).collect(Collectors.toList());
             singleCCS = singleCCS.stream().filter(x -> Arrays.stream(selectedRegions).anyMatch(r -> r == x.getRegion())).collect(Collectors.toList());
-
-            mosgorsud = mosgorsud.stream().filter(x -> Arrays.stream(selectedRegions).anyMatch(r -> r == x.getRegion())).collect(Collectors.toList());
         }
 
         if (levels != null) {
             mainCCS = mainCCS.stream().filter(x->Arrays.stream(levels).anyMatch(r->r==x.getLevel())).collect(Collectors.toList());
             singleCCS = singleCCS.stream().filter(x->Arrays.stream(levels).anyMatch(r->r==x.getLevel())).collect(Collectors.toList());
-            mosgorsud = mosgorsud.stream().filter(x->Arrays.stream(levels).anyMatch(r->r==x.getLevel())).collect(Collectors.toList());
         }
 
         if (strategyNames != null) {
             mainCCS = mainCCS.stream().filter(x->Arrays.stream(strategyNames).anyMatch(r->r==x.getStrategyName())).collect(Collectors.toList());
             singleCCS = singleCCS.stream().filter(x->Arrays.stream(strategyNames).anyMatch(r->r==x.getStrategyName())).collect(Collectors.toList());
-            mosgorsud = mosgorsud.stream().filter(x->Arrays.stream(strategyNames).anyMatch(r->r==x.getStrategyName())).collect(Collectors.toList());
         }
 
         mainCCS = checkIfNothingToExecute(mainCCS);
         singleCCS = checkIfNothingToExecute(singleCCS);
-        mosgorsud = checkIfNothingToExecute(mosgorsud);
 
 
-        countDownLatch = new CountDownLatch(mainCCS.size() + singleCCS.size() + mosgorsud.size());
+        countDownLatch = new CountDownLatch(mainCCS.size() + singleCCS.size());
 
-        ThreadPoolExecutor mosgorsudExecutor = new StrategyThreadPoolExecutor(1, 1,
-                10, TimeUnit.MINUTES, new ArrayBlockingQueue<>(mosgorsud.size()), this);
-        ThreadPoolExecutor mainExecutor = new StrategyThreadPoolExecutor(3, 4,
-                10, TimeUnit.MINUTES, new ArrayBlockingQueue<>(mainCCS.size()), this);
         ThreadPoolExecutor seleniumExecutor = new StrategyThreadPoolExecutor(1, 1,
                 10, TimeUnit.MINUTES, new ArrayBlockingQueue<>(singleCCS.size()), this);
+        ThreadPoolExecutor mainExecutor = new StrategyThreadPoolExecutor(2, 4,
+                10, TimeUnit.MINUTES, new ArrayBlockingQueue<>(mainCCS.size()), this);
 
-        courts = mainCCS.size() + singleCCS.size() + mosgorsud.size();
-        for (CourtConfiguration cc : mosgorsud) {
-            seleniumExecutor.execute(this.selectStrategy(cc));
-        }
+        courts = mainCCS.size() + singleCCS.size();
+
         for (CourtConfiguration cc : singleCCS) {
             seleniumExecutor.execute(this.selectStrategy(cc));
         }
+
         for (CourtConfiguration cc : mainCCS) {
             mainExecutor.execute(this.selectStrategy(cc));
         }
@@ -378,7 +371,6 @@ public class Starter {
 
         mainExecutor.shutdown();
         seleniumExecutor.shutdown();
-        mosgorsudExecutor.shutdown();
     }
 
     private synchronized void update(Collection<Case> cases) {

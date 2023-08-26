@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
@@ -327,6 +327,14 @@
                     <option value="86">Ханты-Мансийский автономный округ</option>
                     <option value="87">Чукотский автономный округ</option>
                     <option value="89">Ямало-Ненецкий автономный округ</option>
+                </select>
+            </div>
+
+            <div class="input-pair block-element">
+                <label for="instances">Instances</label>
+                <select id="instances" autocomplete="off" multiple class="select-strict">
+                    <option value="FIRST" selected>First Instance</option>
+                    <option value="APPELLATION">Appellation Instance</option>
                 </select>
             </div>
 
@@ -1350,12 +1358,15 @@
 
                     const courtLevelSelect = $('#courtLevel');
                     const regionsSelect = $('#regions');
+                    const instancesSelect = $('#instances');
 
                     const levels = requestDetails.meta.levels || ['all'];
                     const regions = requestDetails.meta.regions || ['all'];
+                    const instances = requestDetails.instances;
 
                    courtLevelSelect.val(levels.map(level => level.toLowerCase())).trigger('change');
                    regionsSelect.val(regions).trigger('change');
+                   instancesSelect.val(instances).trigger('change');
 
                     const filterCaseSelect = document.getElementById('filterCase');
                     filterCaseSelect.value = requestDetails.meta.filterMode.toLowerCase();
@@ -1556,6 +1567,19 @@
                 });
             </script>
 
+            <script>
+                $(document).ready(function() {
+                      $('#instances').select2();
+                      $('#instances').on('select2:unselect', function(e) {
+                        var unselectedOption = e.params.data.id;
+                        var allSelected = $(this).find('option:selected').length;
+                        if (allSelected === 0) {
+                          $('#instances').val('FIRST').trigger('change');
+                        }
+                  });
+                });
+            </script>
+
             <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
             <script>
@@ -1669,6 +1693,7 @@
                 courtLevels = selectedCourtLevels.map(level => level.toUpperCase());
               }
               const selectedRegions = $('#regions').val();
+
               let regions = [];
               if (!(selectedRegions.length === 1 && selectedRegions[0] === "all")) {
                  regions = selectedRegions;
@@ -1735,10 +1760,17 @@
                     }
                     article = civilProceedingArticle;
                 }
+              const selectedInstances = $('#instances').val();
+              let instances = ['FIRST'];
+
+              if (!(selectedInstances.length === 0)) {
+                instances = selectedInstances;
+              }
 
                  const request = {
                     article: article,
                     meta: metaINF,
+                    instances: instances,
                     chosenDump: dump,
                     field: article.field,
                     connectionInf: connectionInfo,

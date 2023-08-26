@@ -2,6 +2,7 @@ package com.github.courtandrey.sudrfscraper.service;
 
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Level;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.exception.CaptchaException;
 import com.github.courtandrey.sudrfscraper.exception.InitializationException;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
@@ -47,20 +48,20 @@ public class CaptchaPropertiesConfigurator {
         props = getProps();
     }
 
-    public static void configureCaptcha(CourtConfiguration cc, boolean didWellItWorkedOnceUsed, Connection connection) throws InterruptedException {
+    public static void configureCaptcha(CourtConfiguration cc, boolean didWellItWorkedOnceUsed, Connection connection, Instance i) throws InterruptedException {
         switch (connection) {
-            case SELENIUM -> configureCaptchaWithSelenium(cc, didWellItWorkedOnceUsed);
-            case REQUEST -> configureCaptchaWithRequests(cc, didWellItWorkedOnceUsed);
+            case SELENIUM -> configureCaptchaWithSelenium(cc, didWellItWorkedOnceUsed,i);
+            case REQUEST -> configureCaptchaWithRequests(cc, didWellItWorkedOnceUsed,i);
             default -> throw new UnsupportedOperationException("Unknown type of connection");
         }
     }
 
-    private static void configureCaptchaWithRequests(CourtConfiguration cc, boolean didWellItWorkedOnceUsed) throws InterruptedException {
+    private static void configureCaptchaWithRequests(CourtConfiguration cc, boolean didWellItWorkedOnceUsed, Instance in) throws InterruptedException {
         CaptchaPropertiesConfigurator cpc = new CaptchaPropertiesConfigurator(cc);
 
         if (cpc.checkProperties(didWellItWorkedOnceUsed)) return;
 
-        String urlFprCaptcha = (new URLCreator(cc)).createUrlForCaptcha();
+        String urlFprCaptcha = (new URLCreator(cc)).createUrlForCaptcha(in);
 
         String captcha = null;
         Document document = null;
@@ -129,7 +130,7 @@ public class CaptchaPropertiesConfigurator {
         return properties;
     }
 
-    public static void configureCaptchaWithSelenium(CourtConfiguration cc, boolean didWellItWorkedOnceUsed) throws InterruptedException {
+    public static void configureCaptchaWithSelenium(CourtConfiguration cc, boolean didWellItWorkedOnceUsed, Instance i) throws InterruptedException {
         CaptchaPropertiesConfigurator cpc = new CaptchaPropertiesConfigurator(cc);
 
         if (cpc.checkProperties(didWellItWorkedOnceUsed)) return;
@@ -138,7 +139,7 @@ public class CaptchaPropertiesConfigurator {
             sh = SeleniumHelper.getInstance();
         }
 
-        String urlFprCaptcha = (new URLCreator(cc)).createUrlForCaptcha();
+        String urlFprCaptcha = (new URLCreator(cc)).createUrlForCaptcha(i);
 
         if (sh.getCurrentUrl().equals(urlFprCaptcha)) {
             sh.refresh();
