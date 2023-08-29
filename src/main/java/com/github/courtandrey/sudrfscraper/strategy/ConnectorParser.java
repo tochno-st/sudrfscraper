@@ -31,7 +31,7 @@ public abstract class ConnectorParser implements Parser{
         builder = new RequestBuilder(cc);
     }
 
-    String getJsoupText(String url) throws IOException {
+    String getRequestText(String url) throws IOException {
         try(CloseableHttpClient httpClient =  HttpClients.custom().disableAutomaticRetries().
                 setDefaultRequestConfig(RequestConfig.custom()
                         .setConnectTimeout(30*1000)

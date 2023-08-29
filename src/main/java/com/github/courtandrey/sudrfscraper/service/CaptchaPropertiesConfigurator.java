@@ -151,25 +151,25 @@ public class CaptchaPropertiesConfigurator {
         String captcha = null;
         Document document = Jsoup.parse(sh.getPageSource());
         try {
-            for (WebElement e:sh.findElements(By.tagName("tr"))) {
-                try {
-                    e.findElement(By.name("captchaid"));
-                    String dataUrl = e.findElement(By.tagName("img")).getAttribute("src");
-                    byte[] dataBytes = Base64.getDecoder().decode(dataUrl.replaceFirst("data:.+,","").trim());
-                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(dataBytes));
-                    captcha = view.showCaptcha(image);
-                    break;
-                } catch (NoSuchElementException ignored) {}
+            for (Element e:document.getElementsByClass("form-item general-item category-item")) {
+                if (!e.text().contains("Проверочный код")) continue;
+                String dataUrl = e.getElementsByTag("img").get(0).attr("src");
+                String replaced = dataUrl.replaceFirst("data:.+,","").trim();
+                byte[] dataBytes = Base64.getDecoder().decode(replaced);
+                BufferedImage image = ImageIO.read(new ByteArrayInputStream(dataBytes));
+                captcha = view.showCaptcha(image);
+                break;
             }
             if (captcha == null) {
-                for (Element e:document.getElementsByClass("form-item general-item category-item")) {
-                    if (!e.text().contains("Проверочный код")) continue;
-                    String dataUrl = e.getElementsByTag("img").get(0).attr("src");
-                    String replaced = dataUrl.replaceFirst("data:.+,","").trim();
-                    byte[] dataBytes = Base64.getDecoder().decode(replaced);
-                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(dataBytes));
-                    captcha = view.showCaptcha(image);
-                    break;
+                for (WebElement e:sh.findElements(By.tagName("tr"))) {
+                    try {
+                        e.findElement(By.name("captchaid"));
+                        String dataUrl = e.findElement(By.tagName("img")).getAttribute("src");
+                        byte[] dataBytes = Base64.getDecoder().decode(dataUrl.replaceFirst("data:.+,","").trim());
+                        BufferedImage image = ImageIO.read(new ByteArrayInputStream(dataBytes));
+                        captcha = view.showCaptcha(image);
+                        break;
+                    } catch (NoSuchElementException ignored) {}
                 }
             }
             if (captcha == null) throw new CaptchaException();

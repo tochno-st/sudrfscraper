@@ -1,5 +1,6 @@
 package com.github.courtandrey.sudrfscraper.strategy;
 
+import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
 import com.github.courtandrey.sudrfscraper.service.Converter;
@@ -11,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +21,9 @@ public class MosGorSudParser extends ConnectorParser{
     protected boolean isTextFound = false;
     private final Downloader downloader = new Downloader();
     private final Converter converter = new Converter();
+    private final boolean showConflicts = Boolean.parseBoolean(
+            ApplicationConfiguration.getInstance().getProperty("dev.show_mgs_conflicts")
+    );
     MosGorSudParser(CourtConfiguration cc) {
         super(cc);
     }
@@ -60,30 +65,25 @@ public class MosGorSudParser extends ConnectorParser{
                 cc.getName())
         );
         int i = 1;
-        Set<Case> newCases = new HashSet<>();
         for (Case _case:resultCases) {
             String url = _case.getText();
             if (url != null) {
                 _case.setText(null);
                 try{
-                    String text = getJsoupText(url);
+                    String text = getRequestText(url);
                     if (text != null) {
                         isTextFound = true;
                         String[] splits = text.split("\\$DELIMITER");
-                        if (splits.length == 1) {
-                            if (!text.equals("MALFORMED"))
-                                _case.setText(text);
-                            else
-                                _case.setText(null);
+                        if (text.equals("MALFORMED") ) {
+                            _case.setText(null);
                         }
                         else {
-                            _case.setText(splits[0]);
-                            for (int j = 1; j < splits.length; j++) {
-                                Case newCase = getaCase(_case, j, splits);
-                                newCases.add(newCase);
+                            for (String split : splits) {
+                                if (checkText(split, _case.getCaseNumber()))
+                                    _case.setText(split.split("CELLAR_TEXT")[2]);
                             }
-
-                            _case.setCaseNumber(_case.getCaseNumber() + " ("+0+")");
+                            if (_case.getText() == null && showConflicts)
+                                SimpleLogger.log(LoggingLevel.DEBUG, "Couldn't match case: " + Arrays.toString(splits));
                         }
                     }
                 }catch (Exception e) {
@@ -95,52 +95,70 @@ public class MosGorSudParser extends ConnectorParser{
             }
             i += 1;
         }
-        resultCases.addAll(newCases);
         return resultCases;
     }
 
-    private Case getaCase(Case _case, int j, String[] splits) {
-        Case newCase = new Case();
-        newCase.setCaseNumber(_case.getCaseNumber()+" ("+ j +")");
-        newCase.setNames(_case.getNames());
-        newCase.setJudge(_case.getJudge());
-        newCase.setRegion(_case.getRegion());
-        newCase.setName(_case.getName());
-        newCase.setDecision(_case.getDecision());
-        newCase.setText(splits[j]);
-        return newCase;
+    private boolean checkText(String text, String number) {
+        String preparedNumber = number.split("/")[0];
+        String preparedText = text.replaceAll(" ", "");
+        int i;
+        try {
+            i = Integer.parseInt(preparedNumber.split("-")[1]);
+        } catch (Exception e) {
+            SimpleLogger.log(LoggingLevel.WARNING, "Couldn't parse MGS case number: " + number);
+            return false;
+        }
+        if (preparedText.contains(preparedNumber)) return true;
+
+        return preparedText.contains(preparedNumber.split("-")[0] + "-" + i);
     }
 
     @Override
     public String parseText(Document decision) {
         if (decision.getElementsByAttributeValue("id", "tabs-3").isEmpty()) return null;
+
         Element table = decision.getElementsByAttributeValue("id", "tabs-3").get(0);
+
         StringBuilder stringBuilder = new StringBuilder();
+
         for (Element e : table.getElementsByTag("tr")) {
             if (!e.getElementsByTag("th").isEmpty()) continue;
             Element textElement = e.getElementsByTag("td").get(2);
             if (textElement.getElementsByTag("a").attr("href").isEmpty()) continue;
+
             String url = cc.getSearchString() + textElement.getElementsByTag("a").attr("href");
 
             if (url.equalsIgnoreCase("https://www.mos-gorsud.ru#") || url.equalsIgnoreCase("http://www.mos-gorsud.ru#")) {
                 if (stringBuilder.isEmpty()) stringBuilder.append("MALFORMED");
                 continue;
             }
+
             String text = converter.getTxtFromFile(downloader.download(url));
+
             if (text == null) continue;
+
             text = cleanUp(text);
+
+            text += "$CELLAR_TEXT" + textElement.text() + "$CELLAR_TEXT" + text;
+
             if (!stringBuilder.isEmpty()) {
                 if (stringBuilder.toString().equals("MALFORMED")) {
                     stringBuilder = new StringBuilder();
                     stringBuilder.append(text);
-                } else {
+                }
+                else {
                     stringBuilder.append("$DELIMITER").append(text);
                 }
-            } else {
+            }
+
+            else {
                 stringBuilder.append(text);
             }
+
         }
+
         if (stringBuilder.isEmpty()) return null;
+
         return stringBuilder.toString();
     }
 

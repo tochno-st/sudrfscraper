@@ -39,6 +39,29 @@ public class SeleniumHelper {
         return wd.findElements(by);
     }
 
+    public static synchronized WebDriver createDriver() {
+        String os = System.getProperty("os.name");
+        String nul = "nul";
+        if (os.toLowerCase().contains("linux")) {
+            nul = "/dev/null";
+            System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/linux/geckodriver");
+        }
+        else if (os.toLowerCase().contains("windows")) {
+            System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/windows/geckodriver.exe");
+        } else if (os.toLowerCase().contains("mac")) {
+            nul = "/dev/null";
+            System.setProperty("webdriver.gecko.driver", ApplicationConfiguration.getUsrDir() + "/src/main/resources/macOS/geckodriver");
+        }
+
+        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, nul);
+        FirefoxOptions options = new FirefoxOptions();
+        WebDriver wd = new FirefoxDriver(options);
+        wd.manage().timeouts().pageLoadTimeout(Duration.ofMinutes(1));
+        wd.manage().timeouts().scriptTimeout(Duration.ofMinutes(1));
+        wd.manage().timeouts().implicitlyWait(Duration.ofMinutes(1));
+        return wd;
+    }
+
     public static synchronized SeleniumHelper getInstance() {
         if (sh == null) {
             String os = System.getProperty("os.name");
@@ -57,6 +80,7 @@ public class SeleniumHelper {
             System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, nul);
             FirefoxOptions options = new FirefoxOptions();
             options.addArguments("--headless");
+            options.setPageLoadStrategy(PageLoadStrategy.EAGER);
             sh = new SeleniumHelper();
             wd = new FirefoxDriver(options);
             wd.manage().timeouts().pageLoadTimeout(Duration.ofMinutes(1));
@@ -86,7 +110,7 @@ public class SeleniumHelper {
     public synchronized String getPage(String sourceUrl, Integer waitTime) {
         if (wd == null) reset();
 
-        wd.get(sourceUrl);
+        wd.get(sourceUrl.replaceFirst("http","https"));
 
         if (waitTime != null) {
             ThreadHelper.sleep(waitTime);

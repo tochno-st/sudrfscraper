@@ -57,7 +57,7 @@ public class SocketController {
         }
         String ret = captcha;
         this.captcha = null;
-        return  ret;
+        return ret;
     }
 
     public void handleProgressUpdate(int current, int total, int scraped) {

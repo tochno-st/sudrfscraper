@@ -143,7 +143,7 @@ public class GeneralParser extends ConnectorParser{
             String text = null;
             for (int i = 0; i < 10; i++) {
                 try {
-                    text = getJsoupText(href);
+                    text = getRequestText(href);
                     break;
                 } catch (HttpStatusException | SocketException | UnknownHostException | SocketTimeoutException e) {
                     ThreadHelper.sleep(5);
