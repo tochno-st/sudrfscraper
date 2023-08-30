@@ -56,6 +56,8 @@ public class MosGorSudParser extends ConnectorParser{
         return cases;
     }
 
+    private Case workingCase = null;
+
     @Override
     public Set<Case> scrapTexts(Set<Case> resultCases) {
         if (resultCases.isEmpty()) return resultCases;
@@ -66,6 +68,7 @@ public class MosGorSudParser extends ConnectorParser{
         );
         int i = 1;
         for (Case _case:resultCases) {
+            workingCase = _case;
             String url = _case.getText();
             if (url != null) {
                 _case.setText(null);
@@ -113,8 +116,23 @@ public class MosGorSudParser extends ConnectorParser{
         return preparedText.contains(preparedNumber.split("-")[0] + "-" + i);
     }
 
+    private String extractRegistrationDate(Document decision) {
+        if (decision.getElementsByClass("row_card").isEmpty()) return null;
+
+        for (Element e : decision.getElementsByClass("row_card")) {
+            if (e.getElementsByClass("left").isEmpty() ||
+                !e.getElementsByClass("left").get(0).text().contains("Дата регистрации")) continue;
+
+            return e.getElementsByClass("right").get(0).text();
+        }
+
+        return null;
+    }
+
+
     @Override
     public String parseText(Document decision) {
+        workingCase.setEntryDate(extractRegistrationDate(decision));
         if (decision.getElementsByAttributeValue("id", "tabs-3").isEmpty()) return null;
 
         Element table = decision.getElementsByAttributeValue("id", "tabs-3").get(0);
@@ -145,13 +163,10 @@ public class MosGorSudParser extends ConnectorParser{
                 if (stringBuilder.toString().equals("MALFORMED")) {
                     stringBuilder = new StringBuilder();
                     stringBuilder.append(text);
-                }
-                else {
+                } else {
                     stringBuilder.append("$DELIMITER").append(text);
                 }
-            }
-
-            else {
+            } else {
                 stringBuilder.append(text);
             }
 
