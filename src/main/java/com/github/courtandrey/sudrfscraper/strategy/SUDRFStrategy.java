@@ -259,7 +259,7 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     protected boolean checkArticleAndInstance(Instance i) {
-        return Arrays.stream(SearchRequest.getInstance().getArticle().getInstances()).collect(Collectors.toSet()).contains(i);
+        return Arrays.stream(SearchRequest.getInstance().getField().getInstanceList()).collect(Collectors.toSet()).contains(i);
     }
 
     protected void createUrls(Instance instance) {

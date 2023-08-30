@@ -121,7 +121,21 @@ public class MosGorSudParser extends ConnectorParser{
 
         for (Element e : decision.getElementsByClass("row_card")) {
             if (e.getElementsByClass("left").isEmpty() ||
-                !e.getElementsByClass("left").get(0).text().contains("Дата регистрации")) continue;
+                !(e.getElementsByClass("left").get(0).text().contains("Дата регистрации") ||
+                        e.getElementsByClass("left").get(0).text().contains("Дата поступления"))) continue;
+
+            return e.getElementsByClass("right").get(0).text();
+        }
+
+        return null;
+    }
+
+    private String extractResultDate(Document decision) {
+        if (decision.getElementsByClass("row_card").isEmpty()) return null;
+
+        for (Element e : decision.getElementsByClass("row_card")) {
+            if (e.getElementsByClass("left").isEmpty() ||
+                    !e.getElementsByClass("left").get(0).text().contains("Дата вступления решения в силу")) continue;
 
             return e.getElementsByClass("right").get(0).text();
         }
@@ -133,6 +147,7 @@ public class MosGorSudParser extends ConnectorParser{
     @Override
     public String parseText(Document decision) {
         workingCase.setEntryDate(extractRegistrationDate(decision));
+        workingCase.setResultDate(extractResultDate(decision));
         if (decision.getElementsByAttributeValue("id", "tabs-3").isEmpty()) return null;
 
         Element table = decision.getElementsByAttributeValue("id", "tabs-3").get(0);

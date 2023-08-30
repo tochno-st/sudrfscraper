@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,6 +96,8 @@ public class AjaxRestController {
 
             if (!requestDetails.getArticle().isEmpty()) {
                 SearchRequest.getInstance().setArticle(requestDetails.getArticle());
+            } else if (requestDetails.getEndDate().isEmpty()) {
+                SearchRequest.getInstance().setResultDateTill(LocalDate.now());
             }
 
             SearchRequest.getInstance().setField(Field.parseField(requestDetails.getField()));

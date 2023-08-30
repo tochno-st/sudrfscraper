@@ -97,6 +97,8 @@ ver.0.2.4-1 performance enhancement. Enhanced performance for VPN environment.
 
 ver.0.2.5 appellation-update. Added appellation instance.
 
+v0.2.5-1 MGS-fix. Removed scraping duplicate cases for MGS.
+
 CONTACT ME:
 
 Email: sudarkinandrew@gmail.com
