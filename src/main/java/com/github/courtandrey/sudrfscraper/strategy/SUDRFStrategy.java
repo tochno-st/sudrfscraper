@@ -237,7 +237,8 @@ public abstract class SUDRFStrategy implements Runnable{
             issue = Issue.NOT_SUPPORTED_REQUEST;
             unravel = unravel - 5;
         }
-        else if (text.contains("Этот запрос заблокирован по соображениям безопасности")) {
+        else if (text.contains("Этот запрос заблокирован по соображениям безопасности") ||
+            text.contains("Ñ\u0081Ð¾Ð¾Ð±Ñ\u0080Ð°Ð¶ÐµÐ½Ð¸Ñ\u008FÐ¼ Ð±ÐµÐ·Ð¾Ð¿Ð°Ñ\u0081Ð½Ð¾Ñ\u0081Ñ\u0082Ð")) {
             finalIssue = Issue.compareAndSetIssue(Issue.BLOCKED,finalIssue);
             issue = Issue.BLOCKED;
         }
