@@ -10,6 +10,7 @@ import com.github.courtandrey.sudrfscraper.view.View;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +66,7 @@ public final class SimpleLogger {
         initLogger();
         Path courtHistory = Paths.get("./src/main/resources/courts/");
         if (Files.notExists(courtHistory)) Files.createDirectory(courtHistory);
-        try (FileWriter writer = new FileWriter(String.format(PATH_TO_COURT_HISTORY.toString(), cc.getId()), true)) {
+        try (FileWriter writer = new FileWriter(String.format(PATH_TO_COURT_HISTORY.toString(), cc.getId()), StandardCharsets.UTF_8,true)) {
             if (cc.getIssue() == null)  {
                 cc.setIssue(Issue.ERROR);
             }
@@ -89,7 +90,7 @@ public final class SimpleLogger {
 
     private static FileWriter getLogWriter() throws IOException {
         if (logWriter == null) {
-            logWriter = new FileWriter(String.format(PATH_TO_LOGS.toString(), name, name),true);
+            logWriter = new FileWriter(String.format(PATH_TO_LOGS.toString(), name, name),StandardCharsets.UTF_8,true);
             log(LoggingLevel.INFO, Message.BEGINNING_OF_EXECUTION);
         }
         return logWriter;
