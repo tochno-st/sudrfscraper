@@ -42,7 +42,7 @@ public class CaptchaStrategy extends ConnectionSUDRFStrategy {
             createUrls(i);
             for (indexUrl = 0; indexUrl < urls.length; indexUrl++) {
                 super.run();
-                if (issue == Issue.CAPTCHA) {
+                if (issue == Issue.CAPTCHA && !(finalIssue == NOT_FOUND_CASE && indexUrl > 0)) {
                     if (captchaInLoop == 5 && page_num == prevNum && srv_num == prevSrvNum) {
                         if (indexUrl + 1 == urls.length) {
                             finalIssue = Issue.compareAndSetIssue(LOOPED_CAPTCHA,finalIssue);
@@ -65,9 +65,18 @@ public class CaptchaStrategy extends ConnectionSUDRFStrategy {
                     CaptchaPropertiesConfigurator.configureCaptcha(cc, didWellItWorkedOnceUsed,cc.getConnection(),i);
 
                     didWellItWorkedOnceUsed = true;
+
+                    String url = urls[indexUrl];
+
                     createUrls(i);
-                    indexUrl = indexUrl - 1;
                     refreshUrls();
+
+                    if (!url.equals(urls[indexUrl])) {
+                        indexUrl = indexUrl - 1;
+                    } else {
+                        clear();
+                        captchaInLoop = 0;
+                    }
                 }
                 else if (finalIssue == SUCCESS) {
                     indexUrl += 1;
