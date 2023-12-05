@@ -1,7 +1,9 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest.article;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import lombok.Getter;
 
 @Getter
@@ -11,6 +13,9 @@ public class CriminalArticle implements SoftStrictFilterableArticle {
     private int part = 0;
     private char letter = 0;
     private int subArticle = 0;
+
+    @JsonIgnore
+    private final static Instance[] INSTANCES = {Instance.FIRST, Instance.APPELLATION};
 
     public CriminalArticle() {}
 
@@ -54,6 +59,11 @@ public class CriminalArticle implements SoftStrictFilterableArticle {
     @Override
     public boolean isEmpty() {
         return article == 0;
+    }
+
+    @Override
+    public Instance[] getInstances() {
+        return INSTANCES;
     }
 
     @Override

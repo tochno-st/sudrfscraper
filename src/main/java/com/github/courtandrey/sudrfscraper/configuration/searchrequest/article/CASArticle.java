@@ -1,7 +1,9 @@
 package com.github.courtandrey.sudrfscraper.configuration.searchrequest.article;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
+import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import lombok.Getter;
 
 @Getter
@@ -9,6 +11,9 @@ import lombok.Getter;
 public class CASArticle implements CategorizedArticle {
     private String partOfCas;
     private String mosgorsudCode;
+
+    @JsonIgnore
+    private final static Instance[] INSTANCES = {Instance.FIRST, Instance.APPELLATION};
 
     public CASArticle() {
     }
@@ -31,6 +36,11 @@ public class CASArticle implements CategorizedArticle {
     @Override
     public boolean isEmpty() {
         return partOfCas == null && mosgorsudCode == null;
+    }
+
+    @Override
+    public Instance[] getInstances() {
+        return INSTANCES;
     }
 
     @Override
