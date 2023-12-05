@@ -25,10 +25,12 @@ import java.util.Set;
 public abstract class ConnectorParser implements Parser{
     protected CourtConfiguration cc;
     private final RequestBuilder builder;
+    protected final Connector connector;
 
     public ConnectorParser(CourtConfiguration cc) {
+        connector = new Connector(cc);
         this.cc = cc;
-        builder = new RequestBuilder(cc);
+        builder = new RequestBuilder(cc.getLevel());
     }
 
     String getRequestText(String url) throws IOException {

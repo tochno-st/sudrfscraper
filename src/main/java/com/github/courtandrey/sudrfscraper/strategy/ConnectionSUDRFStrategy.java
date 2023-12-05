@@ -38,7 +38,21 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
 
     public ConnectionSUDRFStrategy(CourtConfiguration cc) {
         super(cc);
-        requestBuilder = new RequestBuilder(cc);
+        requestBuilder = new RequestBuilder(cc.getLevel());
+        if (cc.getStrategyName() != StrategyName.MOSGORSUD_STRATEGY) {
+            parser = new GeneralParser(cc);
+        } else {
+            parser = new MosGorSudParser(cc);
+        }
+        if (ApplicationConfiguration.getInstance().getProperty("dev.test") != null
+                && ApplicationConfiguration.getInstance().getProperty("dev.test").equals("true")) {
+            isInTestingMode = true;
+        }
+    }
+
+    public ConnectionSUDRFStrategy(CourtConfiguration cc, CourtStatus status) {
+        super(cc,status);
+        requestBuilder = new RequestBuilder(cc.getLevel());
         if (cc.getStrategyName() != StrategyName.MOSGORSUD_STRATEGY) {
             parser = new GeneralParser(cc);
         } else {
@@ -214,6 +228,7 @@ public abstract class ConnectionSUDRFStrategy extends SUDRFStrategy {
         Set<Case> cases = parser.scrap(currentDocument,cc.getSearchString());
 
         if (cases != null) {
+            cases.forEach(x -> x.setInstance(currentInstance.name()));
             resultCases.addAll(cases);
         }
 
