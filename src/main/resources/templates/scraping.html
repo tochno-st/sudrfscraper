@@ -3,6 +3,9 @@
 <head>
     <title>Scraping</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/i18next@21.6.10/i18next.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-i18next@1.2.1/jquery-i18next.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <style>
         html {
             height: 100%;
@@ -132,7 +135,7 @@
 <body>
     <div>
         <div class="container">
-            <h1>Scraping progress</h1>
+            <h1 data-i18n="progress"></h1>
             <div class="progress" style="width: 500px; height: 20px;">
             <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
             <div id="progressText"></div>
@@ -141,25 +144,66 @@
                 <div class="captcha-container">
                     <div class="captcha-image">
                         <img id="captchaImage" src="">
-                        <div id="captchaPlaceholder">Captcha would appear here</div>
+                        <div id="captchaPlaceholder" data-i18n="captcha-text"></div>
                     </div>
                     <div>
                         <input type="text" id="captchaInput" placeholder="Enter Captcha" class="captcha-input">
                     </div>
                 </div>
-
-                <button id="submitButton" onclick="submitCaptcha()" class="captcha-submit">Submit</button>
+                <audio id="captchaSound" src="https://cdn.freesound.org/previews/444/444918_6142149-lq.mp3" preload="auto"></audio>
+                <button id="submitButton" onclick="submitCaptcha()" class="captcha-submit" data-i18n="submit-btn"></button>
             </div>
 
             <div id="logsContainer">
-                <div id="logsHeader" onclick="toggleLogs()">Show Logs</div>
+                <div id="logsHeader" onclick="toggleLogs()" data-i18n="show-logs"></div>
                 <div id="logsContent"></div>
             </div>
 
-            <button id="exit" class="submit">Exit</button>
+            <button id="exit" class="submit" data-i18n="exit"></button>
     </div>
 </div>
 
+    <script>
+        const chosenLng = localStorage.getItem('selectedLanguage');
+
+        const rerender = () => {
+            $('body').localize();
+        }
+
+        $(function () {
+            i18next
+                .init({
+                    lng: chosenLng,
+                    fallbackLng: 'en',
+                    resources: {
+                        en: {
+                            translation: {
+                                "progress": "Scraping progress",
+                                "captcha-text": "Captcha would appear here",
+                                "show-logs": "Show Logs",
+                                "exit": "Exit",
+                                "submit-btn": "Submit",
+                            }
+                        },
+                        ru: {
+                            translation: {
+                                "progress": "Прогресс",
+                                "captcha-text": "Капча появится здесь",
+                                "show-logs": "Показать логи",
+                                "exit": "Завершить",
+                                "submit-btn": "Отправить",
+                            }
+                        }
+                    }
+                }, (err, t) => {
+                    if (err) return console.error(err);
+
+                    jqueryI18next.init(i18next, $, {useOptionsAttr: true});
+
+                    rerender();
+                });
+        });
+    </script>
     <script>
         var progressSocket = new WebSocket("ws://localhost:8080/ws");
         var openedWS = 0;
@@ -369,10 +413,15 @@
           captchaImage.style.display='flex';
           placeHolder.textContent = '';
           captchaImage.src = imageDataURL;
+          playNotification();
 
           // Show the submit button
           var submitButton = document.getElementById('submitButton');
           submitButton.style.display = 'flex';
+        }
+
+        function playNotification() {
+            $('#captchaSound')[0].play();
         }
 
         function submitCaptcha() {

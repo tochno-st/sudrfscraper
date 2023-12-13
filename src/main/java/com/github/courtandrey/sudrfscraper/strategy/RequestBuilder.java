@@ -1,6 +1,5 @@
 package com.github.courtandrey.sudrfscraper.strategy;
 
-import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Level;
 import com.github.courtandrey.sudrfscraper.service.Constant;
 import org.apache.http.client.methods.HttpGet;
@@ -12,8 +11,8 @@ public class RequestBuilder {
     }
     private final RequestFor aFor;
 
-    public RequestBuilder(CourtConfiguration cc) {
-        if (cc.getLevel() == Level.MOSGORSUD) aFor = RequestFor.MOSGORSUD;
+    public RequestBuilder(Level ll) {
+        if (ll == Level.MOSGORSUD) aFor = RequestFor.MOSGORSUD;
         else aFor = RequestFor.GENERAL;
     }
 

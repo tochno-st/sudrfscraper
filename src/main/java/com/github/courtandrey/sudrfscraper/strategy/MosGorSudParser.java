@@ -3,11 +3,14 @@ package com.github.courtandrey.sudrfscraper.strategy;
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
+import com.github.courtandrey.sudrfscraper.dump.model.LinkType;
+import com.github.courtandrey.sudrfscraper.exception.CourtIsDownException;
 import com.github.courtandrey.sudrfscraper.service.Converter;
 import com.github.courtandrey.sudrfscraper.service.Downloader;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
 import com.github.courtandrey.sudrfscraper.service.logger.SimpleLogger;
+import org.apache.http.NoHttpResponseException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -17,16 +20,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MosGorSudParser extends ConnectorParser{
-    private final Set<Case> cases = new HashSet<>();
     protected boolean isTextFound = false;
     private final Downloader downloader = new Downloader();
     private final Converter converter = new Converter();
     private final boolean showConflicts = Boolean.parseBoolean(
             ApplicationConfiguration.getInstance().getProperty("dev.show_mgs_conflicts")
     );
+    private final MetaParser metaParser = new MosGorSudMetaParser();
+
     MosGorSudParser(CourtConfiguration cc) {
         super(cc);
     }
+
     @Override
     public boolean isTextFound() {
         return isTextFound;
@@ -34,6 +39,7 @@ public class MosGorSudParser extends ConnectorParser{
 
     @Override
     public Set<Case> scrap(Document document, String currentUrl) {
+        Set<Case> cases = new HashSet<>();
         Elements table = document.getElementsByClass("custom_table");
         if (table.isEmpty()) return cases;
         for (Element element:table.get(0).getElementsByTag("tr")) {
@@ -47,7 +53,8 @@ public class MosGorSudParser extends ConnectorParser{
                 _case.setDecision(rowParts.get(2).text());
                 _case.setJudge(rowParts.get(3).text());
                 _case.setRegion(cc.getRegion());
-                _case.setText(currentUrl+rowParts.get(0).getElementsByTag("a").attr("href"));
+                _case.setTextUrl(currentUrl+rowParts.get(0).getElementsByTag("a").attr("href"));
+                _case.addLink(LinkType.TEXT_AND_META, currentUrl+rowParts.get(0).getElementsByTag("a").attr("href"));
                 cases.add(_case);
             } catch (Exception e) {
                 SimpleLogger.log(LoggingLevel.DEBUG, Message.MOSGORSUD_PARSING_EXCEPTION + e.getLocalizedMessage());
@@ -69,11 +76,11 @@ public class MosGorSudParser extends ConnectorParser{
         int i = 1;
         for (Case _case:resultCases) {
             workingCase = _case;
-            String url = _case.getText();
+            String url = _case.getLinks().get(LinkType.TEXT_AND_META);
             if (url != null) {
-                _case.setText(null);
                 try{
-                    String text = getRequestText(url);
+                    Document doc = connector.getDocument(url);
+                    String text = parseText(doc);
                     if (text != null) {
                         isTextFound = true;
                         String[] splits = text.split("\\$DELIMITER");
@@ -89,8 +96,13 @@ public class MosGorSudParser extends ConnectorParser{
                                 SimpleLogger.log(LoggingLevel.DEBUG, "Couldn't match case: " + Arrays.toString(splits));
                         }
                     }
-                }catch (Exception e) {
-                    SimpleLogger.log(LoggingLevel.DEBUG, Message.DOCUMENT_NOT_PARSED + url);
+                    CaseParsingResultBox box = metaParser.parseMeta(_case, doc);
+                    if (box.getCps() == CaseParsingResult.COURT_DOWN) throw new CourtIsDownException();
+                    if (box.getCps() == CaseParsingResult.CASE_COULD_NOT_BE_PARSED) throw new Exception("CUI NOT SET");
+                } catch (CourtIsDownException | NoHttpResponseException e) {
+                    SimpleLogger.log(LoggingLevel.DEBUG, "Court is possibly down. Couldn't parse text: " + url);
+                } catch (Exception e) {
+                    SimpleLogger.log(LoggingLevel.WARNING, "Meta was not parsed: " + url + " cause: " + e);
                 }
             }
             if (i % 25 == 0) {
@@ -184,13 +196,10 @@ public class MosGorSudParser extends ConnectorParser{
             } else {
                 stringBuilder.append(text);
             }
-
         }
 
         if (stringBuilder.isEmpty()) return null;
 
         return stringBuilder.toString();
     }
-
-
 }

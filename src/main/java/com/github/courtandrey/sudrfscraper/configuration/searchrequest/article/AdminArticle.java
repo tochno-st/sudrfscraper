@@ -61,5 +61,4 @@ public class AdminArticle implements SoftStrictFilterableArticle {
         if (subPart != 0) returnString += "." + subPart;
         return returnString;
     }
-
 }

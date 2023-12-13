@@ -3,6 +3,8 @@ package com.github.courtandrey.sudrfscraper.strategy;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.CourtConfiguration;
 import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.SearchPattern;
 import com.github.courtandrey.sudrfscraper.dump.model.Case;
+import com.github.courtandrey.sudrfscraper.dump.model.LinkType;
+import com.github.courtandrey.sudrfscraper.exception.CourtIsDownException;
 import com.github.courtandrey.sudrfscraper.service.ThreadHelper;
 import com.github.courtandrey.sudrfscraper.service.logger.LoggingLevel;
 import com.github.courtandrey.sudrfscraper.service.logger.Message;
@@ -22,6 +24,7 @@ import java.util.Set;
 
 public class GeneralParser extends ConnectorParser{
     protected boolean isTextFound = false;
+    private final MetaParser metaParser = new GeneralMetaParser(cc.getSearchPattern());
 
     GeneralParser(CourtConfiguration cc) {
         super(cc);
@@ -74,6 +77,19 @@ public class GeneralParser extends ConnectorParser{
 
             if (!caseParams.get(0).text().replace(" ", "").isEmpty()) {
                 _case.setCaseNumber(caseParams.get(0).text());
+                Elements els = caseParams.get(0).getElementsByTag("a");
+                if (!els.isEmpty()) {
+                    String href;
+                    href = els.get(0).attr("href");
+                    if (!href.isEmpty()) {
+                        if (href.charAt(0) == '/') href = currentUrl + href;
+                        _case.addLink(LinkType.META, href);
+                    } else {
+                        SimpleLogger.log(LoggingLevel.WARNING, "No Link to Meta found in: " + currentUrl);
+                    }
+                } else {
+                    SimpleLogger.log(LoggingLevel.WARNING, "No Link to Meta found in: " + currentUrl);
+                }
             }
             if (!caseParams.get(1).text().replace(" ", "").isEmpty()) {
                 _case.setEntryDate(caseParams.get(1).text());
@@ -107,7 +123,7 @@ public class GeneralParser extends ConnectorParser{
                 href = els.get(0).attr("href");
             if (!href.isEmpty()) {
                 if (href.charAt(0) == '/') href = currentUrl + href;
-                _case.setText(href);
+                _case.addLink(LinkType.TEXT, href);
             }
             cases.add(_case);
         }
@@ -119,9 +135,8 @@ public class GeneralParser extends ConnectorParser{
         SimpleLogger.log(LoggingLevel.INFO, String.format(Message.COLLECTING_TEXTS.toString(),cases.size(),cc.getName()));
         int i = 1;
         for (Case _case:cases) {
-            String url = _case.getText();
+            String url = _case.getLinks().get(LinkType.TEXT);
             if (url != null) {
-                _case.setText(null);
                 String text = getText(url);
                 if (text != null && !text.equals("Malformed case")) {
                     isTextFound = true;
@@ -130,10 +145,28 @@ public class GeneralParser extends ConnectorParser{
                     SimpleLogger.log(LoggingLevel.DEBUG, Message.DOCUMENT_NOT_PARSED + url);
                 }
             }
+            url = _case.getLinks().get(LinkType.META);
+            if (url != null) {
+                try {
+                    Document doc = connector.getDocument(url);
+                    CaseParsingResultBox result = metaParser.parseMeta(_case, doc);
+                    if (result.getCps() == CaseParsingResult.COURT_DOWN) throw new CourtIsDownException();
+                    if (result.getCps() == CaseParsingResult.CASE_COULD_NOT_BE_PARSED) throw new IOException();
+                }
+                catch (CourtIsDownException e){
+                    SimpleLogger.log(LoggingLevel.DEBUG, "Court is possibly down. Couldn't parse meta: " + url);
+                }
+                catch (IOException e) {
+                    SimpleLogger.log(LoggingLevel.DEBUG, "Meta is not parsed: " + url);
+                }
+            } else {
+                SimpleLogger.log(LoggingLevel.WARNING, "Couldn't find link to meta for: " + cc.getSearchString());
+            }
             if (i % 25 == 0) {
                 SimpleLogger.log(LoggingLevel.INFO,String.format(Message.COLLECTED_TEXTS.toString(),i,cases.size(),cc.getName()));
             }
             i+= 1;
+            _case.setFormed(true);
         }
         return cases;
     }

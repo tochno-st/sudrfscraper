@@ -56,6 +56,18 @@ public abstract class SUDRFStrategy implements Runnable{
         if (cc.getSearchPattern() != SearchPattern.VNKOD_PATTERN) timeToStopRotatingBuild = true;
     }
 
+    public SUDRFStrategy(CourtConfiguration cc, CourtStatus status) {
+        this.cc = cc;
+
+        this.page_num = status.page;
+
+        this.srv_num = status.srv == null ? 1 : status.build;
+
+        this.build = status.build == null ? 1 : status.build;
+
+        if (cc.getSearchPattern() != SearchPattern.VNKOD_PATTERN) timeToStopRotatingBuild = true;
+    }
+
     private void setPage_num() {
         if (cc.getSearchPattern() == SearchPattern.SECONDARY_PATTERN ||
                 cc.getSearchPattern() == SearchPattern.DEPRECATED_SECONDARY_PATTERN) {
@@ -189,73 +201,21 @@ public abstract class SUDRFStrategy implements Runnable{
         return false;
     }
 
+    private final IssueByTextIdentifier identifier = new IssueByTextIdentifier();
+
     protected void checkText(String text) {
-        if (text.contains("код с картинки") || text.contains("Время жизни сессии закончилось")) {
-            issue = Issue.CAPTCHA;
-        }
-
-        else if (text.contains("для получения полной информации по делу или материалу, нажмите на номер") ||
-                text.contains("НЕВЕРНЫЙ ФОРМАТ ЗАПРОСА!") ||
-                text.matches(".*На ..\\...\\..... дел не назначено.*")) {
-            finalIssue = Issue.compareAndSetIssue(Issue.URL_ERROR, finalIssue);
-            issue = Issue.URL_ERROR;
-        }
-
-        else if (text.contains("Данных по запросу не обнаружено") ||
-                text.contains("Данных по запросу не найдено") ||
-                text.contains("Ничего не найдено")) {
-            finalIssue = Issue.compareAndSetIssue(Issue.NOT_FOUND_CASE, finalIssue);
-            issue = Issue.NOT_FOUND_CASE;
-        }
-
-        else if (text.contains("№ дела") || text.contains("Дата поступления") || text.contains("Номер дела")
-                || text.contains("Всего по запросу найдено")) {
-            issue = Issue.SUCCESS;
-        }
-
-        else if (text.contains("Информация временно недоступна") || text.contains("Warning: pg_connect():") || text.contains("В настоящий момент производится информационное наполнение сайта. Обратитесь к странице позже")) {
-            finalIssue = Issue.compareAndSetIssue(Issue.INACTIVE_COURT,finalIssue);
-            issue = Issue.INACTIVE_COURT;
-            unravel = unravel - 5;
-        }
-
-        else if (text.contains("Данный модуль неактивен")) {
-            finalIssue = Issue.compareAndSetIssue(Issue.INACTIVE_MODULE, finalIssue);
-            issue = Issue.INACTIVE_MODULE;
-            unravel = unravel - 5;
-        }
-
-        else if (text.contains("503")
-                && text.contains("В настоящее время сайт временно недоступен. Обратитесь к данной странице позже")) {
-            --unravel;
-            finalIssue = Issue.compareAndSetIssue(Issue.CONNECTION_ERROR,finalIssue);
-            issue = Issue.CONNECTION_ERROR;
-        }
-
-        else if (text.contains("ERROR LEVEL 2")) {
-            finalIssue = Issue.compareAndSetIssue(Issue.NOT_SUPPORTED_REQUEST,finalIssue);
-            issue = Issue.NOT_SUPPORTED_REQUEST;
-            unravel = unravel - 5;
-        }
-        else if (text.contains("Этот запрос заблокирован по соображениям безопасности") ||
-            text.contains("Ñ\u0081Ð¾Ð¾Ð±Ñ\u0080Ð°Ð¶ÐµÐ½Ð¸Ñ\u008FÐ¼ Ð±ÐµÐ·Ð¾Ð¿Ð°Ñ\u0081Ð½Ð¾Ñ\u0081Ñ\u0082Ð")) {
-            finalIssue = Issue.compareAndSetIssue(Issue.BLOCKED,finalIssue);
-            issue = Issue.BLOCKED;
-        }
-        else if (text.contains("Возможно, она была удалена или перемещена.")) {
-            finalIssue = Issue.compareAndSetIssue(Issue.NOT_FOUND,finalIssue);
-            issue = Issue.NOT_FOUND;
-        }
-
-        else if (cc.getConnection() != Connection.SELENIUM){
-            finalIssue = Issue.compareAndSetIssue(Issue.UNDEFINED_ISSUE,finalIssue);
-            issue = Issue.UNDEFINED_ISSUE;
-        }
-
-        else {
-            unravel = unravel - 5;
-            finalIssue = Issue.compareAndSetIssue(Issue.CONNECTION_ERROR, finalIssue);
-            issue = Issue.CONNECTION_ERROR;
+        Issue identified = identifier.checkText(text, cc.getConnection());
+        switch (identified) {
+            case CAPTCHA, SUCCESS -> issue = identified;
+            case URL_ERROR, NOT_FOUND_CASE, BLOCKED, NOT_FOUND, UNDEFINED_ISSUE -> {
+                issue = identified;
+                finalIssue = Issue.compareAndSetIssue(identified, finalIssue);
+            }
+            default -> {
+                issue = identified;
+                finalIssue = Issue.compareAndSetIssue(identified, finalIssue);
+                unravel = unravel - 5;
+            }
         }
     }
 
@@ -324,13 +284,8 @@ public abstract class SUDRFStrategy implements Runnable{
     }
 
     protected void finish() {
-        if (currentInstance != Instance.FIRST) setInstance();
         setFinalInfo();
         logFinalInfo();
-    }
-
-    private void setInstance() {
-        resultCases.forEach(x -> x.setInstance(currentInstance.name()));
     }
 
     protected void logFinalInfo() {
