@@ -32,7 +32,7 @@
 
 1. Перейдите в https://github.com/tochno-st/sudrfscraper/releases/. Найдите последнюю версию релиза и скачайте архив, который соответствует вашей операционной системе.
 2. Разархивируйте.
-3. Если у вас Windows, то приложение можно запустить, два раза кликнув на файл **run.bat**. Если у вас Linux или MacOS, то введите в терминале полный путь до файла run.sh (/path/to/run.sh). Если появилась ошибка Permission dinied, убедитесь, что у исполняемых файлов run.sh и linux-x64.sudrfscraper/jre/bin/java установлено свойство Allow this file to run as a program.
+3. Если у вас Windows, то приложение можно запустить, два раза кликнув на файл **run.bat**. Если у вас Linux или MacOS, то введите в терминале полный путь до файла run.sh (`/path/to/run.sh`). Если появилась ошибка Permission dinied, убедитесь, что у исполняемых файлов `run.sh` и `<ваша операционная система>/jre/bin/java` установлено свойство Allow this file to run as a program.
 
 ## На что обратить внимание
 
