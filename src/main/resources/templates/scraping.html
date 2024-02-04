@@ -160,6 +160,8 @@
             </div>
 
             <button id="exit" class="submit" data-i18n="exit"></button>
+
+            <p data-i18n="[html]donation-text"></p>
     </div>
 </div>
 
@@ -183,6 +185,7 @@
                                 "show-logs": "Show Logs",
                                 "exit": "Exit",
                                 "submit-btn": "Submit",
+                                "donation-text": "To support our continued research efforts, consider establishing a recurring donation through Boosty (<a href=\"https://boosty.to/tochnost\">https://boosty.to/tochnost</a>) or Patreon (<a href=\"https://www.patreon.com/ToBePrecise\">https://www.patreon.com/ToBePrecise</a>). We rely on your support to sustain our work.",
                             }
                         },
                         ru: {
@@ -192,6 +195,7 @@
                                 "show-logs": "Показать логи",
                                 "exit": "Завершить",
                                 "submit-btn": "Отправить",
+                                "donation-text": "Чтобы мы могли делать больше исследований, оформите регулярное пожертвование на Boosty (<a href=\"https://boosty.to/tochnost\">https://boosty.to/tochnost</a>) или Patreon (<a href=\"https://www.patreon.com/ToBePrecise\">https://www.patreon.com/ToBePrecise</a>). Мы работаем благодаря вашей поддержке.",
                             }
                         }
                     }
@@ -236,10 +240,21 @@
             var progressBar = document.getElementById('progressBar');
             var progressText = document.getElementById('progressText');
 
+            var messages = {
+                'en': {
+                    progressTextMessage: ' courts done. Total number of found cases: ',
+                },
+                'ru': {
+                    progressTextMessage: ' судов обработано. Количество найденных дел: ',
+                }
+            };
+
+            var currentLanguageMessages = messages[chosenLng];
+
             var progressPercentage = (current / total) * 100;
             progressBar.style.width = progressPercentage + '%';
             progressBar.setAttribute('aria-valuenow', progressPercentage);
-            progressText.textContent = current + '/' + total + ' courts done. Total number of found cases: ' + scraped;
+            progressText.textContent = current + '/' + total + currentLanguageMessages.progressTextMessage + scraped;
         }
 
         var infoSocket = new WebSocket("ws://localhost:8080/ws");
@@ -433,11 +448,23 @@
             captcha: captchaValue
           };
           xhr.send(JSON.stringify(captchaVal));
+
+            var messages = {
+                'en': {
+                    placeHolderText: 'Captcha would appear here',
+                },
+                'ru': {
+                    placeHolderText: 'Капча появится здесь',
+                }
+            };
+
+            var currentLanguageMessage = messages[chosenLng];
+
           captchaInput.value = '';
           captchaImage.src = '';
           captchaImage.style.display = 'none';
           captchaInput.style.display = 'none';
-          placeHolder.textContent = 'Captcha would appear here';
+          placeHolder.textContent = currentLanguageMessage.placeHolderText;
           submitButton.style.display = 'none';
         }
     </script>

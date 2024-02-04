@@ -12,8 +12,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.github.courtandrey.sudrfscraper.service.Constant.PATH_TO_RESULT_JSON;
-import static com.github.courtandrey.sudrfscraper.service.Constant.PATH_TO_RESULT_META;
+import static com.github.courtandrey.sudrfscraper.service.Constant.*;
 
 public class JSONUpdaterService extends UpdaterService {
 
@@ -21,11 +20,14 @@ public class JSONUpdaterService extends UpdaterService {
     private final ObjectMapper mapper = new ObjectMapper();
     private final String fileName;
     private final String meta;
+    private final CSVConverterService csvConverterService;
 
     public JSONUpdaterService(String dumpName, ErrorHandler handler) throws IOException {
         super(dumpName, handler);
         fileName = String.format(PATH_TO_RESULT_JSON.toString(), dumpName, dumpName);
         meta = String.format(PATH_TO_RESULT_META.toString(),dumpName,dumpName);
+        csvConverterService = new CSVConverterService(fileName,
+                String.format(PATH_TO_RESULT_CSV.toString(), dumpName, dumpName));
         try {
             renew();
             if (Files.size(Paths.get(fileName)) > 0) {
@@ -94,6 +96,7 @@ public class JSONUpdaterService extends UpdaterService {
         finally {
             try {
                 afterExecute();
+                csvConverterService.convertJsonToCSV();
             } catch (IOException e) {
                 handler.errorOccurred(e, this);
             }

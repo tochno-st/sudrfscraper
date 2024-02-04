@@ -16,10 +16,7 @@ import com.github.courtandrey.sudrfscraper.web.dto.ServerConnectionDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,7 +86,8 @@ public class AjaxRestController {
     }
 
     @PostMapping("/check_request")
-    public ResponseEntity<String> checkRequest(@RequestBody RequestDetails requestDetails) {
+    public ResponseEntity<String> checkRequest(@RequestBody RequestDetails requestDetails,
+    @RequestHeader(name = "Selected-Language") String language) {
         try {
             ResponseEntity<String> valid = validate(requestDetails);
             if (valid != null) return valid;
@@ -134,6 +132,7 @@ public class AjaxRestController {
             ApplicationConfiguration.getInstance().setProperty("basic.continue",String.valueOf(requestDetails.getMeta().isNeedToContinue()));
             ApplicationConfiguration.getInstance().setProperty("basic.name",requestDetails.getMeta().getName());
             ApplicationConfiguration.getInstance().setProperty("basic.dump",requestDetails.getChosenDump());
+            ApplicationConfiguration.getInstance().setProperty("basic.language", language);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Internal Error. Please change you request." +
                     " If it continues, write to sudarkinandrew@gmail.com");

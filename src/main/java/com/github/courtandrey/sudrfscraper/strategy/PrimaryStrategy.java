@@ -22,6 +22,7 @@ public class PrimaryStrategy extends ConnectionSUDRFStrategy {
             clear();
             issue = null;
             timeToStopRotatingPage = false;
+            indexUrl = 0;
         }
         finish();
     }
