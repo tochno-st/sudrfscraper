@@ -230,7 +230,7 @@ public class Starter {
 
     public void executeScrapping(boolean needToContinue) throws SearchRequestUnsetException {
         Runtime.getRuntime().addShutdownHook(new Thread(this::end));
-        view.showFrameWithInfo(ViewFrame.INFO, Message.BEGINNING_OF_EXECUTION);
+        view.showFrameWithInfo(ViewFrame.INFO, getMessage(Message.BEGINNING_OF_EXECUTION, Message.BEGINNING_OF_EXECUTION_RU));
         mainThread = Thread.currentThread();
         try {
             checkSearchConfiguration();
@@ -249,6 +249,11 @@ public class Starter {
         } finally {
             end();
         }
+    }
+
+    private static Message getMessage(Message english, Message russian) {
+        return ApplicationConfiguration.getInstance().getProperty("basic.language").equals("ru")
+                ? russian : english;
     }
 
     private void checkSearchConfiguration() throws SearchRequestUnsetException {
@@ -282,7 +287,7 @@ public class Starter {
 
         ConfigurationLoader.storeConfiguration(configHolder.getCCs());
 
-        view.showFrameWithInfo(ViewFrame.INFO, Message.SCRAPING_DONE,
+        view.showFrameWithInfo(ViewFrame.INFO, getMessage(Message.SCRAPING_DONE, Message.SCRAPING_DONE_RU),
                 ApplicationConfiguration.getInstance().getProperty("basic.result.path") +
                 ApplicationConfiguration.getInstance().getProperty("basic.name") + "/");
 
@@ -296,7 +301,7 @@ public class Starter {
 
     private void continueScrapping() throws InterruptedException {
         SimpleLogger.log(LoggingLevel.INFO, Message.SECOND_LAP);
-        view.showFrameWithInfo(ViewFrame.INFO, Message.SECOND_LAP);
+        view.showFrameWithInfo(ViewFrame.INFO, getMessage(Message.SECOND_LAP, Message.SECOND_LAP_RU));
         ConfigurationHelper.analyzeIssues(configHolder.getCCs());
         execute(true);
     }
@@ -304,7 +309,7 @@ public class Starter {
     private void scrap() throws InterruptedException {
         execute(false);
         continueScrapping();
-        view.showFrameWithInfo(ViewFrame.INFO, Message.DUMP);
+        view.showFrameWithInfo(ViewFrame.INFO, getMessage(Message.DUMP, Message.DUMP_RU));
     }
 
     private void execute(Boolean ignoreInactive) throws InterruptedException {
