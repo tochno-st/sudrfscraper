@@ -142,6 +142,11 @@
     </script>
     <script>
       document.getElementById("redirectButton").addEventListener("click", function() {
+          const chosenLng = localStorage.getItem('selectedLanguage');
+          if (!chosenLng) {
+              localStorage.setItem('selectedLanguage', 'en');
+          }
+
         window.location.href = "/search";
       });
     </script>
