@@ -39,20 +39,27 @@
         #redirectButton:hover {
             background-color: #555;
         }
-             h1 {
-        font-weight: bold;
-        font-size: 24px;
-        text-align: center;
-        }
+
+         h1 {
+             font-weight: bold;
+             font-size: 24px;
+             text-align: center;
+             display: block;
+         }
+
+         .centered {
+             display: flex;
+             justify-content: center;
+             align-items: center;
+         }
+
          h2 {
-        font-weight: bold;
-        font-size: 20px;
-        text-align: center;
-        }
+             font-weight: bold;
+             font-size: 20px;
+             text-align: center;
+         }
 
          #languageSelect {
-             display: block;
-             float: right;
              width: 50px;
              border: none;
              padding: 8px;
@@ -74,7 +81,7 @@
 </head>
 <body>
 <div class="container">
-    <select name="language" id="languageSwitcher" class="select-strict" style="float: right"></select>
+    <select name="language" id="languageSwitcher" class="select-strict"></select>
 
     <h1 data-i18n="welcome"></h1>
 
@@ -127,6 +134,10 @@
         <label for="hide-checkbox" data-i18n="checkbox-label"></label>
     </div>
 
+    <div class="centered">
+        <div id="submitNotValid" style="margin-top: 10px"></div>
+    </div>
+
     <button id="redirectButton" data-i18n="redirect-button-text"></button>
 </div>
 
@@ -141,11 +152,16 @@
         });
     </script>
     <script>
-      document.getElementById("redirectButton").addEventListener("click", function() {
-          const chosenLng = localStorage.getItem('selectedLanguage');
-          if (!chosenLng) {
-              localStorage.setItem('selectedLanguage', 'en');
-          }
+        const submitFailed = document.getElementById('submitNotValid');
+
+        document.getElementById("redirectButton").addEventListener("click", function (event) {
+            event.preventDefault();
+
+            if (document.getElementById('languageSwitcher').value === "") {
+                submitFailed.textContent = 'Please choose the language';
+                submitFailed.style.color = 'red';
+                return;
+            }
 
         window.location.href = "/search";
       });
@@ -163,7 +179,6 @@
 
     $(function () {
         i18next
-            .use(i18nextBrowserLanguageDetector)
             .init({
                 fallbackLng: 'en',
                 resources: {
@@ -179,7 +194,7 @@
                             "important-title": "Important Points",
                             "important-1": "<strong>SUDRF Scraper</strong> uses the FireFox WebDriver, so you must have the Firefox browser installed on your device. If you see error messages related to the WebDriver, try:",
                             "important-2": "Download the driver for your operating system from <a href=\"https://github.com/mozilla/geckodriver/releases\">https://github.com/mozilla/geckodriver/releases</a>",
-                            "important-3": "Replace the driver in the ./src/main/resources/<your operating system name>/ folder.",
+                            "important-3": "Replace the driver in the ./src/main/resources/\"your operating system name folder\".",
                             "important-4": "It is not recommended to search for cases <strong>only by the text of the court decision</strong>. Many courts do not support this query format, so the search will be among all decisions published up to that moment. Specify search parameters in other fields.",
                             "important-5": "Search for court cases can only be done for one of the five types of judicial proceedings. If you have not specified it, the search defaults to criminal cases.",
                             "important-6": "It is also not recommended to run an unlimited search for administrative or civil types of judicial proceedings. Choose a specific article or set other search criteria.",
@@ -257,11 +272,11 @@
                 jqueryI18next.init(i18next, $, {useOptionsAttr: true});
 
                 // fill language switcher
+                $('#languageSwitcher').append('<option value="" selected>Select language</option>');
+
                 Object.keys(lngs).map((lng) => {
                     const opt = new Option(lngs[lng].nativeName, lng);
-                    if (lng === i18next.resolvedLanguage) {
-                        opt.setAttribute("selected", "selected");
-                    }
+
                     $('#languageSwitcher').append(opt);
                 });
                 $('#languageSwitcher').change((a, b, c) => {
