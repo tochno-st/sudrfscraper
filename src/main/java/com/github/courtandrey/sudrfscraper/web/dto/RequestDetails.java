@@ -3,6 +3,7 @@ package com.github.courtandrey.sudrfscraper.web.dto;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.article.Article;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @JsonAutoDetect
@@ -54,6 +55,10 @@ public class RequestDetails {
     private ServerConnectionDetails connectionInf;
     private String endDate;
     private String startDate;
+    @Setter
+    private String entryEndDate;
+    @Setter
+    private String entryStartDate;
     private String text;
     private String[] instances;
 

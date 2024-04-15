@@ -227,7 +227,13 @@ public abstract class SUDRFStrategy implements Runnable{
         switch (instance) {
             case FIRST -> createFirstInstanceUrls();
             case APPELLATION -> createAppellationUrls();
+            case CASSATION -> createCassationUrls();
         }
+    }
+
+    private void createCassationUrls() {
+        urlCreator = new URLCreator(cc, Instance.CASSATION);
+        urls = urlCreator.createUrls();
     }
 
     private void createAppellationUrls() {
