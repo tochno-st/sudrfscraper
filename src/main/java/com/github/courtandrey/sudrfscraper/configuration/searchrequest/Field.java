@@ -7,8 +7,8 @@ public enum Field {
     MATERIAL_PROCEEDING, CIVIL;
 
     public Instance[] getInstanceList() {
-        if (this != MATERIAL_PROCEEDING) return new Instance[]{Instance.FIRST, Instance.APPELLATION};
-        return new Instance[]{Instance.FIRST};
+        if (this != MATERIAL_PROCEEDING) return new Instance[]{Instance.FIRST, Instance.APPELLATION, Instance.CASSATION};
+        return new Instance[]{Instance.FIRST, Instance.CASSATION};
     }
 
     public static Field parseField(String field) {

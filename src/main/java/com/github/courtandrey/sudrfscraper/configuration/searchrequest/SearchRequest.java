@@ -21,9 +21,15 @@ public class SearchRequest {
     private Instance[] instanceList;
     @Getter
     private String entryDateTill;
+    @Getter
+    private String entryDateFrom;
 
     public void setEntryDateTill(LocalDate entryDateTill) {
         this.entryDateTill = getDateToString(entryDateTill);
+    }
+
+    public void setEntryDateFrom(LocalDate entryDateFrom) {
+        this.entryDateFrom = getDateToString(entryDateFrom);
     }
 
     @Getter

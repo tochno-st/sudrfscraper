@@ -46,8 +46,29 @@ public class URLCreator {
             case APPELLATION -> {
                 return createAppellationUrlForCaptcha();
             }
+            case CASSATION -> {
+                return createCassationUrlForCaptcha();
+            }
         }
         return "";
+    }
+
+    private String createCassationUrlForCaptcha() {
+        String ending = "";
+
+        switch (pattern) {
+            case PRIMARY_PATTERN -> {
+                switch (sc.getField()) {
+                    case CRIMINAL -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&nc=1&delo_id=4&new=2450001";
+                    case ADMIN -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&nc=1&delo_id=2550001";
+                    case CAS -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&nc=1&delo_id=43";
+                    case CIVIL -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&nc=1&delo_id=5&new=2800001";
+                    case MATERIAL_PROCEEDING -> ending = "/modules.php?name=sud_delo&srv_num=1&name_op=sf&nc=1&delo_id=1610001";
+                }
+            }
+        }
+
+        return cc.getSearchString() + ending;
     }
 
     private String createAppellationUrlForCaptcha() {
@@ -114,8 +135,8 @@ public class URLCreator {
         String captcha = (new CaptchaPropertiesConfigurator(cc)).getCaptcha();
         if (captcha.split("&").length < 2) return;
         for (int i = 0; i < endings.length; i++) {
-            endings[i] = endings[i] + "&captcha="+captcha.split("&")[0];
-            endings[i] = endings[i]+"&captchaid="+captcha.split("&")[1];
+            endings[i] = endings[i] + "&captcha=" + captcha.split("&")[0];
+            endings[i] = endings[i] + "&captchaid=" + captcha.split("&")[1];
         }
     }
 
@@ -188,6 +209,14 @@ public class URLCreator {
 
         if (sc.getResultDateTill()!=null) {
             endings[0] = endings[0].replace("caseFinalDateTo=","caseFinalDateTo="+sc.getResultDateTill());
+        }
+
+        if (sc.getEntryDateFrom() != null) {
+            endings[0] = endings[0].replace("caseDateFrom=", "caseDateFrom=" + sc.getEntryDateFrom());
+        }
+
+        if (sc.getEntryDateTill() != null) {
+            endings[0] = endings[0].replace("caseDateTo=", "caseDateTo=" + sc.getEntryDateTill());
         }
     }
 
@@ -355,7 +384,7 @@ public class URLCreator {
                     "lawbookarticles%5B%5D=" + articlePart);
 
                 if (sc.getArticle() instanceof CASArticle && !checkFields()) {
-                    sc.setEntryDateTill(LocalDate.now());
+//                    sc.setEntryDateTill(LocalDate.now());
                     try {
                         endings[i] = endings[i].replace("ENTRY_DATE2D=",
                                 "ENTRY_DATE2D=" + sc.getEntryDateTill());
@@ -418,6 +447,36 @@ public class URLCreator {
                     endings[i] = endings[i].replace("case__result_date2d=",
                             "case__result_date2d=" + sc.getResultDateTill());
                 } catch (Exception ignored) {}
+            }
+        }
+
+        if (sc.getEntryDateFrom() != null) {
+            for (int i = 0; i < endings.length; i++) {
+                try {
+                    endings[i] = endings[i].replace("case__ENTRY_DATE1D=",
+                            "case__ENTRY_DATE1D=" + sc.getEntryDateFrom());
+                } catch (Exception ignored) {
+                }
+                try {
+                    endings[i] = endings[i].replace("case__entry_date1d=",
+                            "case__entry_date1d=" + sc.getEntryDateFrom());
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        if (sc.getEntryDateTill() != null) {
+            for (int i = 0; i < endings.length; i++) {
+                try {
+                    endings[i] = endings[i].replace("case__ENTRY_DATE2D=",
+                            "case__ENTRY_DATE2D=" + sc.getEntryDateTill());
+                } catch (Exception ignored) {
+                }
+                try {
+                    endings[i] = endings[i].replace("case__entry_date2d=",
+                            "case__entry_date2d=" + sc.getEntryDateTill());
+                } catch (Exception ignored) {
+                }
             }
         }
     }

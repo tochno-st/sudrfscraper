@@ -16,8 +16,7 @@ public enum SearchPattern {
     VNKOD_PATTERN,
     DEPRECATED_SECONDARY_PATTERN,
     SECONDARY_PATTERN,
-    MOSGORSUD_PATTERN
-    ;
+    MOSGORSUD_PATTERN;
 
     private Properties getProps(String path) {
         Properties properties = new Properties();
@@ -37,8 +36,52 @@ public enum SearchPattern {
             case APPELLATION -> {
                 return getAppellationPattern(field);
             }
+            case CASSATION -> {
+                return getCassationPattern(field);
+            }
         }
         return new String[]{};
+    }
+
+    private String[] getCassationPattern(Field field) {
+        switch (field) {
+            case ADMIN -> {
+                return getAdminPatternCassation();
+            }
+            case CRIMINAL -> {
+                return getCriminalPatternCassation();
+            }
+            case CAS -> {
+                return getCASPatternCassation();
+            }
+            case MATERIAL_PROCEEDING -> {
+                return getMaterialProceedingPatternCassation();
+            }
+            case CIVIL -> {
+                return getCivilPatternCassation();
+            }
+        }
+        return new String[]{};
+    }
+
+    private String[] getCivilPatternCassation() {
+        return String.valueOf(getProps(PATH_TO_CIVIL_PROPERTIES.toString()).getProperty(this + "_CASSATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getMaterialProceedingPatternCassation() {
+        return String.valueOf(getProps(PATH_TO_MATERIAL_PROCEEDING_PROPERTIES.toString()).getProperty(this + "_CASSATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getCASPatternCassation() {
+        return String.valueOf(getProps(PATH_TO_CAS_PROPERTIES.toString()).getProperty(this + "_CASSATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getCriminalPatternCassation() {
+        return String.valueOf(getProps(PATH_TO_CRIMINAL_PROPERTIES.toString()).getProperty(this + "_CASSATION")).split("\\$DELIMITER");
+    }
+
+    private String[] getAdminPatternCassation() {
+        return String.valueOf(getProps(PATH_TO_ADMIN_PROPERTIES.toString()).getProperty(this + "_CASSATION")).split("\\$DELIMITER");
     }
 
     private String[] getAppellationPattern(Field field) {

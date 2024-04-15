@@ -2,6 +2,7 @@ package com.github.courtandrey.sudrfscraper.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.courtandrey.sudrfscraper.configuration.ApplicationConfiguration;
+import com.github.courtandrey.sudrfscraper.configuration.courtconfiguration.Level;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Field;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.Instance;
 import com.github.courtandrey.sudrfscraper.configuration.searchrequest.SearchRequest;
@@ -124,6 +125,12 @@ public class AjaxRestController {
             }
             if (!requestDetails.getStartDate().isEmpty()) {
                 SearchRequest.getInstance().setResultDateFrom(validator.validateDate(requestDetails.getStartDate()));
+            }
+            if (!requestDetails.getEntryEndDate().isEmpty()) {
+                SearchRequest.getInstance().setEntryDateTill(validator.validateDate(requestDetails.getEntryEndDate()));
+            }
+            if (!requestDetails.getEntryStartDate().isEmpty()) {
+                SearchRequest.getInstance().setEntryDateFrom(validator.validateDate(requestDetails.getEntryStartDate()));
             }
             if (!requestDetails.getText().trim().isEmpty()) {
                 SearchRequest.getInstance().setText(requestDetails.getText());

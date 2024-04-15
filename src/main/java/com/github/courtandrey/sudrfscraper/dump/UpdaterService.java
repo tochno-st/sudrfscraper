@@ -87,6 +87,12 @@ public abstract class UpdaterService extends Thread implements Updater{
         if (sc.getResultDateTill() != null) {
             properties.put("result_date_till",sc.getResultDateTill());
         }
+        if (sc.getEntryDateFrom() != null) {
+            properties.put("entry_date_from",sc.getEntryDateFrom());
+        }
+        if (sc.getEntryDateTill() != null) {
+            properties.put("entry_date_till",sc.getEntryDateTill());
+        }
         if (sc.getText() != null) {
             properties.put("text",sc.getText());
         }
@@ -123,6 +129,8 @@ public abstract class UpdaterService extends Thread implements Updater{
             requestDetails.setField(SearchRequest.getInstance().getField().toString());
             requestDetails.setEndDate(SearchRequest.getInstance().getResultDateTill() != null ? SearchRequest.getInstance().getResultDateTill() : "");
             requestDetails.setStartDate(SearchRequest.getInstance().getResultDateFrom() != null ? SearchRequest.getInstance().getResultDateFrom() : "");
+            requestDetails.setEntryEndDate(SearchRequest.getInstance().getEntryDateTill() != null ? SearchRequest.getInstance().getEntryDateTill() : "");
+            requestDetails.setEntryStartDate(SearchRequest.getInstance().getEntryDateFrom() != null ? SearchRequest.getInstance().getEntryDateFrom() : "");
             requestDetails.setMeta(new RequestDetails.Meta());
             requestDetails.getMeta().setLevels((ApplicationConfiguration.getInstance().getProperty("basic.levels") != null &&
                     !ApplicationConfiguration.getInstance().getProperty("basic.levels").isEmpty())  ?
