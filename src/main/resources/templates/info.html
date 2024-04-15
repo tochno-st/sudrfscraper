@@ -114,6 +114,7 @@
         <p data-i18n="[html]exec-info-6"></p>
         <p data-i18n="[html]exec-info-7"></p>
         <p data-i18n="[html]exec-info-8"></p>
+        <p data-i18n="[html]exec-info-8a"></p>
         <p data-i18n="[html]exec-info-9"></p>
         <p data-i18n="[html]exec-info-10"></p>
         <p data-i18n="[html]exec-info-11"></p>
@@ -188,7 +189,7 @@
                             "nb": "Important: SUDRF Scraper may sometimes block requests from foreign IP addresses. We recommend using Russian IP addresses.",
                             "desc-title": "SUDRF Scraper",
                             "desc-1": "Among researchers and journalists, the official aggregator of Russian judicial data bsr.sudrf.ru (also known as «Pravosudie») is associated with pain and disappointment. It is very slow and often does not work at all.",
-                            "desc-2": "<strong>SUDRF Scraper</strong> helps to solve this problem — it collects data on court cases and texts of court decisions directly from the websites of general jurisdiction courts (including garrison military courts). Currently, the parser can work with five types of judicial proceedings (Сriminal Article, Administrative Proceeding, Administrative Offense Article, Material Proceeding and Civil Proceeding), as well as two instances (First and Appellation).",
+                            "desc-2": "<strong>SUDRF Scraper</strong> helps to solve this problem — it collects data on court cases and texts of court decisions directly from the websites of general jurisdiction courts (including garrison military courts). Currently, the parser can work with five types of judicial proceedings (Сriminal Article, Administrative Proceeding, Administrative Offense Article, Material Proceeding and Civil Proceeding), as well as three instances (First, Appellation, Cassation).",
                             "desc-3": "Some courts use CAPTCHA, so sometimes you may need to enter it manually. We have tried to minimize the required amount of CAPTCHA input.",
                             "desc-4": "<strong>The parser collects only public data posted on the court websites.</strong>",
                             "important-title": "Important Points",
@@ -207,9 +208,10 @@
                             "exec-info-6": "<strong>Region</strong> (note that some courts, such as military garrison courts, do not have a strict regional affiliation, so in such cases, it is better not to limit the export to specific regions)",
                             "exec-info-7": "<strong>Filter Case Mode:</strong> Soft (collects sub-articles for a given article, for example, for Article 20.3 of the Administrative Code of the Russian Federation, it collects cases under Article 20.3.3) or Strict (collects only cases under a given article)",
                             "exec-info-8": "Period in which the case was considered (<strong>Result Date From, Result Date To</strong>): start and end dates of the period in which the decision was considered. If you set these parameters, then unfinished cases will not be included in the export. To avoid this, leave these fields blank.",
-                            "exec-info-9": "<strong>Text to Search Within Acts:</strong>: search by text from the court decision.",
+                            "exec-info-8a": "Period in which the case came to the court (<strong>Entry Date From, Entry Date To</strong>).",
+                            "exec-info-9": "<strong>Text to Search Within Acts:</strong> search by text from the court decision.",
                             "exec-info-10": "<strong>Case Type:</strong> Criminal Article, Administrative Proceeding, Administrative Offense Article, Material Proceeding and Civil Proceeding",
-                            "exec-info-11": "<strong>Instance:</strong> First, Appellation",
+                            "exec-info-11": "<strong>Instance:</strong> First, Appellation, Cassation. The choice of region only affects the search for cases in the first and appellate instances. For the cassation instance, the search is carried out across all courts, regardless of the choice of region.",
                             "exec-info-12": "Depending on the selected type of judicial proceeding, you will be prompted to specify a specific article for your search.",
                             "exec-info-13": "For articles related to criminal proceedings, it is important not to confuse the sub-article and the part of the article. For example, in the Criminal Code, there is Article 286.1 \"Failure to Execute an Order by an Internal Affairs Officer.\" In this case, «Article»  is 286, «SubArticle» is 1. And if you need to search for part 4 of Article 286 «Exceeding Official Powers», then you should specify 4 in the «Part» field, not «Sub-article».",
                             "exec-info-14": "You can also control the following options:",
@@ -228,7 +230,7 @@
                             "nb": "Важно: SUDRF Scraper иногда блокирует запросы с зарубежных IP-адресов. Рекомендуем использовать российские IP-адреса.",
                             "desc-title": "SUDRF Scraper",
                             "desc-1": "Среди российских исследователей и журналистов официальный агрегатор судебных данных bsr.sudrf.ru (также известный как ГАС «Правосудие») ассоциируется с болью и разочарованием. Он очень медленный и часто вообще не работает.",
-                            "desc-2": "<strong>SUDRF Scraper</strong> помогает решить эту проблему — он собирает данные о судебных делах и тексты судебных решений напрямую с сайтов судов общей юрисдикции (включая гарнизонные военные суды). Сейчас парсер умеет работать с пятью типами судебного производства (уголовное, административное, об административных правонарушениях, гражданское и производства по материалам), а также с двумя инстанциями (первая и апелляционная).",
+                            "desc-2": "<strong>SUDRF Scraper</strong> помогает решить эту проблему — он собирает данные о судебных делах и тексты судебных решений напрямую с сайтов судов общей юрисдикции (включая гарнизонные военные суды). Сейчас парсер умеет работать с пятью типами судебного производства (уголовное, административное, об административных правонарушениях, гражданское и производства по материалам), а также с тремя инстанциями (первая, апелляционная, кассационная).",
                             "desc-3": "Некоторые суды используют капчу, поэтому иногда вам придется вводить ее вручную. Мы постарались минимизировать требуемое количество вводов капчи.",
                             "desc-4": "<strong>Парсер собирает только открытые данные, размещенные на сайтах судов.</strong>",
                             "important-title": "Важные моменты:",
@@ -247,9 +249,10 @@
                             "exec-info-6": "<strong>Регион</strong> (обратите внимание, что некоторые суды, например, военные гарнизонные, не имеют строгой региональной привязки, поэтому в таких случаях лучше не ограничивать выгрузку конкретными регионами)",
                             "exec-info-7": "<strong>Формат поиска: Мягкий</strong> (собирает подстатьи для заданной статьи, например, для статьи 20.3 КОАП РФ собирает и дела по статье 20.3.3) или <strong>Строгий</strong> (собирает только дела по заданной статье)",
                             "exec-info-8": "<strong>Период, в который дело рассмотрено (с, по):</strong> даты начала и конца периода, в который было рассмотрено дело. Если задать эти параметры, то еще незавершенные дела не попадут в выгрузку. Чтобы этого избежать, оставьте эти поля пустыми.",
+                            "exec-info-8a": "<strong>Период, в который дело поступило в суд (с, по):</strong> даты начала и конца периода, в который дело поступило в суд.",
                             "exec-info-9": "<strong>Поиск по тексту документа:</strong> поиск по тексту из судебного решения",
                             "exec-info-10": "<strong>Тип судебного производства:</strong> Уголовное, Административное, Об административных правонарушениях, Гражданское и Производства по материалам",
-                            "exec-info-11": "<strong>Инстанция:</strong> Первая, Апелляционная",
+                            "exec-info-11": "<strong>Инстанция:</strong> Первая, Апелляционная, Кассационная. Выбор региона влияет только на поиск дел в первой и апелляционной инстанциях. Для кассационной инстанции поиск осуществляется по всем судам, независимо от выбора региона.",
                             "exec-info-12": "В зависимости от выбранного типа судебного производства вам будет предложено указать конкретную статью, по которой вы хотите осуществить поиск.",
                             "exec-info-13": "Для статей по уголовному производству важно не путать подстатью и часть статьи. Например, в уголовном кодексе есть Статья 286.1 «Неисполнение сотрудником органов внутренних дел приказа». В данном случае «Статья» — 286, «Подстатья» — 1. А если необходимо осуществить поиск по части 4 статьи 286 «Превышение должностных полномочий», то 4 нужно указать в поле «Часть», а не в поле «Подстатья».",
                             "exec-info-14": "Также вы можете управлять следующими опциями:",

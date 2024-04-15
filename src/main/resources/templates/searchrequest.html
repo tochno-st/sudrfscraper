@@ -337,6 +337,7 @@
                 <select id="instances" autocomplete="off" multiple class="select-strict">
                     <option value="FIRST" data-i18n="first-instance"></option>
                     <option value="APPELLATION" data-i18n="appellation-instance"></option>
+                    <option value="CASSATION" data-i18n="cassation-instance"></option>
                 </select>
             </div>
 
@@ -357,6 +358,16 @@
             <div class="input-pair block-element">
                 <label for="endDateInput" data-i18n="date-to"></label>
                 <input type="text" id="endDateInput" autocomplete="off">
+            </div>
+
+            <div class="input-pair block-element" style="margin-top: 40px">
+                <label for="entryStartDateInput" data-i18n="entry-date-from"></label>
+                <input type="text" id="entryStartDateInput" placeholder="24/02/2022" autocomplete="off">
+            </div>
+
+            <div class="input-pair block-element">
+                <label for="entryEndDateInput" data-i18n="entry-date-to"></label>
+                <input type="text" id="entryEndDateInput" autocomplete="off">
             </div>
 
             <div class="input-pair block-element" style="margin-top: 40px">
@@ -1355,7 +1366,8 @@
                   .then(requestDetails => {
                     // Populate the form fields with the data from the RequestDetails object
                     document.getElementById('textWithinActs').value = requestDetails.text;
-                    initializeDatepickers(requestDetails.startDate, requestDetails.endDate);
+                      initializeDatepickers(requestDetails.startDate, requestDetails.endDate,
+                          requestDetails.entryStartDate, requestDetails.entryEndDate);
 
                     const courtLevelSelect = $('#courtLevel');
                     const regionsSelect = $('#regions');
@@ -1475,9 +1487,11 @@
                 });
               });
 
-              function initializeDatepickers(startDate, endDate) {
+              function initializeDatepickers(startDate, endDate, entryStartDate, entryEndDate) {
                 const startDateInput = document.getElementById('startDateInput');
                 const endDateInput = document.getElementById('endDateInput');
+                const entryStartDateInput = document.getElementById('entryStartDateInput');
+                const entryEndDateInput = document.getElementById('entryEndDateInput');
 
                 flatpickr(startDateInput, {
                   dateFormat: 'd/m/Y',
@@ -1487,6 +1501,16 @@
                 flatpickr(endDateInput, {
                   dateFormat: 'd/m/Y',
                   defaultDate: endDate
+                });
+
+                flatpickr(entryStartDateInput, {
+                  dateFormat: 'd/m/Y',
+                  defaultDate: entryStartDate
+                });
+
+                flatpickr(entryEndDateInput, {
+                  dateFormat: 'd/m/Y',
+                  defaultDate: entryEndDate
                 });
               }
             </script>
@@ -1586,37 +1610,28 @@
             <script>
                 const startDateInput = document.getElementById('startDateInput');
                 const endDateInput = document.getElementById('endDateInput');
+                const entryStartDateInput = document.getElementById('entryStartDateInput');
+                const entryEndDateInput = document.getElementById('entryEndDateInput');
 
-                flatpickr(startDateInput, {
-                  dateFormat: 'd/m/Y',
-                  maxDate: 'today', // Set the maximum date to today
-                  onClose: function(selectedDates, dateStr, instance) {
-                    // Update the minimum date of the end date picker
-                    flatpickr(endDateInput, {
-                      dateFormat: 'd/m/Y',
-                      minDate: dateStr,
-                      maxDate: 'today',// Set the minimum date to the selected start date
-                      onClose: function(selectedDates, dateStr, instance) {
-                        // Add any additional logic you need for the end date picker
-                      }
-                    });
-                  }
-                });
+                function setupDates(start, end) {
+                    flatpickr(start, {
+                        dateFormat: 'd/m/Y',
+                        maxDate: 'today',
+                        onClose: function (selectedDates, dateStr, instance) {
+                            flatpickr(end, {
+                                dateFormat: 'd/m/Y',
+                                minDate: dateStr,
+                                maxDate: 'today',
+                                onClose: function (selectedDates, dateStr, insctance) {
 
-                flatpickr(endDateInput, {
-                  dateFormat: 'd/m/Y',
-                  maxDate: 'today', // Set the maximum date to today
-                  onClose: function(selectedDates, dateStr, instance) {
-                    // Update the minimum date of the end date picker
-                    flatpickr(startDateInput, {
-                      dateFormat: 'd/m/Y',
-                      maxDate: dateStr, // Set the minimum date to the selected start date
-                      onClose: function(selectedDates, dateStr, instance) {
-                        // Add any additional logic you need for the end date picker
-                      }
-                    });
-                  }
-                });
+                                }
+                            })
+                        }
+                    })
+                }
+
+                setupDates(startDateInput, endDateInput);
+                setupDates(entryStartDateInput, entryEndDateInput);
 
                  flatpickr(today, {
                     dateFormat: 'd/m/Y',
@@ -1625,6 +1640,7 @@
 
                 const thisDay = document.getElementById('today').value
                 endDateInput.setAttribute('placeholder', thisDay);
+                entryEndDateInput.setAttribute('placeholder', thisDay);
             </script>
 
             <script>
@@ -1761,23 +1777,26 @@
                     }
                     article = civilProceedingArticle;
                 }
-              const selectedInstances = $('#instances').val();
+
+                const selectedInstances = $('#instances').val();
               let instances = ['FIRST'];
 
               if (!(selectedInstances.length === 0)) {
                 instances = selectedInstances;
               }
 
-                 const request = {
-                    article: article,
-                    meta: metaINF,
-                    instances: instances,
-                    chosenDump: dump,
-                    field: article.field,
-                    connectionInf: connectionInfo,
-                    endDate: document.getElementById('endDateInput').value,
-                    startDate: document.getElementById('startDateInput').value,
-                    text: textWA.value
+                  const request = {
+                      article: article,
+                      meta: metaINF,
+                      instances: instances,
+                      chosenDump: dump,
+                      field: article.field,
+                      connectionInf: connectionInfo,
+                      endDate: document.getElementById('endDateInput').value,
+                      startDate: document.getElementById('startDateInput').value,
+                      entryEndDate: document.getElementById('entryEndDateInput').value,
+                      entryStartDate: document.getElementById('entryStartDateInput').value,
+                      text: textWA.value
                   };
                   const xhr = new XMLHttpRequest();
                   xhr.open('POST', '/check_request');
@@ -1951,6 +1970,8 @@
                                 "strict": "Strict (collects only exact Article, e.g. SubArticle 20.3.3 is excluded for Article 20.3 request)",
                                 "date-from": "Result Date From",
                                 "date-to": "Result Date Till",
+                                "entry-date-from": "Entry Date From",
+                                "entry-date-to": "Entry Date Till",
                                 "text-search-acts": "Text to Search Within Acts",
                                 "case-type": "Case Type",
                                 "criminal-article": "Criminal Article",
@@ -1978,6 +1999,7 @@
                                 "all-instance": "All",
                                 "first-instance": "First",
                                 "appellation-instance": "Appellation",
+                                "cassation-instance": "Cassation",
                                 "submit-btn": "Submit",
                                 "close-btn": "Close",
                                 "remember-checkbox": "Remember Connection Info",
@@ -2005,6 +2027,8 @@
                                 "strict": "Строгий (собирает только дела по заданной статье)",
                                 "date-from": "Искать с (рассмотрено)",
                                 "date-to": "Искать по (рассмотрено)",
+                                "entry-date-from": "Искать с (поступило)",
+                                "entry-date-to": "Искать по (поступило)",
                                 "text-search-acts": "Поиск по тексту документа",
                                 "case-type": "Тип судебного производства",
                                 "criminal-article": "Уголовное",
@@ -2032,6 +2056,7 @@
                                 "all-instance": "Все",
                                 "first-instance": "Первая",
                                 "appellation-instance": "Апелляционная",
+                                "cassation-instance": "Кассация",
                                 "submit-btn": "Продолжить",
                                 "close-btn": "Закрыть",
                                 "remember-checkbox": "Запомнить информацию о соединении",
